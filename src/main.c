@@ -25,6 +25,7 @@
 /* add user code end Header */
 
 /* Includes ------------------------------------------------------------------*/
+#include <string.h>
 #include "at32f403a_407_wk_config.h"
 #include "at32f403a_407_board.h"
 #include "wk_adc.h"
@@ -37,6 +38,7 @@
 #include "wk_spi.h"
 #include "wk_tmr.h"
 #include "wk_usart.h"
+#include "wk_dma.h"
 #include "wk_gpio.h"
 #include "wk_system.h"
 #include "FreeRTOS.h"
@@ -44,7 +46,7 @@
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
-
+#include "elog.h"
 /* add user code end private includes */
 
 /* private typedef -----------------------------------------------------------*/
@@ -54,7 +56,6 @@
 
 /* private define ------------------------------------------------------------*/
 /* add user code begin private define */
-
 /* add user code end private define */
 
 /* private macro -------------------------------------------------------------*/
@@ -87,8 +88,7 @@ TaskHandle_t LED1Task_Handler;
 void led1_task(void* pvParameters);
 
 TaskHandle_t network_handler;
-void network_task_function(void *pvParameters);
-
+void network_task_function(void* pvParameters);
 
 /* private function prototypes --------------------------------------------*/
 /* add user code begin function prototypes */
@@ -124,8 +124,20 @@ int main(void) {
   /* timebase config. */
   wk_timebase_init();
 
+  /* init dma1 channel1 */
+  // wk_dma1_channel1_init();
+  /* config dma channel transfer parameter */
+  /* user need to modify define values DMAx_CHANNELy_XXX_BASE_ADDR and DMAx_CHANNELy_BUFFER_SIZE in at32xxx_wk_config.h */
+  // wk_dma_channel_config(DMA1_CHANNEL1,
+  //                       (uint32_t)&UART4->dt,
+  //                       DMA1_CHANNEL1_MEMORY_BASE_ADDR,
+  //                       DMA1_CHANNEL1_BUFFER_SIZE);
+  // dma_channel_enable(DMA1_CHANNEL1, TRUE);
+
   /* init usart1 function. */
   // wk_usart1_init();
+  memset(uart_tx_buf, 0, MAX_LEN);
+  config_dma(uart_tx_buf);
   uart_print_init(115200);
   printf("USART1 Init Success\r\n");
 
@@ -164,7 +176,7 @@ int main(void) {
   // wk_crc_init();
 
   /* init gpio function. */
-  wk_gpio_config();
+  // wk_gpio_config();
 
   /* add user code begin 2 */
   at32_led_init(LED2);
@@ -182,40 +194,16 @@ int main(void) {
 /* add user code begin 4 */
 void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
-  // printf("Tick: %d\r\n", xTaskGetTickCount());
-  // vTaskDelay(1000);
-  // xTaskCreate((TaskFunction_t)led0_task, (const char*)"led0_task", (uint16_t)LED0_STK_SIZE, (void*)NULL, (UBaseType_t)LED0_TASK_PRIO,
-  //             (TaskHandle_t*)&LED0Task_Handler);
-  // xTaskCreate((TaskFunction_t)led1_task, (const char*)"led1_task", (uint16_t)LED1_STK_SIZE, (void*)NULL, (UBaseType_t)LED1_TASK_PRIO,
-  //             (TaskHandle_t*)&LED1Task_Handler);
   xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)512, (void*)NULL, (UBaseType_t)2,
               (TaskHandle_t*)&network_handler);
   vTaskDelete(StartTask_Handler);
   taskEXIT_CRITICAL();
 }
 
-// void led0_task(void* pvParameters) {
-//   while (1) {
-//     at32_led_toggle(LED4);
-//     // printf("LED4 Toggle: %d\r\n", LED0_count);
-//     vTaskDelay(300);
-//     LED0_count++;
-//   }
-// }
-
-// void led1_task(void* pvParameters) {
-//   while (1) {
-//     at32_led_toggle(LED2);
-//     // printf("LED2 Toggle: %d\r\n", LED1_count);
-//     vTaskDelay(800);
-//     LED1_count++;
-//   }
-// }
-
 void network_task_function(void* pvParameters) {
-    /* init emac function. */
+  /* init emac function. */
   // printf("EMAC Init Start\r\n");
-  while(wk_emac_init() == ERROR) {
+  while (wk_emac_init() == ERROR) {
     printf("EMAC Init Failed\r\n");
     vTaskDelay(1000);
   }

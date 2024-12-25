@@ -26,6 +26,7 @@
 
 /* includes ------------------------------------------------------------------*/
 #include "at32f403a_407_int.h"
+#include "wk_dma.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -255,6 +256,19 @@ void TMR4_GLOBAL_IRQHandler(void)
   /* add user code end TMR4_GLOBAL_IRQ 1 */
 }
 
-/* add user code begin 1 */
+void UART4_IRQHandler(void)
+{
+  /* add user code begin UART4_IRQ 0 */
 
+  /* add user code end UART4_IRQ 0 */
+  /* add user code begin UART4_IRQ 1 */
+
+  /* add user code end UART4_IRQ 1 */
+}
+
+/* add user code begin 1 */
+void UART1_IRQHandler(void)
+{
+  start_dma_transfer();
+}
 /* add user code end 1 */

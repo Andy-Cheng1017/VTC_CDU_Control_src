@@ -797,7 +797,7 @@ dhcp_start(struct netif *netif)
     dhcp_release_and_stop(netif);
     return ERR_MEM;
   }
-	printf("0x%08x\n", dhcp->offered_ip_addr.addr);
+	printf("0x%08lx\n", dhcp->offered_ip_addr.addr);
   return result;
 }
 

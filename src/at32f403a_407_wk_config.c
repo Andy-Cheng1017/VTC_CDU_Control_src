@@ -1,27 +1,27 @@
 /* add user code begin Header */
 /**
-  **************************************************************************
-  * @file     at32f403a_407_wk_config.c
-  * @brief    work bench config program
-  **************************************************************************
-  *                       Copyright notice & Disclaimer
-  *
-  * The software Board Support Package (BSP) that is made available to
-  * download from Artery official website is the copyrighted work of Artery.
-  * Artery authorizes customers to use, copy, and distribute the BSP
-  * software and its related documentation for the purpose of design and
-  * development in conjunction with Artery microcontrollers. Use of the
-  * software is governed by this copyright notice and the following disclaimer.
-  *
-  * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
-  * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
-  * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
-  * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
-  * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
-  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
-  *
-  **************************************************************************
-  */
+ **************************************************************************
+ * @file     at32f403a_407_wk_config.c
+ * @brief    work bench config program
+ **************************************************************************
+ *                       Copyright notice & Disclaimer
+ *
+ * The software Board Support Package (BSP) that is made available to
+ * download from Artery official website is the copyrighted work of Artery.
+ * Artery authorizes customers to use, copy, and distribute the BSP
+ * software and its related documentation for the purpose of design and
+ * development in conjunction with Artery microcontrollers. Use of the
+ * software is governed by this copyright notice and the following disclaimer.
+ *
+ * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
+ * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
+ * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
+ * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
+ * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+ *
+ **************************************************************************
+ */
 /* add user code end Header */
 
 #include "at32f403a_407_wk_config.h"
@@ -62,25 +62,24 @@
 /* add user code end 0 */
 
 /**
-  * @brief  system clock config program
-  * @note   the system clock is configured as follow:
-  *         system clock (sclk)   = hext * pll_mult
-  *         system clock source   = HEXT_VALUE
-  *         - hext                = HEXT_VALUE
-  *         - sclk                = 240000000
-  *         - ahbdiv              = 1
-  *         - ahbclk              = 240000000
-  *         - apb1div             = 2
-  *         - apb1clk             = 120000000
-  *         - apb2div             = 2
-  *         - apb2clk             = 120000000
-  *         - pll_mult            = 30
-  *         - pll_range           = GT72MHZ (greater than 72 mhz)
-  * @param  none
-  * @retval none
-  */
-void wk_system_clock_config(void)
-{
+ * @brief  system clock config program
+ * @note   the system clock is configured as follow:
+ *         system clock (sclk)   = hext * pll_mult
+ *         system clock source   = HEXT_VALUE
+ *         - hext                = HEXT_VALUE
+ *         - sclk                = 240000000
+ *         - ahbdiv              = 1
+ *         - ahbclk              = 240000000
+ *         - apb1div             = 2
+ *         - apb1clk             = 120000000
+ *         - apb2div             = 2
+ *         - apb2clk             = 120000000
+ *         - pll_mult            = 30
+ *         - pll_range           = GT72MHZ (greater than 72 mhz)
+ * @param  none
+ * @retval none
+ */
+void wk_system_clock_config(void) {
   /* reset crm */
   crm_reset();
 
@@ -90,11 +89,9 @@ void wk_system_clock_config(void)
   pwc_battery_powered_domain_access(TRUE);
 
   /* check lext enabled or not */
-  if(crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET)
-  {
+  if (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
     crm_clock_source_enable(CRM_CLOCK_SOURCE_LEXT, TRUE);
-    while(crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET)
-    {
+    while (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
     }
   }
   /* disable battery powered domain access */
@@ -114,8 +111,7 @@ void wk_system_clock_config(void)
   crm_clock_source_enable(CRM_CLOCK_SOURCE_HEXT, TRUE);
 
   /* wait till hext is ready */
-  while(crm_hext_stable_wait() == ERROR)
-  {
+  while (crm_hext_stable_wait() == ERROR) {
   }
 
   // /* enable hick */
@@ -133,8 +129,7 @@ void wk_system_clock_config(void)
   crm_clock_source_enable(CRM_CLOCK_SOURCE_PLL, TRUE);
 
   /* wait till pll is ready */
-  while(crm_flag_get(CRM_PLL_STABLE_FLAG) != SET)
-  {
+  while (crm_flag_get(CRM_PLL_STABLE_FLAG) != SET) {
   }
 
   /* config ahbclk */
@@ -153,8 +148,7 @@ void wk_system_clock_config(void)
   crm_sysclk_switch(CRM_SCLK_PLL);
 
   /* wait till pll is used as system clock source */
-  while(crm_sysclk_switch_status_get() != CRM_SCLK_PLL)
-  {
+  while (crm_sysclk_switch_status_get() != CRM_SCLK_PLL) {
   }
 
   /* disable auto step mode */
@@ -165,12 +159,14 @@ void wk_system_clock_config(void)
 }
 
 /**
-  * @brief  config periph clock
-  * @param  none
-  * @retval none
-  */
-void wk_periph_clock_config(void)
-{
+ * @brief  config periph clock
+ * @param  none
+ * @retval none
+ */
+void wk_periph_clock_config(void) {
+  /* enable dma1 periph clock */
+  crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
+
   /* enable crc periph clock */
   crm_periph_clock_enable(CRM_CRC_PERIPH_CLOCK, TRUE);
 
@@ -242,12 +238,11 @@ void wk_periph_clock_config(void)
 }
 
 /**
-  * @brief  nvic config
-  * @param  none
-  * @retval none
-  */
-void wk_nvic_config(void)
-{
+ * @brief  nvic config
+ * @param  none
+ * @retval none
+ */
+void wk_nvic_config(void) {
   nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 
   NVIC_SetPriority(MemoryManagement_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));

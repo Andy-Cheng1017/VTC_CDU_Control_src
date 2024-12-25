@@ -101,8 +101,8 @@ typedef int sys_prot_t;
  * around the arguments, which are left out in the following macro definition:
  */
 #if !defined(LWIP_TESTMODE) || !LWIP_TESTMODE
-void lwip_win32_platform_diag(const char *format, ...);
-#define LWIP_PLATFORM_DIAG(x) lwip_win32_platform_diag x
+void lwip_AT32_platform_diag(const char *format, ...);
+#define LWIP_PLATFORM_DIAG(x) lwip_AT32_platform_diag x
 #endif
 
 //#ifndef LWIP_NORAND

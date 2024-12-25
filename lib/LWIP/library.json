@@ -14,6 +14,6 @@
     "frameworks": "at32firmlib",
     "platforms": "arterytekat32",
     "build" : {
-        "extraScript": "lib_LWIP_build.py"
+        "extraScript": "lib_build.py"
     }
 }

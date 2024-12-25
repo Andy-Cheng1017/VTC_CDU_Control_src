@@ -40,9 +40,9 @@
 #define STEP_DELAY_MS 50
 
 /* at-start led resouce array */
-gpio_type *led_gpio_port[LED_NUM] = {LED2_GPIO, LED3_GPIO, LED4_GPIO, PHY_LAN_nRST};
-uint16_t led_gpio_pin[LED_NUM] = {LED2_PIN, LED3_PIN, LED4_PIN, PHY_LAN_nRST};
-crm_periph_clock_type led_gpio_crm_clk[LED_NUM] = {LED2_GPIO_CRM_CLK, LED3_GPIO_CRM_CLK, LED4_GPIO_CRM_CLK};
+gpio_type *led_gpio_port[LED_NUM] = {LED2_GPIO, LED3_GPIO, LED4_GPIO, PHY_LAN_nRST_GPIO};
+uint16_t led_gpio_pin[LED_NUM] = {LED2_PIN, LED3_PIN, LED4_PIN, PHY_LAN_nRST_PIN};
+crm_periph_clock_type led_gpio_crm_clk[LED_NUM] = {LED2_GPIO_CRM_CLK, LED3_GPIO_CRM_CLK, LED4_GPIO_CRM_CLK, PHY_LAN_nRST_GPIO_CRM_CLK};
 
 /* delay variable */
 static __IO uint32_t fac_us;
@@ -128,7 +128,30 @@ void uart_print_init(uint32_t baudrate) {
   /* configure uart param */
   usart_init(PRINT_UART, baudrate, USART_DATA_8BITS, USART_STOP_1_BIT);
   usart_transmitter_enable(PRINT_UART, TRUE);
+  usart_dma_transmitter_enable(PRINT_UART, TRUE);
+  usart_interrupt_enable(PRINT_UART, USART_TDBE_INT, TRUE);
   usart_enable(PRINT_UART, TRUE);
+}
+
+void config_dma(char *dma_buf) {
+  dma_init_type dma_init_struct;
+
+  crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
+
+  /* USART1 TX DMA1 Channel (triggered by USART1 Tx event) Config */
+  dma_reset(DMA1_CHANNEL4);
+  dma_default_para_init(&dma_init_struct);
+  dma_init_struct.peripheral_base_addr = (u32)&USART1->dt;
+  dma_init_struct.memory_base_addr = (uint32_t)dma_buf;
+  dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;
+  dma_init_struct.buffer_size = 0;
+  dma_init_struct.peripheral_inc_enable = FALSE;
+  dma_init_struct.memory_inc_enable = TRUE;
+  dma_init_struct.peripheral_data_width = DMA_PERIPHERAL_DATA_WIDTH_BYTE;
+  dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
+  dma_init_struct.loop_mode_enable = FALSE;
+  dma_init_struct.priority = DMA_PRIORITY_MEDIUM;
+  dma_init(DMA1_CHANNEL4, &dma_init_struct);
 }
 
 /**

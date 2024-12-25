@@ -82,6 +82,10 @@ typedef enum
 #define LED4_PIN                         GPIO_PINS_15
 #define LED4_GPIO                        GPIOD
 #define LED4_GPIO_CRM_CLK                CRM_GPIOD_PERIPH_CLOCK
+
+#define PHY_LAN_nRST_PIN                 GPIO_PINS_15
+#define PHY_LAN_nRST_GPIO                GPIOB
+#define PHY_LAN_nRST_GPIO_CRM_CLK        CRM_GPIOB_PERIPH_CLOCK
 #endif
 
 /**************** define print uart ******************/
@@ -132,6 +136,7 @@ void delay_sec(uint16_t sec);
 
 /* printf uart init function */
 void uart_print_init(uint32_t baudrate);
+void config_dma(char *dma_buf);
 
 /**
   * @}

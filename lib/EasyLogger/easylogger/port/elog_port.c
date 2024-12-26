@@ -92,11 +92,11 @@ const char *elog_port_get_time(void) {
  *
  * @return current process name
  */
-const char *elog_port_get_p_info(void) { /* add your code here */ }
+const char *elog_port_get_p_info(void) { return "FreeRTOS"; }
 
 /**
  * get current thread name interface
  *
  * @return current thread name
  */
-const char *elog_port_get_t_info(void) { /* add your code here */ }
+const char *elog_port_get_t_info(void) { return pcTaskGetName(NULL); }

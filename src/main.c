@@ -1,38 +1,9 @@
-/* add user code begin Header */
-/**
- **************************************************************************
- * @file     main.c
- * @brief    main program
- **************************************************************************
- *                       Copyright notice & Disclaimer
- *
- * The software Board Support Package (BSP) that is made available to
- * download from Artery official website is the copyrighted work of Artery.
- * Artery authorizes customers to use, copy, and distribute the BSP
- * software and its related documentation for the purpose of design and
- * development in conjunction with Artery microcontrollers. Use of the
- * software is governed by this copyright notice and the following disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
- * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
- * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
- * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
- * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
- *
- **************************************************************************
- */
-/* add user code end Header */
-
-/* Includes ------------------------------------------------------------------*/
 #include <string.h>
 #include "at32f403a_407_wk_config.h"
-#include "at32f403a_407_board.h"
 #include "wk_adc.h"
 #include "wk_crc.h"
 #include "wk_dac.h"
 #include "wk_debug.h"
-#include "wk_emac.h"
 #include "wk_i2c.h"
 #include "wk_rtc.h"
 #include "wk_spi.h"
@@ -43,22 +14,20 @@
 #include "wk_system.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "network_task.h"
+#include "LCD_task.h"
+#include "upper_task.h"
+#include "fans_task.h"
+#include "sensor_task.h"
+#include "pump_task.h"
+#include "RTC_task.h"
+#include "warning_task.h"
+
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
 
-/**
- * Log default configuration for EasyLogger.
- * NOTE: Must defined before including the <elog.h>
- */
-#if !defined(LOG_TAG)
-#define LOG_TAG "CDU_main"
-#endif
-#undef LOG_LVL
-#if defined(XX_LOG_LVL)
-#define LOG_LVL XX_LOG_LVL
-#endif
-
+#define LOG_TAG "main"
 #include "elog.h"
 /* add user code end private includes */
 
@@ -69,7 +38,34 @@
 
 /* private define ------------------------------------------------------------*/
 /* add user code begin private define */
-#define LOG_TAG "CDU_main"
+#define START_TASK_PRIO 1
+#define START_STK_SIZE 128
+
+#define NETWORK_TASK_PRIO 4
+#define NETWORK_STK_SIZE 512
+
+#define LCD_TASK_PRIO 2
+#define LCD_STK_SIZE 256
+
+#define UPPER_TASK_PRIO 4
+#define UPPER_STK_SIZE 256
+
+#define FANS_TASK_PRIO 4
+#define FANS_STK_SIZE 256
+
+#define SENSOR_TASK_PRIO 3
+#define SENSOR_STK_SIZE 256
+
+#define PUMP_TASK_PRIO 1
+#define PUMP_STK_SIZE 256
+
+#define RTC_TASK_PRIO 4
+#define RTC_STK_SIZE 128
+
+#define WARNNING_TASK_PRIO 3
+#define WARNNING_STK_SIZE 128
+
+
 /* add user code end private define */
 
 /* private macro -------------------------------------------------------------*/
@@ -79,30 +75,11 @@
 
 /* private variables ---------------------------------------------------------*/
 /* add user code begin private variables */
-int LED0_count = 0;
-int LED1_count = 0;
+
 /* add user code end private variables */
 
-extern void tcpip_stack_init(void);
-extern void udpecho_init(void);
-
-#define START_TASK_PRIO 1
-#define START_STK_SIZE 128
 TaskHandle_t StartTask_Handler;
 void start_task(void* pvParameters);
-
-#define LED0_TASK_PRIO 4
-#define LED0_STK_SIZE 128
-TaskHandle_t LED0Task_Handler;
-void led0_task(void* pvParameters);
-
-#define LED1_TASK_PRIO 3
-#define LED1_STK_SIZE 128
-TaskHandle_t LED1Task_Handler;
-void led1_task(void* pvParameters);
-
-TaskHandle_t network_handler;
-void network_task_function(void* pvParameters);
 
 /* private function prototypes --------------------------------------------*/
 /* add user code begin function prototypes */
@@ -150,9 +127,7 @@ int main(void) {
 
   /* init usart1 function. */
   // wk_usart1_init();
-  memset(uart_tx_buf, 0, MAX_LEN);
-  config_dma(uart_tx_buf);
-  uart_print_init(115200);
+
   elog_init();
   elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
   elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
@@ -161,9 +136,10 @@ int main(void) {
   elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
   elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
   elog_set_text_color_enabled(TRUE);
-  elog_start();
-  log_i("USART1 Init Success");
 
+  // memset(uart_tx_buf, 0, MAX_LEN);
+  // config_dma(uart_tx_buf);
+  // uart_print_init(115200);
   /* init usart2 function. */
   // wk_usart2_init();
 
@@ -202,40 +178,39 @@ int main(void) {
   // wk_gpio_config();
 
   /* add user code begin 2 */
-  at32_led_init(LED2);
-  at32_led_init(LED3);
-  at32_led_init(LED4);
-
-  at32_led_on(PHY_LAN_nRST);
 
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);
   vTaskStartScheduler();
+
+  elog_start();
+  log_i("USART1 Init Success");
+
   /* add user code end 2 */
 }
 
 /* add user code begin 4 */
 void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
-  xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)512, (void*)NULL, (UBaseType_t)2,
-              (TaskHandle_t*)&network_handler);
+  xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
+              (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
+  xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
+              (TaskHandle_t*)&LCD_handler);
+  xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
+              (TaskHandle_t*)&upper_handler);
+  xTaskCreate((TaskFunction_t)fans_task_function, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
+              (TaskHandle_t*)&fans_handler);
+  xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
+              (TaskHandle_t*)&sensor_handler);
+  xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
+              (TaskHandle_t*)&pump_handler);
+  xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
+              (TaskHandle_t*)&RTC_handler);
+  xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
+              (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
+
   vTaskDelete(StartTask_Handler);
   taskEXIT_CRITICAL();
 }
 
-void network_task_function(void* pvParameters) {
-  /* init emac function. */
-  // printf("EMAC Init Start\r\n");
-  while (wk_emac_init() == ERROR) {
-    printf("EMAC Init Failed\r\n");
-    vTaskDelay(1000);
-  }
-  log_i("EMAC Init Success");
-  tcpip_stack_init();
-  udpecho_init();
-  while (1) {
-    at32_led_toggle(LED3);
-    vTaskDelay(500);
-  }
-}
 /* add user code end 4 */

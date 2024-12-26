@@ -25,7 +25,7 @@
 /* add user code end Header */
 
 /* Includes ------------------------------------------------------------------*/
-#include "at32f403a_407_board.h"
+// #include "at32f403a_407_board.h"
 #include "lwip/dhcp.h"
 #include "wk_emac.h"
 #include "task.h"
@@ -459,7 +459,7 @@ void ethernetif_notify_conn_changed(struct netif *netif)
 void ethernetif_update_config(struct netif *netif) {
   if (netif_is_link_up(netif)) {
     printf("Link is up\n");
-    at32_led_on(LED2);
+    // at32_led_on(LED2);
     emac_speed_config(mac_control_para.auto_nego, mac_control_para.duplex_mode, mac_control_para.fast_ethernet_speed);
 
     vTaskDelay(300);
@@ -467,7 +467,7 @@ void ethernetif_update_config(struct netif *netif) {
     emac_start();
   } else {
     /* disable mac and dma transmission and reception */
-    at32_led_off(LED2);
+    // at32_led_off(LED2);
     printf("Link is down\n");
     emac_stop();
   }

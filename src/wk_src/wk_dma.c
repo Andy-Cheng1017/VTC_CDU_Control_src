@@ -36,14 +36,15 @@
  * @param  none
  * @retval none
  */
-void wk_dma1_channel1_init(void) {
-  /* add user code begin dma1_channel1 0 */
+void wk_dma2_channel5_init(void)
+{
+  /* add user code begin dma2_channel5 0 */
 
-  /* add user code end dma1_channel1 0 */
+  /* add user code end dma2_channel5 0 */
 
   dma_init_type dma_init_struct;
 
-  dma_reset(DMA1_CHANNEL1);
+  dma_reset(DMA2_CHANNEL5);
   dma_default_para_init(&dma_init_struct);
   dma_init_struct.direction = DMA_DIR_MEMORY_TO_PERIPHERAL;
   dma_init_struct.memory_data_width = DMA_MEMORY_DATA_WIDTH_BYTE;
@@ -52,13 +53,7 @@ void wk_dma1_channel1_init(void) {
   dma_init_struct.peripheral_inc_enable = FALSE;
   dma_init_struct.priority = DMA_PRIORITY_LOW;
   dma_init_struct.loop_mode_enable = FALSE;
-  dma_init(DMA1_CHANNEL1, &dma_init_struct);
-
-  /* flexible function enable */
-  dma_flexible_config(DMA1, FLEX_CHANNEL1, DMA_FLEXIBLE_UART4_TX);
-  /* add user code begin dma1_channel1 1 */
-
-  /* add user code end dma1_channel1 1 */
+  dma_init(DMA2_CHANNEL5, &dma_init_struct);
 }
 
 /**
@@ -85,17 +80,17 @@ void wk_dma_channel_config(dma_channel_type* dmax_channely, uint32_t peripheral_
 
 /* add user code begin 1 */
 void start_dma_transfer(void) {
-  if (usart_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
+  if (usart_flag_get(UART4, USART_TDBE_FLAG) != RESET) {
     if (txBuffer.count > 0) {
       uint16_t len = CircularBuffer_ReadBuffer(&txBuffer, uart_tx_buf, sizeof(uart_tx_buf));
-      dma_channel_enable(DMA1_CHANNEL4, FALSE);
-      dma_data_number_set(DMA1_CHANNEL4, len);
-      dma_channel_enable(DMA1_CHANNEL4, TRUE);
+      dma_channel_enable(DMA2_CHANNEL5, FALSE);
+      dma_data_number_set(DMA2_CHANNEL5, len);
+      dma_channel_enable(DMA2_CHANNEL5, TRUE);
     } else {
       return;
     }
   } else {
-    usart_interrupt_enable(USART1, USART_TDBE_INT, true);
+    usart_interrupt_enable(UART4, USART_TDBE_INT, true);
   }
 }
 /* add user code end 1 */

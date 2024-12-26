@@ -128,15 +128,6 @@ int main(void) {
   /* init usart1 function. */
   // wk_usart1_init();
 
-  elog_init();
-  elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
-  elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-  elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-  elog_set_text_color_enabled(TRUE);
-
   // memset(uart_tx_buf, 0, MAX_LEN);
   // config_dma(uart_tx_buf);
   // uart_print_init(115200);
@@ -145,7 +136,7 @@ int main(void) {
 
   /* uart4 already supports printf. */
   /* init uart4 function. */
-  // wk_uart4_init();
+  // 
 
   /* init uart8 function. */
   // wk_uart8_init();
@@ -182,16 +173,31 @@ int main(void) {
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);
   vTaskStartScheduler();
-
-  elog_start();
-  log_i("USART1 Init Success");
-
-  /* add user code end 2 */
 }
 
-/* add user code begin 4 */
+void Logger_init(void) {
+  wk_uart4_init();
+  wk_dma2_channel5_init();
+  memset(uart_tx_buf, 0, MAX_LEN);
+  wk_dma_channel_config(DMA2_CHANNEL5, 
+                        (uint32_t)&UART4->dt, 
+                        DMA2_CHANNEL5_MEMORY_BASE_ADDR, 
+                        DMA2_CHANNEL5_BUFFER_SIZE);
+  dma_channel_enable(DMA2_CHANNEL5, TRUE);
+  elog_init();
+  elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
+  elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+  elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+  elog_set_text_color_enabled(TRUE);
+  elog_start();
+}
+
 void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
+  Logger_init();
   xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
               (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
   xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
@@ -213,4 +219,5 @@ void start_task(void* pvParameters) {
   taskEXIT_CRITICAL();
 }
 
-/* add user code end 4 */
+
+

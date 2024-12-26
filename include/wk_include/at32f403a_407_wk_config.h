@@ -57,8 +57,8 @@ extern "C" {
 
 /* add user code begin dma define */
 /* user can only modify the dma define value */
-#define DMA1_CHANNEL1_BUFFER_SIZE   0
-#define DMA1_CHANNEL1_MEMORY_BASE_ADDR   0
+// #define DMA1_CHANNEL1_BUFFER_SIZE   0
+// #define DMA1_CHANNEL1_MEMORY_BASE_ADDR   0
 //#define DMA1_CHANNEL1_PERIPHERAL_BASE_ADDR  0
 
 //#define DMA1_CHANNEL2_BUFFER_SIZE   0
@@ -101,8 +101,8 @@ extern "C" {
 //#define DMA2_CHANNEL4_MEMORY_BASE_ADDR   0
 //#define DMA2_CHANNEL4_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA2_CHANNEL5_BUFFER_SIZE   0
-//#define DMA2_CHANNEL5_MEMORY_BASE_ADDR   0
+#define DMA2_CHANNEL5_BUFFER_SIZE   0
+#define DMA2_CHANNEL5_MEMORY_BASE_ADDR   (uint32_t)uart_tx_buf
 //#define DMA2_CHANNEL5_PERIPHERAL_BASE_ADDR   0
 
 //#define DMA2_CHANNEL6_BUFFER_SIZE   0

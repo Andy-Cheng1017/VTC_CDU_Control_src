@@ -184,19 +184,11 @@ void wk_uart4_init(void)
   usart_parity_selection_config(UART4, USART_PARITY_NONE);
 
   usart_dma_transmitter_enable(UART4, TRUE);
-  usart_interrupt_enable(UART4, USART_TDBE_INT, TRUE);
+  // usart_interrupt_enable(UART4, USART_TDBE_INT, TRUE);
 
   usart_hardware_flow_control_set(UART4, USART_HARDWARE_FLOW_NONE);
 
-  /* add user code begin uart4_init 2 */
-
-  /* add user code end uart4_init 2 */
-
   usart_enable(UART4, TRUE);
-
-  /* add user code begin uart4_init 3 */
-
-  /* add user code end uart4_init 3 */
 }
 
 /**

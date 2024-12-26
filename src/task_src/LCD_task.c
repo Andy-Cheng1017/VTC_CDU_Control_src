@@ -2,6 +2,9 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "at32f403a_407_wk_config.h"
+#include "wk_usart.h"
+#include "wk_crc.h"
+#include "wk_dma.h"
 #include "LCD_task.h"
 
 

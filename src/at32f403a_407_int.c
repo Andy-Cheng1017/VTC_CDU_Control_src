@@ -242,20 +242,13 @@ void TMR4_GLOBAL_IRQHandler(void) {
 }
 
 void UART4_IRQHandler(void) {
-  /* add user code begin UART4_IRQ 0 */
-
-  /* add user code end UART4_IRQ 0 */
-  /* add user code begin UART4_IRQ 1 */
-
-  /* add user code end UART4_IRQ 1 */
-}
-
-/* add user code begin 1 */
-void USART1_IRQHandler(void) {
-  if (usart_interrupt_flag_get(USART1, USART_TDBE_FLAG) == SET) {
+  if (usart_interrupt_flag_get(UART4, USART_TDBE_FLAG) == SET) {
     start_dma_transfer();
-    usart_interrupt_enable(USART1, USART_TDBE_INT, FALSE);
+    usart_interrupt_enable(UART4, USART_TDBE_INT, FALSE);
     // usart_flag_clear(USART1, USART_TDBE_FLAG);
   }
 }
-/* add user code end 1 */
+
+// void USART1_IRQHandler(void) {
+
+// }

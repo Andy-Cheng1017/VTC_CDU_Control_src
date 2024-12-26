@@ -54,8 +54,8 @@
 #define ELOG_COLOR_ASSERT                        (F_MAGENTA B_NULL S_NORMAL)
 #define ELOG_COLOR_ERROR                         (F_RED B_NULL S_NORMAL)
 #define ELOG_COLOR_WARN                          (F_YELLOW B_NULL S_NORMAL)
-#define ELOG_COLOR_INFO                          (F_CYAN B_NULL S_NORMAL)
-#define ELOG_COLOR_DEBUG                         (F_GREEN B_NULL S_NORMAL)
+#define ELOG_COLOR_INFO                          (F_GREEN B_NULL S_NORMAL)
+#define ELOG_COLOR_DEBUG                         (F_WHITE B_NULL S_NORMAL)
 #define ELOG_COLOR_VERBOSE                       (F_BLUE B_NULL S_NORMAL)
 /*---------------------------------------------------------------------------*/
 /* enable log fmt */
@@ -76,7 +76,7 @@
 #define ELOG_ASYNC_OUTPUT_USING_PTHREAD
 /*---------------------------------------------------------------------------*/
 /* enable buffered output mode */
-#define ELOG_BUF_OUTPUT_ENABLE
+// #define ELOG_BUF_OUTPUT_ENABLE
 /* buffer size for buffered output mode */
 #define ELOG_BUF_OUTPUT_BUF_SIZE                 (ELOG_LINE_BUF_SIZE * 10)
 

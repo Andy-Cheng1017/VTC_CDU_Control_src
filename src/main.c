@@ -46,6 +46,19 @@
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
+
+/**
+ * Log default configuration for EasyLogger.
+ * NOTE: Must defined before including the <elog.h>
+ */
+#if !defined(LOG_TAG)
+#define LOG_TAG "CDU_main"
+#endif
+#undef LOG_LVL
+#if defined(XX_LOG_LVL)
+#define LOG_LVL XX_LOG_LVL
+#endif
+
 #include "elog.h"
 /* add user code end private includes */
 
@@ -56,6 +69,7 @@
 
 /* private define ------------------------------------------------------------*/
 /* add user code begin private define */
+#define LOG_TAG "CDU_main"
 /* add user code end private define */
 
 /* private macro -------------------------------------------------------------*/
@@ -139,7 +153,16 @@ int main(void) {
   memset(uart_tx_buf, 0, MAX_LEN);
   config_dma(uart_tx_buf);
   uart_print_init(115200);
-  printf("USART1 Init Success\r\n");
+  elog_init();
+  elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
+  elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+  elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+  elog_set_text_color_enabled(TRUE);
+  elog_start();
+  log_i("USART1 Init Success");
 
   /* init usart2 function. */
   // wk_usart2_init();
@@ -207,7 +230,7 @@ void network_task_function(void* pvParameters) {
     printf("EMAC Init Failed\r\n");
     vTaskDelay(1000);
   }
-  printf("EMAC Init Success\r\n");
+  log_i("EMAC Init Success");
   tcpip_stack_init();
   udpecho_init();
   while (1) {

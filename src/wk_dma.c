@@ -85,11 +85,17 @@ void wk_dma_channel_config(dma_channel_type* dmax_channely, uint32_t peripheral_
 
 /* add user code begin 1 */
 void start_dma_transfer(void) {
-  if (txBuffer.count > 0 && usart_flag_get(USART1, USART_TDBE_FLAG) == SET) {
-    uint16_t len = CircularBuffer_ReadBuffer(&txBuffer, uart_tx_buf, sizeof(uart_tx_buf));
-    dma_channel_enable(DMA1_CHANNEL4, FALSE);
-    dma_data_number_set(DMA1_CHANNEL4, len);
-    dma_channel_enable(DMA1_CHANNEL4, TRUE);
+  if (usart_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
+    if (txBuffer.count > 0) {
+      uint16_t len = CircularBuffer_ReadBuffer(&txBuffer, uart_tx_buf, sizeof(uart_tx_buf));
+      dma_channel_enable(DMA1_CHANNEL4, FALSE);
+      dma_data_number_set(DMA1_CHANNEL4, len);
+      dma_channel_enable(DMA1_CHANNEL4, TRUE);
+    } else {
+      return;
+    }
+  } else {
+    usart_interrupt_enable(USART1, USART_TDBE_INT, true);
   }
 }
 /* add user code end 1 */

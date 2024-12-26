@@ -29,6 +29,8 @@
 #include <elog.h>
 #include "CircularBuffer.h"
 #include "wk_dma.h"
+#include "FreeRTOS.h"
+#include "task.h"
 
 CircularBuffer txBuffer;
 /**
@@ -78,7 +80,12 @@ void elog_port_output_unlock(void) { /* add your code here */ }
  *
  * @return current time
  */
-const char *elog_port_get_time(void) { /* add your code here */ }
+const char *elog_port_get_time(void) {
+  static char time_str[16];
+  uint32_t time_ms = xTaskGetTickCount() * portTICK_PERIOD_MS;
+  snprintf(time_str, sizeof(time_str), "%lu", time_ms);
+  return time_str;
+}
 
 /**
  * get current process name interface

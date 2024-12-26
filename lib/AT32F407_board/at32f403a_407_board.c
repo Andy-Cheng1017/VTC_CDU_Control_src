@@ -129,8 +129,8 @@ void uart_print_init(uint32_t baudrate) {
   usart_init(PRINT_UART, baudrate, USART_DATA_8BITS, USART_STOP_1_BIT);
   usart_transmitter_enable(PRINT_UART, TRUE);
   usart_dma_transmitter_enable(PRINT_UART, TRUE);
-  usart_interrupt_enable(PRINT_UART, USART_TDBE_INT, TRUE);
   usart_enable(PRINT_UART, TRUE);
+  // usart_interrupt_enable(PRINT_UART, USART_TDBE_INT, TRUE);
 }
 
 void config_dma(char *dma_buf) {

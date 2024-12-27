@@ -8,7 +8,7 @@
 #define LOG_TAG "Pump_Task"
 #include "elog.h"
 
-TaskHandle_t pump_handler = NULL;
+TaskHandle_t pump_handler;
 
 void pump_task_function(void* pvParameters) {
     while (1) {

@@ -88,24 +88,24 @@ void wk_system_clock_config(void) {
   /* enable battery powered domain access */
   pwc_battery_powered_domain_access(TRUE);
 
-  /* check lext enabled or not */
-  if (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
-    crm_clock_source_enable(CRM_CLOCK_SOURCE_LEXT, TRUE);
-    while (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
-    }
-  }
+  // /* check lext enabled or not */
+  // if (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
+  //   crm_clock_source_enable(CRM_CLOCK_SOURCE_LEXT, TRUE);
+  //   while (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
+  //   }
+  // }
   /* disable battery powered domain access */
   pwc_battery_powered_domain_access(FALSE);
   /* disable pwc periph clock */
   crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, FALSE);
 
-  // /* enable lick */
-  // crm_clock_source_enable(CRM_CLOCK_SOURCE_LICK, TRUE);
+  /* enable lick */
+  crm_clock_source_enable(CRM_CLOCK_SOURCE_LICK, TRUE);
 
-  // /* wait till lick is ready */
-  // while(crm_flag_get(CRM_LICK_STABLE_FLAG) != SET)
-  // {
-  // }
+  /* wait till lick is ready */
+  while(crm_flag_get(CRM_LICK_STABLE_FLAG) != SET)
+  {
+  }
 
   /* enable hext */
   crm_clock_source_enable(CRM_CLOCK_SOURCE_HEXT, TRUE);

@@ -8,7 +8,7 @@
 #define LOG_TAG "Sensor_Task"
 #include "elog.h"
 
-TaskHandle_t sensor_handler = NULL;
+TaskHandle_t sensor_handler;
 
 void sensor_task_function(void* pvParameters) {
     while (1) {

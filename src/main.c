@@ -14,6 +14,7 @@
 #include "wk_system.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "init_task.h"
 #include "network_task.h"
 #include "LCD_task.h"
 #include "upper_task.h"
@@ -22,7 +23,6 @@
 #include "pump_task.h"
 #include "RTC_task.h"
 #include "warning_task.h"
-
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -38,6 +38,9 @@
 
 /* private define ------------------------------------------------------------*/
 /* add user code begin private define */
+#define INIT_TASK_PRIO 2
+#define INIT_STK_SIZE 128
+
 #define START_TASK_PRIO 1
 #define START_STK_SIZE 128
 
@@ -45,7 +48,7 @@
 #define NETWORK_STK_SIZE 512
 
 #define LCD_TASK_PRIO 2
-#define LCD_STK_SIZE 256
+#define LCD_STK_SIZE 512
 
 #define UPPER_TASK_PRIO 4
 #define UPPER_STK_SIZE 256
@@ -65,7 +68,6 @@
 #define WARNNING_TASK_PRIO 3
 #define WARNNING_STK_SIZE 128
 
-
 /* add user code end private define */
 
 /* private macro -------------------------------------------------------------*/
@@ -83,6 +85,24 @@ void start_task(void* pvParameters);
 
 /* private function prototypes --------------------------------------------*/
 /* add user code begin function prototypes */
+
+// void Logger_init(void) {
+//   wk_usart1_init();
+//   wk_dma1_channel4_init();
+//   memset(uart_tx_buf, 0, MAX_LEN);
+//   wk_dma_channel_config(DMA1_CHANNEL4, (uint32_t)&USART1->dt, DMA1_CHANNEL4_MEMORY_BASE_ADDR, DMA1_CHANNEL4_BUFFER_SIZE);
+//   dma_channel_enable(DMA1_CHANNEL4, TRUE);
+//   elog_init();
+//   elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
+//   elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+//   elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+//   elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+//   elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+//   elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+//   elog_set_text_color_enabled(TRUE);
+//   elog_start();
+// }
+
 /* add user code end function prototypes */
 
 /* private user code ---------------------------------------------------------*/
@@ -115,28 +135,12 @@ int main(void) {
   /* timebase config. */
   wk_timebase_init();
 
-  /* init dma1 channel1 */
-  // wk_dma1_channel1_init();
-  /* config dma channel transfer parameter */
-  /* user need to modify define values DMAx_CHANNELy_XXX_BASE_ADDR and DMAx_CHANNELy_BUFFER_SIZE in at32xxx_wk_config.h */
-  // wk_dma_channel_config(DMA1_CHANNEL1,
-  //                       (uint32_t)&UART4->dt,
-  //                       DMA1_CHANNEL1_MEMORY_BASE_ADDR,
-  //                       DMA1_CHANNEL1_BUFFER_SIZE);
-  // dma_channel_enable(DMA1_CHANNEL1, TRUE);
-
-  /* init usart1 function. */
-  // wk_usart1_init();
-
-  // memset(uart_tx_buf, 0, MAX_LEN);
-  // config_dma(uart_tx_buf);
-  // uart_print_init(115200);
   /* init usart2 function. */
   // wk_usart2_init();
 
   /* uart4 already supports printf. */
   /* init uart4 function. */
-  // 
+  //
 
   /* init uart8 function. */
   // wk_uart8_init();
@@ -175,49 +179,27 @@ int main(void) {
   vTaskStartScheduler();
 }
 
-void Logger_init(void) {
-  wk_uart4_init();
-  wk_dma2_channel5_init();
-  memset(uart_tx_buf, 0, MAX_LEN);
-  wk_dma_channel_config(DMA2_CHANNEL5, 
-                        (uint32_t)&UART4->dt, 
-                        DMA2_CHANNEL5_MEMORY_BASE_ADDR, 
-                        DMA2_CHANNEL5_BUFFER_SIZE);
-  dma_channel_enable(DMA2_CHANNEL5, TRUE);
-  elog_init();
-  elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
-  elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-  elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-  elog_set_text_color_enabled(TRUE);
-  elog_start();
-}
-
 void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
-  Logger_init();
+  xTaskCreate((TaskFunction_t)init_task_function, (const char*)"Init_task", (uint16_t)INIT_STK_SIZE, (void*)NULL, (UBaseType_t)INIT_TASK_PRIO,
+              (TaskHandle_t*)&init_handler);
   xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
               (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
-  xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
-              (TaskHandle_t*)&LCD_handler);
-  xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
-              (TaskHandle_t*)&upper_handler);
-  xTaskCreate((TaskFunction_t)fans_task_function, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
-              (TaskHandle_t*)&fans_handler);
-  xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
-              (TaskHandle_t*)&sensor_handler);
-  xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
-              (TaskHandle_t*)&pump_handler);
-  xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
-              (TaskHandle_t*)&RTC_handler);
-  xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
-              (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
+  // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
+  //             (TaskHandle_t*)&LCD_handler);
+  // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
+  //             (TaskHandle_t*)&upper_handler);
+  // xTaskCreate((TaskFunction_t)fans_task_function, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
+  //             (TaskHandle_t*)&fans_handler);
+  // xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
+  //             (TaskHandle_t*)&sensor_handler);
+  // xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
+  //             (TaskHandle_t*)&pump_handler);
+  // xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
+  //             (TaskHandle_t*)&RTC_handler);
+  // xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
+  //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
 
   vTaskDelete(StartTask_Handler);
   taskEXIT_CRITICAL();
 }
-
-
-

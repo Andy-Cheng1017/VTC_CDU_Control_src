@@ -71,11 +71,9 @@ void wk_usart1_init(void)
   usart_receiver_enable(USART1, TRUE);
   usart_parity_selection_config(USART1, USART_PARITY_NONE);
 
+  usart_dma_transmitter_enable(USART1, TRUE);
+
   usart_hardware_flow_control_set(USART1, USART_HARDWARE_FLOW_NONE);
-
-  /* add user code begin usart1_init 2 */
-
-  /* add user code end usart1_init 2 */
 
   usart_enable(USART1, TRUE);
 
@@ -182,9 +180,6 @@ void wk_uart4_init(void)
   usart_transmitter_enable(UART4, TRUE);
   usart_receiver_enable(UART4, TRUE);
   usart_parity_selection_config(UART4, USART_PARITY_NONE);
-
-  usart_dma_transmitter_enable(UART4, TRUE);
-  // usart_interrupt_enable(UART4, USART_TDBE_INT, TRUE);
 
   usart_hardware_flow_control_set(UART4, USART_HARDWARE_FLOW_NONE);
 

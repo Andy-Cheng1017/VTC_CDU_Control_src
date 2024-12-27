@@ -8,10 +8,10 @@
 #define LOG_TAG "RTC_Task"
 #include "elog.h"
 
-TaskHandle_t RTC_handler = NULL;
+TaskHandle_t RTC_handler;
 
 void RTC_task_function(void* pvParameters) {
     while (1) {
-        vTaskDelay(1000);
+        vTaskDelay(500);
     }
 }

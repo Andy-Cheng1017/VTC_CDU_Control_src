@@ -8,7 +8,7 @@
 #define LOG_TAG "Upper_Task"
 #include "elog.h"
 
-TaskHandle_t upper_handler = NULL;
+TaskHandle_t upper_handler;
 
 void upper_task_function(void* pvParameters) {
     while (1) {

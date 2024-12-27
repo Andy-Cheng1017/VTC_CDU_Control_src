@@ -9,7 +9,7 @@
 #define LOG_TAG "Network_Task"
 #include "elog.h"
 
-TaskHandle_t network_handler = NULL;
+TaskHandle_t network_handler;
 
 extern void tcpip_stack_init(void);
 extern void udpecho_init(void);
@@ -23,6 +23,7 @@ void network_task_function(void* pvParameters) {
   tcpip_stack_init();
   udpecho_init();
   while (1) {
-    vTaskDelay(500);
+    log_i("Network Task Running");
+    vTaskDelay(3000);
   }
 }

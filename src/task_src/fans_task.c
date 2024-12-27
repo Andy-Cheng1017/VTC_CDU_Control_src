@@ -8,7 +8,7 @@
 #define LOG_TAG "Fans_Task"
 #include "elog.h"
 
-TaskHandle_t fans_handler = NULL;
+TaskHandle_t fans_handler;
 
 void fans_task_function(void* pvParameters) {
     while (1) {

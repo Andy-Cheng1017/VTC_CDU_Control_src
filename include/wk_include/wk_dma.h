@@ -59,7 +59,7 @@ char uart_tx_buf[MAX_LEN];
 /* exported functions ------------------------------------------------------- */
 
 /* init dma1 channel1 */
-void wk_dma2_channel5_init(void);
+void wk_dma1_channel4_init(void);
 
 /* config dma channel transfer parameter */
 /* user need to modify parameters memory_base_addr and buffer_size */

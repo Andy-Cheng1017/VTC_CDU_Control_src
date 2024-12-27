@@ -11,10 +11,11 @@
 #define LOG_TAG "LCD_Task"
 #include "elog.h"
 
-TaskHandle_t LCD_handler = NULL;
+TaskHandle_t LCD_handler;
 
 void LCD_task_function(void* pvParameters) {
   while (1) {
     vTaskDelay(500);
   }
+  vTaskDelete(LCD_handler);
 }

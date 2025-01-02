@@ -34,6 +34,7 @@ extern "C" {
 
 /* includes -----------------------------------------------------------------------*/
 #include "at32f403a_407_wk_config.h"
+#include "i2c_application.h"
 
 /* private includes -------------------------------------------------------------*/
 /* add user code begin private includes */
@@ -42,12 +43,13 @@ extern "C" {
 
 /* exported types -------------------------------------------------------------*/
 /* add user code begin exported types */
-
+#define I2C_TIMEOUT                      0xFFFFFFFF
+#define I2Cx_PORT                        I2C3
 /* add user code end exported types */
 
 /* exported constants --------------------------------------------------------*/
 /* add user code begin exported constants */
-
+i2c_handle_type hi2cx;
 /* add user code end exported constants */
 
 /* exported macro ------------------------------------------------------------*/

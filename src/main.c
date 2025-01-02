@@ -1,4 +1,6 @@
 #include <string.h>
+#include "i2c_application.h"
+#include "RX8025T_wrap.h"
 #include "at32f403a_407_wk_config.h"
 #include "wk_adc.h"
 #include "wk_crc.h"
@@ -183,8 +185,8 @@ void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
   xTaskCreate((TaskFunction_t)init_task_function, (const char*)"Init_task", (uint16_t)INIT_STK_SIZE, (void*)NULL, (UBaseType_t)INIT_TASK_PRIO,
               (TaskHandle_t*)&init_handler);
-  xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
-              (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
+  // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
+  //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
   // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
   //             (TaskHandle_t*)&LCD_handler);
   // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,

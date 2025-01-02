@@ -26,8 +26,8 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "wk_i2c.h"
-
 /* add user code begin 0 */
+
 
 /* add user code end 0 */
 
@@ -39,7 +39,9 @@
 void wk_i2c3_init(void)
 {
   /* add user code begin i2c3_init 0 */
+  hi2cx.i2cx = I2Cx_PORT;
 
+  i2c_config(&hi2cx);
   /* add user code end i2c3_init 0 */
 
   gpio_init_type gpio_init_struct;

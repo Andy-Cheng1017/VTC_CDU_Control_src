@@ -94,7 +94,7 @@ void start_dma_transfer(void) {
       return;
     }
   } else {
-    usart_interrupt_enable(USART1, USART_TDBE_INT, true);
+    usart_interrupt_enable(USART1, USART_TDBE_INT, TRUE);
   }
 }
 /* add user code end 1 */

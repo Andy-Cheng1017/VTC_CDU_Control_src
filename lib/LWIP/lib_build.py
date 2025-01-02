@@ -14,7 +14,6 @@ src_filter = [
     "+<source/api/*>",
     "+<source/netif/*>",
     "+<source/core/*>",
-
 ]
 
 env.Replace(SRC_FILTER=src_filter)

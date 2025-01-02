@@ -6,7 +6,6 @@
 #include "wk_crc.h"
 #include "wk_dac.h"
 #include "wk_debug.h"
-#include "wk_i2c.h"
 #include "wk_rtc.h"
 #include "wk_spi.h"
 #include "wk_tmr.h"
@@ -150,9 +149,6 @@ int main(void) {
   /* init spi1 function. */
   // wk_spi1_init();
 
-  /* init i2c3 function. */
-  // wk_i2c3_init();
-
   /* init adc1 function. */
   // wk_adc1_init();
 
@@ -176,6 +172,8 @@ int main(void) {
 
   /* add user code begin 2 */
 
+  init_task_function(NULL);
+
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);
   vTaskStartScheduler();
@@ -183,8 +181,8 @@ int main(void) {
 
 void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
-  xTaskCreate((TaskFunction_t)init_task_function, (const char*)"Init_task", (uint16_t)INIT_STK_SIZE, (void*)NULL, (UBaseType_t)INIT_TASK_PRIO,
-              (TaskHandle_t*)&init_handler);
+  // xTaskCreate((TaskFunction_t)init_task_function, (const char*)"Init_task", (uint16_t)INIT_STK_SIZE, (void*)NULL, (UBaseType_t)INIT_TASK_PRIO,
+  //             (TaskHandle_t*)&init_handler);
   // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
   // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
@@ -197,8 +195,8 @@ void start_task(void* pvParameters) {
   //             (TaskHandle_t*)&sensor_handler);
   // xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
   //             (TaskHandle_t*)&pump_handler);
-  // xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
-  //             (TaskHandle_t*)&RTC_handler);
+  xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
+              (TaskHandle_t*)&RTC_handler);
   // xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
 

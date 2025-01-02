@@ -5,7 +5,9 @@
 #include "at32f403a_407_wk_config.h"
 #include "wk_usart.h"
 #include "wk_dma.h"
+#include "wk_i2c.h"
 #include "init_task.h"
+#include "i2c_application.h"
 
 #define LOG_TAG "Init_Task"
 #include "elog.h"
@@ -15,7 +17,7 @@ TaskHandle_t init_handler;
 void Logger_init(void) {
   wk_usart1_init();
   wk_dma1_channel4_init();
-  memset(uart_tx_buf, 0, MAX_LEN);
+  memset(uart_tx_buf, 0, BUFFER_SIZE);
   wk_dma_channel_config(DMA1_CHANNEL4, (uint32_t)&USART1->dt, DMA1_CHANNEL4_MEMORY_BASE_ADDR, DMA1_CHANNEL4_BUFFER_SIZE);
   dma_channel_enable(DMA1_CHANNEL4, TRUE);
   elog_init();
@@ -34,10 +36,13 @@ void init_task_function(void* pvParameters) {
 
   Logger_init();
 
+  log_i("Init Task Running");
+  wk_i2c3_init();
+
   // while (1) {
-  //   // log_i("Init Task Running");
+  //   //
   //   vTaskDelay(3000);
   // }
 
-  vTaskDelete(NULL);
+  // vTaskDelete(NULL);
 }

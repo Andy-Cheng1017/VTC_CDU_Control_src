@@ -21,8 +21,6 @@
   Modified 2020 by Greyson Christoforo (grey@christoforo.net) to implement timeouts
 */
 
-#include "i2c_application.h"
-#include "wk_i2c.h"
 
 extern "C" {
 #include <stdlib.h>
@@ -30,7 +28,13 @@ extern "C" {
 #include <inttypes.h>
 }
 
+#include "i2c_application.h"
+#include "wk_i2c.h"
+
+#define LOG_TAG "Arduino_Wire"
+
 #include "Wire.h"
+#include "elog.h"
 
 // Initialize Class Variables //////////////////////////////////////////////////
 
@@ -96,7 +100,7 @@ void TwoWire::setWireTimeout(uint32_t timeout, bool reset_with_timeout) {}
  *
  * @return true if timeout has occurred since the flag was last cleared.
  */
-bool TwoWire::getWireTimeoutFlag(void) {}
+void TwoWire::getWireTimeoutFlag(void) {}
 
 /***
  * Clears the TWI timeout flag.
@@ -173,7 +177,11 @@ void TwoWire::beginTransmission(int address) { beginTransmission((uint8_t)addres
 uint8_t TwoWire::endTransmission(uint8_t sendStop) {
   // transmit buffer (blocking)
   //   uint8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
-  uint8_t ret = i2c_master_transmit(&hi2cx, txAddress, txBuffer, txBufferLength, I2C_TIMEOUT);
+  i2c_status_type ret = i2c_master_transmit(&hi2cx, txAddress, txBuffer, txBufferLength, I2C_TIMEOUT);
+  if(ret != I2C_OK) {
+    // log_e("I2C error: %d", ret);
+    return ret;
+  }
   // reset tx buffer iterator vars
   txBufferIndex = 0;
   txBufferLength = 0;

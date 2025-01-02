@@ -242,7 +242,7 @@ void TMR4_GLOBAL_IRQHandler(void) {
 }
 
 void USART1_IRQHandler(void) {
-  if (usart_interrupt_flag_get(USART1, USART_TDBE_FLAG) == SET) {
+  if (usart_interrupt_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
     start_dma_transfer();
     usart_interrupt_enable(USART1, USART_TDBE_INT, FALSE);
     // usart_flag_clear(USART1, USART_TDBE_FLAG);

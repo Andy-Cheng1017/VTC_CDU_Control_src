@@ -20,7 +20,7 @@
 #define _BV(bit) (1 << (bit))
 
 // RX8025T I2C Address
-#define RX8025T_ADDR                0x32
+#define RX8025T_ADDR                0x64
 
 // RX8025T Register Addresses
 #define RX8025T_SECONDS             0x00

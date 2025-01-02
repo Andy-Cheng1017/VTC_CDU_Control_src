@@ -46,28 +46,28 @@
 #define START_STK_SIZE 128
 
 #define NETWORK_TASK_PRIO 4
-#define NETWORK_STK_SIZE 512
+#define NETWORK_STK_SIZE 1024*2
 
 #define LCD_TASK_PRIO 2
-#define LCD_STK_SIZE 512
+#define LCD_STK_SIZE 1024
 
 #define UPPER_TASK_PRIO 4
-#define UPPER_STK_SIZE 256
+#define UPPER_STK_SIZE 512
 
 #define FANS_TASK_PRIO 4
-#define FANS_STK_SIZE 256
+#define FANS_STK_SIZE 512
 
 #define SENSOR_TASK_PRIO 3
-#define SENSOR_STK_SIZE 256
+#define SENSOR_STK_SIZE 512
 
 #define PUMP_TASK_PRIO 1
-#define PUMP_STK_SIZE 256
+#define PUMP_STK_SIZE 512
 
 #define RTC_TASK_PRIO 4
-#define RTC_STK_SIZE 128
+#define RTC_STK_SIZE 512
 
 #define WARNNING_TASK_PRIO 3
-#define WARNNING_STK_SIZE 128
+#define WARNNING_STK_SIZE 512
 
 /* add user code end private define */
 

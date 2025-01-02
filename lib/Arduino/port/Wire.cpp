@@ -179,7 +179,7 @@ uint8_t TwoWire::endTransmission(uint8_t sendStop) {
   //   uint8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
   i2c_status_type ret = i2c_master_transmit(&hi2cx, txAddress, txBuffer, txBufferLength, I2C_TIMEOUT);
   if(ret != I2C_OK) {
-    // log_e("I2C error: %d", ret);
+    log_e("I2C error: %d", ret);
     return ret;
   }
   // reset tx buffer iterator vars

@@ -71,7 +71,7 @@ void wk_i2c3_init(void)
   i2c_init(I2C3, I2C_FSMODE_DUTY_2_1, 10000);
   i2c_own_address1_set(I2C3, I2C_ADDRESS_MODE_7BIT, 0x0);
   i2c_ack_enable(I2C3, TRUE);
-  i2c_clock_stretch_enable(I2C3, TRUE);
+  // i2c_clock_stretch_enable(I2C3, TRUE);
   i2c_general_call_enable(I2C3, FALSE);
 
   /* add user code begin i2c3_init 2 */

@@ -96,6 +96,7 @@ uint8_t RX8025T::read(tmElements_t &tm)
   tm.Wday = bin2wday(i2cRead());
   tm.Day = bcd2dec(i2cRead());
   tm.Month = bcd2dec(i2cRead());
+  // tm.Month = bcd2dec(0x30);
   tm.Year = y2kYearToTm(bcd2dec(i2cRead()));
   return 0;
 }

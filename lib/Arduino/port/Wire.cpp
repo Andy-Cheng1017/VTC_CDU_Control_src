@@ -131,12 +131,12 @@ uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddres
   }
   // perform blocking read into buffer
   //   uint8_t read = twi_readFrom(address, rxBuffer, quantity, sendStop);
-  uint8_t read = i2c_master_receive(&hi2cx, address, rxBuffer, quantity, I2C_TIMEOUT);
+  i2c_master_receive(&hi2cx, address, rxBuffer, quantity, I2C_TIMEOUT);
   // set rx buffer iterator vars
   rxBufferIndex = 0;
-  rxBufferLength = read;
+  rxBufferLength = quantity;
 
-  return read;
+  return quantity;
 }
 
 uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint8_t sendStop) {

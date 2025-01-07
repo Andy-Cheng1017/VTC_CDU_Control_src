@@ -10,6 +10,9 @@
 
 TaskHandle_t sensor_handler;
 
+sensor_status_type sensor_status = {0};
+sensor_control_type sensor_control = {0};
+
 void sensor_task_function(void* pvParameters) {
     while (1) {
         // Add sensor reading and processing code here

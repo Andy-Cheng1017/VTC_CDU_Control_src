@@ -25,10 +25,14 @@ typedef struct {
   uint32_t power_input;
 } sensor_status_type;
 
+extern sensor_status_type sensor_status;
+
 typedef struct {
   uint16_t Porpo_1_PWM;
   uint16_t Porpo_2_PWM;
 } sensor_control_type;
+
+extern sensor_control_type sensor_control;
 
 void sensor_task_function(void* pvParameters);
 

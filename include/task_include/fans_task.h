@@ -10,6 +10,8 @@ typedef struct {
   uint16_t fans_speed;
 } fans_control_type;
 
+extern fans_control_type fans_control;
+
 typedef struct {
   uint16_t fan1_FB;
   uint16_t fan2_FB;
@@ -28,6 +30,8 @@ typedef struct {
   uint16_t fan15_FB;
   uint16_t fan16_FB;
 } fans_status_type;
+
+extern fans_status_type fans_status;
 
 void fans_task_function(void* pvParameters);
 

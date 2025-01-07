@@ -36,6 +36,12 @@ void init_task_function(void* pvParameters) {
 
   Logger_init();
 
+  // wk_usart2_init();
+
+  // wk_uart4_init();
+
+  wk_uart8_init();
+
   log_i("Init Task Running");
   wk_i2c3_init();
 

@@ -24,6 +24,7 @@
 #include "pump_task.h"
 #include "RTC_task.h"
 #include "warning_task.h"
+#include "store_data_task.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -136,16 +137,6 @@ int main(void) {
   /* timebase config. */
   wk_timebase_init();
 
-  /* init usart2 function. */
-  // wk_usart2_init();
-
-  /* uart4 already supports printf. */
-  /* init uart4 function. */
-  //
-
-  /* init uart8 function. */
-  // wk_uart8_init();
-
   /* init spi1 function. */
   // wk_spi1_init();
 
@@ -165,7 +156,7 @@ int main(void) {
   // wk_dac_init();
 
   /* init crc function. */
-  // wk_crc_init();
+  wk_crc_init();
 
   /* init gpio function. */
   // wk_gpio_config();
@@ -183,8 +174,8 @@ void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
   // xTaskCreate((TaskFunction_t)init_task_function, (const char*)"Init_task", (uint16_t)INIT_STK_SIZE, (void*)NULL, (UBaseType_t)INIT_TASK_PRIO,
   //             (TaskHandle_t*)&init_handler);
-  // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
-  //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
+  xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
+              (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
   // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
   //             (TaskHandle_t*)&LCD_handler);
   // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
@@ -199,6 +190,8 @@ void start_task(void* pvParameters) {
               (TaskHandle_t*)&RTC_handler);
   // xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
+  xTaskCreate((TaskFunction_t)store_data_task_function, (const char*)"Store_data_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
+              (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&store_data_handler);
 
   vTaskDelete(StartTask_Handler);
   taskEXIT_CRITICAL();

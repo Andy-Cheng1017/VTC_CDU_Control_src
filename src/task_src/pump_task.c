@@ -10,6 +10,9 @@
 
 TaskHandle_t pump_handler;
 
+pump_control_type pump_control = {0};
+pump_status_type pump_status = {0};
+
 void pump_task_function(void* pvParameters) {
     while (1) {
         vTaskDelay(500);

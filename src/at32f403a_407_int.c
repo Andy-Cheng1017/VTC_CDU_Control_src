@@ -251,13 +251,13 @@ void USART1_IRQHandler(void) {
 
 void UART8_IRQHandler(void) {
   if (usart_interrupt_flag_get(RS485_LCD.UART, USART_RDBF_FLAG) != RESET) {
-    RS485_Rx_Data_ISR(RS485_LCD);
+    RS485_Rx_Data_ISR(&RS485_LCD);
 
   } else if (usart_interrupt_flag_get(RS485_LCD.UART, USART_IDLEF_FLAG) != RESET) {
-    RS485_Rx_Cplt_ISR(RS485_LCD);
+    RS485_Rx_Cplt_ISR(&RS485_LCD);
     usart_flag_clear(RS485_LCD.UART, USART_IDLEF_FLAG);
 
   } else if (usart_interrupt_flag_get(RS485_LCD.UART, USART_TDBE_FLAG) != RESET) {
-    RS485_Tx_Data_ISR(RS485_LCD);
+    RS485_Tx_Data_ISR(&RS485_LCD);
   }
 }

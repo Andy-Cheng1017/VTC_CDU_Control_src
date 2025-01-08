@@ -1,12 +1,13 @@
-#ifndef __RS485_H_
-#define __RS485_H_
+#ifndef __RS485_REGION_H_
+#define __RS485_REGION_H_
 #include <stdint.h>
 #include <stdbool.h>
 #include "at32f403a_407.h"
+#include "RS485.h"
 
-void SysStat_Handler(uint8_t func, uint16_t addr, uint8_t *data, int len);
-void DataRead_Handler(uint8_t func, uint16_t addr, uint8_t *data, int len);
-void DevCtrl_Handler(uint8_t func, uint16_t addr, uint8_t *data, int len);
-void EthConfig_Handler(uint8_t func, uint16_t addr, uint8_t *data, int len);
+uint32_t SysStat_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t DataRead_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t DevCtrl_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t EthConfig_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
 
-#endif  // __RS485_H_
+#endif  // __RS485_REGION_H_

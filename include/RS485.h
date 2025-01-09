@@ -6,7 +6,8 @@
 // #include "RS485_Region_handler.h"
 
 #define MAX_DATA_BUFFER_SIZE 64
-#define MAX_PKG_SIZE 12
+#define MAX_BUF_MASK (MAX_DATA_BUFFER_SIZE - 1)
+#define MAX_PKG_SIZE 16
 
 typedef enum {
   BR_4800 = 4800,
@@ -78,12 +79,12 @@ void RS485_Rx_Cplt_ISR(rs485_t *rs485);
 void RS485_Tx_Data_ISR(rs485_t *rs485);
 void RS485_Rx_Data_ISR(rs485_t *rs485);
 
-rs485_error_t RS485_Unpkg(rs485_t *rs485, rs485_func_t result_func, uint8_t *result_data, uint8_t result_data_len);
+rs485_error_t RS485_Unpkg(rs485_t *rs485, rs485_func_t *upk_func, uint8_t *upk_data, uint8_t *upk_data_len);
 rs485_error_t RS485_Decode(rs485_t *rs485, rs485_func_t rx_Func, uint8_t *rx_Data, uint8_t rx_Data_len, rs485_func_t *tx_Func, uint8_t *tx_Data,
                            uint8_t *tx_Data_len);
 
-uint8_t RS485_Pkg(rs485_t *rs485, uint8_t *data, uint8_t len);
-void RS485_Encode(rs485_t *rs485, uint8_t *data, uint8_t len);
+void RS485_Pkg(rs485_t *rs485, rs485_func_t pkg_func, uint8_t *pkg_data, uint8_t pkg_data_len);
+// void RS485_Encode(rs485_t *rs485, uint8_t *data, uint8_t len);
 
 uint32_t crc8_block_calculate(uint8_t *pbuffer, uint32_t length);
 

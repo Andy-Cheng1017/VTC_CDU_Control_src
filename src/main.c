@@ -172,12 +172,10 @@ int main(void) {
 
 void start_task(void* pvParameters) {
   taskENTER_CRITICAL();
-  // xTaskCreate((TaskFunction_t)init_task_function, (const char*)"Init_task", (uint16_t)INIT_STK_SIZE, (void*)NULL, (UBaseType_t)INIT_TASK_PRIO,
-  //             (TaskHandle_t*)&init_handler);
-  xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
-              (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
-  // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
-  //             (TaskHandle_t*)&LCD_handler);
+  // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
+  //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
+  xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
+              (TaskHandle_t*)&LCD_handler);
   // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
   //             (TaskHandle_t*)&upper_handler);
   // xTaskCreate((TaskFunction_t)fans_task_function, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,

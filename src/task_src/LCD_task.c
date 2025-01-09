@@ -25,7 +25,7 @@ void LCD_task_function(void* pvParameters) {
 
   while (1) {
     if (RS485_LCD.RxPkgCpltFlag == TRUE) {
-      rs485_error_t ret = RS485_Unpkg(&RS485_LCD, LCD_rx_Func, LCD_rx_Data, LCD_rx_Data_len);
+      rs485_error_t ret = RS485_Unpkg(&RS485_LCD, &LCD_rx_Func, LCD_rx_Data, &LCD_rx_Data_len);
       if (!ret) {
         log_i("LCD Unpkg Success");
         log_i("LCD Func: %d", LCD_rx_Func);
@@ -54,6 +54,10 @@ void LCD_task_function(void* pvParameters) {
       LCD_rx_Func = 0;
       LCD_rx_Data_len = 0;
       memset(LCD_rx_Data, 0, LCD_DATA_MAX_SIZE);
+    }
+
+    if (LCD_tx_Func != 0) {
+
     }
     vTaskDelay(25);
   }

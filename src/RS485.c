@@ -4,18 +4,17 @@
 #define MAX_HANDLER_COUNT 10
 
 typedef struct {
-  uint16_t start_addr;      // 起始地址
-  uint16_t end_addr;        // 結束地址
-  rs485_handler_t handler;  // 處理函式指標
+  uint16_t start_addr;
+  uint16_t end_addr;
+  rs485_handler_t handler;
 } rs485_handler_entry_t;
 
-// 儲存處理函式的註冊表
 static rs485_handler_entry_t g_handler_table[MAX_HANDLER_COUNT];
 static int g_handler_count = 0;
 
 bool RS485_RegisterHandler(uint16_t start, uint16_t end, rs485_handler_t handler) {
   if (g_handler_count >= MAX_HANDLER_COUNT) {
-    return false;  // 註冊表已滿
+    return false;
   }
   g_handler_table[g_handler_count].start_addr = start;
   g_handler_table[g_handler_count].end_addr = end;
@@ -91,13 +90,13 @@ void RS485_init(rs485_t *rs485, usart_type *UART, baud_rate_t BaudRate, usart_da
 
   memset(rs485->RxData, 0, MAX_DATA_BUFFER_SIZE);
   rs485->RxData[0] = 0x7E;
-  rs485->RxIdex = 1;
+  rs485->RxIdex = 0;
   rs485->RxPkgCpltFlag = FALSE;
   rs485->DecodeIdex = 0;
 
   memset(rs485->TxData, 0, MAX_DATA_BUFFER_SIZE);
   rs485->TxData[0] = 0x7E;
-  rs485->TxIdex = 1;
+  rs485->TxIdex = 0;
   rs485->TxPkgCpltFlag = FALSE;
   rs485->EncodeIdex = 0;
 }
@@ -110,47 +109,44 @@ void RS485_Re_Config(rs485_t *rs485, baud_rate_t BaudRate, usart_data_bit_num_ty
 
 void RS485_Tx_Data_ISR(rs485_t *rs485) {
   if (rs485->EncodeIdex != rs485->TxIdex) {
-    usart_data_transmit(rs485->UART, rs485->TxData[rs485->EncodeIdex++]);
-  }
-  if (rs485->TxIdex >= MAX_DATA_BUFFER_SIZE) {
-    rs485->TxIdex = 0;
+    if (rs485->TxData[++rs485->TxIdex & MAX_BUF_MASK] == 0X7D) {
+      usart_data_transmit(rs485->UART, rs485->TxData[++rs485->TxIdex & MAX_BUF_MASK] ^ 0x20);
+    } else {
+      usart_data_transmit(rs485->UART, rs485->TxData[rs485->TxIdex]);
+    }
   }
 }
 
 void RS485_Rx_Data_ISR(rs485_t *rs485) {
   uint16_t data = usart_data_receive(rs485->UART);
   if (data == 0x7E || data == 0x7D) {
-    rs485->RxData[rs485->RxIdex++] = 0x7D;
-    rs485->RxData[rs485->RxIdex++] = data ^ 0x20;
+    rs485->RxData[++rs485->RxIdex & MAX_BUF_MASK] = 0x7D;
+    rs485->RxData[++rs485->RxIdex & MAX_BUF_MASK] = data ^ 0x20;
 
   } else {
-    rs485->RxData[rs485->RxIdex++] = data;
+    rs485->RxData[++rs485->RxIdex & MAX_BUF_MASK] = data;
   }
-  if (rs485->RxIdex >= MAX_DATA_BUFFER_SIZE) rs485->RxIdex = 0;
 }
 
 void RS485_Rx_Cplt_ISR(rs485_t *rs485) {
-  rs485->RxData[rs485->RxIdex++] = 0X7E;
+  rs485->RxData[++rs485->RxIdex & MAX_BUF_MASK] = 0X7E;
   rs485->RxPkgCpltFlag = TRUE;
 }
 
-uint8_t RS485_Unpkg(rs485_t *rs485, rs485_func_t result_func, uint8_t *result_data, uint8_t result_data_len) {
+rs485_error_t RS485_Unpkg(rs485_t *rs485, rs485_func_t *upk_func, uint8_t *upk_data, uint8_t *upk_data_len) {
   int i = 0;
   memset(rs485->RxPkg, 0, MAX_PKG_SIZE);
   if (rs485->DecodeIdex != rs485->RxIdex) {
-    while (rs485->RxData[rs485->DecodeIdex++] == 0x7E) {
-      if (rs485->DecodeIdex >= MAX_DATA_BUFFER_SIZE) rs485->DecodeIdex = 0;
-    }
+    while (rs485->RxData[rs485->DecodeIdex] != 0x7E) rs485->RxIdex = (rs485->RxIdex + 1) & MAX_BUF_MASK;
 
-    while (rs485->RxData[rs485->DecodeIdex] != 0x7E) {
-      if (rs485->RxData[rs485->DecodeIdex++] == 0x7D) {
-        rs485->RxPkg[i++] = rs485->RxData[rs485->DecodeIdex++] ^ 0x20;
+    while (rs485->RxData[rs485->DecodeIdex] == 0x7E) {
+      if (rs485->RxData[++rs485->DecodeIdex & MAX_BUF_MASK] == 0x7D) {
+        rs485->RxPkg[i++] = rs485->RxData[++rs485->DecodeIdex & MAX_BUF_MASK] ^ 0x20;
       } else {
         rs485->RxPkg[i++] = rs485->RxData[rs485->DecodeIdex];
       }
 
       if (i >= MAX_PKG_SIZE) return UNPKG_OVER_PACKGE_SIZE;
-      if (rs485->DecodeIdex >= MAX_DATA_BUFFER_SIZE) rs485->DecodeIdex = 0;
     }
   } else {
     rs485->RxPkgCpltFlag = FALSE;
@@ -165,11 +161,11 @@ uint8_t RS485_Unpkg(rs485_t *rs485, rs485_func_t result_func, uint8_t *result_da
 
   if (calculatedCRC != receivedCRC) return CRC_ERROR;
 
-  result_func = rs485->RxPkg[1];
+  *upk_func = rs485->RxPkg[1];
   for (int j = 0; j < i - 3; j++) {
-    result_data[j] = rs485->RxPkg[j + 2];
+    upk_data[j] = rs485->RxPkg[j + 2];
   }
-  result_data_len = i - 3;
+  *upk_data_len = i - 3;
 
   return RS485_OK;
 }
@@ -177,13 +173,11 @@ uint8_t RS485_Unpkg(rs485_t *rs485, rs485_func_t result_func, uint8_t *result_da
 rs485_error_t RS485_Chk_Reg_AddrVal(bool handler_found, uint32_t Data_return, rs485_func_t *tx_Func, uint8_t *tx_Data, uint8_t *tx_Data_len) {
   if (!handler_found) {
     *tx_Func = READ_HOLDING_REGISTERS + 0x80;
-    // memset(tx_Data, 0, sizeof(tx_Data));
     tx_Data[0] = 0x02;
     *tx_Data_len = 1;
     return ILLIGAL_DATA_ADDR;
   } else if ((Data_return >> 16) != 0) {
     *tx_Func = READ_HOLDING_REGISTERS + 0x80;
-    // memset(tx_Data, 0, sizeof(tx_Data));
     tx_Data[0] = 0x03;
     *tx_Data_len = 1;
     return ILLIGAL_DATA_VALUE;
@@ -269,52 +263,30 @@ rs485_error_t RS485_Decode(rs485_t *rs485, rs485_func_t rx_Func, uint8_t *rx_Dat
     *tx_Data_len = 4;
   }
   *tx_Func = rx_Func + 0x80;
-  // memset(tx_Data, 0, sizeof(tx_Data));
   tx_Data[0] = 0x01;
   *tx_Data_len = 1;
   return ILLIGAL_FUNC;
 }
 
-// memset(tx_Data, 0, sizeof(tx_Data));
-// tx_Data[0] = data[0];
-// tx_Data[1] = data[1];
+void RS485_Pkg(rs485_t *rs485, rs485_func_t pkg_func, uint8_t *pkg_data, uint8_t pkg_data_len) {
+  uint8_t CRC_frame[pkg_data_len + 4];
+  CRC_frame[0] = rs485->IpAddr;
+  CRC_frame[1] = pkg_func;
+  for (int i = 0; i < pkg_data_len; i++) {
+    CRC_frame[i + 2] = pkg_data[i];
+  }
+  uint32_t crc_value = crc8_block_calculate(CRC_frame, pkg_data_len + 2);
+  CRC_frame[pkg_data_len] = (crc_value >> 8) & 0xFF;
+  CRC_frame[pkg_data_len + 1] = crc_value & 0xFF;
 
-// for (int i = 0; i < read_num * 2; i += 2) {
-//   uint32_t result = 0;
-//   bool handler_found = false;
-
-//   // 遍歷註冊表，尋找對應地址範圍的處理函式
-//   for (int j = 0; j < g_handler_count; j++) {
-//     if (start_addr + i >= g_handler_table[j].start_addr && start_addr + i <= g_handler_table[j].end_addr) {
-//       result = g_handler_table[j].handler(func, start_addr + i, value, NULL);
-//       handler_found = true;
-//       break;
-//     }
-//   }
-
-//   // 如果沒有匹配的處理函式
-//   if (!handler_found) {
-//     log_e("ILLIGAL_DATA_ADDR");
-//     tx_Func = func + 0x80;
-//     tx_Data[0] = 0x02;
-//     tx_Data_len = 1;
-//     return;
-//   }
-
-//   // 檢查是否有錯誤
-//   if ((result >> 16) != 0) {
-//     log_e("ILLIGAL_DATA_VALUE");
-//     tx_Func = func + 0x80;
-//     tx_Data[0] = 0x03;
-//     tx_Data_len = 1;
-//     return;
-//   }
-
-//   // 正常回傳數值
-//   tx_Data[i + 2] = (result >> 8) & 0xFF;
-//   tx_Data[i + 3] = result & 0xFF;
-// }
-
-// tx_Func = func;
-// tx_Data_len = read_num * 2 + 2;
-// }
+  for (int i = 0; i < pkg_data_len + 4; i++) {
+    if (CRC_frame[i] == 0x7E || CRC_frame[i] == 0x7D) {
+      rs485->TxData[++rs485->EncodeIdex & MAX_BUF_MASK] = 0x7D;
+      rs485->TxData[++rs485->EncodeIdex & MAX_BUF_MASK] = CRC_frame[i] ^ 0x20;
+    } else {
+      rs485->TxData[++rs485->EncodeIdex & MAX_BUF_MASK] = CRC_frame[i];
+    }
+  }
+  rs485->TxData[++rs485->EncodeIdex & MAX_BUF_MASK] = 0x7E;
+  RS485_Tx_Data_ISR(rs485);
+}

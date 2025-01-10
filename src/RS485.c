@@ -12,12 +12,12 @@ typedef struct {
 static rs485_handler_entry_t g_handler_table[MAX_HANDLER_COUNT];
 static int g_handler_count = 0;
 
-bool RS485_RegisterHandler(uint16_t start, uint16_t end, rs485_handler_t handler) {
+bool RS485_RegisterHandler(rs485_t *rs485, rs485_handler_t handler) {
   if (g_handler_count >= MAX_HANDLER_COUNT) {
     return false;
   }
-  g_handler_table[g_handler_count].start_addr = start;
-  g_handler_table[g_handler_count].end_addr = end;
+  g_handler_table[g_handler_count].start_addr = rs485->RegHdlerStat;
+  g_handler_table[g_handler_count].end_addr = rs485->RegHdlerEnd;
   g_handler_table[g_handler_count].handler = handler;
   g_handler_count++;
   return true;
@@ -63,30 +63,23 @@ IRQn_Type Get_USART_IRQn(usart_type *uart) {
   }
 }
 
-void RS485_init(rs485_t *rs485, usart_type *UART, baud_rate_t BaudRate, usart_data_bit_num_type DataBit, usart_stop_bit_num_type StopBit,
-                uint16_t IpAddr) {
-  usart_reset(UART);
-  usart_init(UART, (uint32_t)BaudRate, USART_DATA_8BITS, USART_STOP_1_BIT);
+void RS485_init(rs485_t *rs485) {
+  usart_reset(rs485->UART);
+  usart_init(rs485->UART, (uint32_t)rs485->BaudRate, rs485->DataBit, rs485->StopBit);
 
-  usart_receiver_enable(UART, TRUE);
-  usart_transmitter_enable(UART, FALSE);
+  usart_receiver_enable(rs485->UART, TRUE);
+  usart_transmitter_enable(rs485->UART, FALSE);
 
-  usart_interrupt_enable(UART, USART_IDLE_INT, TRUE);
-  usart_interrupt_enable(UART, USART_RDBF_INT, TRUE);
-  nvic_irq_enable(Get_USART_IRQn(UART), 2, 0);
+  usart_interrupt_enable(rs485->UART, USART_IDLE_INT, TRUE);
+  usart_interrupt_enable(rs485->UART, USART_RDBF_INT, TRUE);
+  nvic_irq_enable(Get_USART_IRQn(rs485->UART), 2, 0);
 
-  usart_parity_selection_config(UART, USART_PARITY_NONE);
+  usart_parity_selection_config(rs485->UART, USART_PARITY_NONE);
   nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 
-  usart_enable(UART, TRUE);
+  usart_enable(rs485->UART, TRUE);
 
-  usart_interrupt_enable(UART, USART_TDBE_INT, TRUE);
-
-  rs485->UART = UART;
-  rs485->BaudRate = BaudRate;
-  rs485->StopBit = USART_STOP_1_BIT;
-  rs485->DataBit = USART_DATA_8BITS;
-  rs485->IpAddr = IpAddr;
+  usart_interrupt_enable(rs485->UART, USART_TDBE_INT, TRUE);
 
   memset(rs485->RxData, 0, MAX_DATA_BUFFER_SIZE);
   rs485->RxData[0] = 0x7E;
@@ -101,10 +94,10 @@ void RS485_init(rs485_t *rs485, usart_type *UART, baud_rate_t BaudRate, usart_da
   rs485->EncodeIdex = 0;
 }
 
-void RS485_Re_Config(rs485_t *rs485, baud_rate_t BaudRate, usart_data_bit_num_type DataBit, usart_stop_bit_num_type StopBit, uint16_t IpAddr) {
+void RS485_Re_Config(rs485_t *rs485) {
   usart_receiver_enable(rs485->UART, FALSE);
   usart_transmitter_enable(rs485->UART, FALSE);
-  RS485_init(rs485, rs485->UART, BaudRate, DataBit, StopBit, rs485->IpAddr);
+  RS485_init(rs485);
 }
 
 void RS485_Tx_Data_ISR(rs485_t *rs485) {
@@ -170,17 +163,28 @@ rs485_error_t RS485_Unpkg(rs485_t *rs485, rs485_func_t *upk_func, uint8_t *upk_d
   return RS485_OK;
 }
 
-rs485_error_t RS485_Chk_Reg_AddrVal(bool handler_found, uint32_t Data_return, rs485_func_t *tx_Func, uint8_t *tx_Data, uint8_t *tx_Data_len) {
-  if (!handler_found) {
-    *tx_Func = READ_HOLDING_REGISTERS + 0x80;
+rs485_error_t RS485_Chk_Reg_AddrVal(bool handler_found, uint32_t Data_return, rs485_func_t rx_Func, rs485_func_t *tx_Func, uint8_t *tx_Data,
+                                    uint8_t *tx_Data_len) {
+  if ((Data_return >> 16) == 1) {
+    *tx_Func = rx_Func + 0x80;
+    tx_Data[0] = 0x01;
+    *tx_Data_len = 1;
+    return ILLIGAL_FUNC;
+  } else if (!handler_found || (Data_return >> 16) == 2) {
+    *tx_Func = rx_Func + 0x80;
     tx_Data[0] = 0x02;
     *tx_Data_len = 1;
     return ILLIGAL_DATA_ADDR;
-  } else if ((Data_return >> 16) != 0) {
-    *tx_Func = READ_HOLDING_REGISTERS + 0x80;
+  } else if ((Data_return >> 16) == 3) {
+    *tx_Func = rx_Func + 0x80;
     tx_Data[0] = 0x03;
     *tx_Data_len = 1;
     return ILLIGAL_DATA_VALUE;
+  } else if ((Data_return >> 16) == 4) {
+    *tx_Func = rx_Func + 0x80;
+    tx_Data[0] = 0x04;
+    *tx_Data_len = 1;
+    return SLAVE_DEVICE_FAILURE;
   }
   return RS485_OK;
 }
@@ -207,7 +211,7 @@ rs485_error_t RS485_Decode(rs485_t *rs485, rs485_func_t rx_Func, uint8_t *rx_Dat
       tx_Data[2 + i] = (Data_return >> 8) & 0xFF;
       tx_Data[3 + i] = Data_return & 0xFF;
 
-      rs485_error_t ret = RS485_Chk_Reg_AddrVal(handler_found, Data_return, tx_Func, tx_Data, tx_Data_len);
+      rs485_error_t ret = RS485_Chk_Reg_AddrVal(handler_found, Data_return, rx_Func, tx_Func, tx_Data, tx_Data_len);
       if (ret != RS485_OK) return ret;
     }
 
@@ -228,7 +232,7 @@ rs485_error_t RS485_Decode(rs485_t *rs485, rs485_func_t rx_Func, uint8_t *rx_Dat
       }
     }
 
-    rs485_error_t ret = RS485_Chk_Reg_AddrVal(handler_found, Data_return, tx_Func, tx_Data, tx_Data_len);
+    rs485_error_t ret = RS485_Chk_Reg_AddrVal(handler_found, Data_return, rx_Func, tx_Func, tx_Data, tx_Data_len);
     if (ret != RS485_OK) return ret;
 
     tx_Data[2] = (Data_return >> 8) & 0xFF;
@@ -252,7 +256,7 @@ rs485_error_t RS485_Decode(rs485_t *rs485, rs485_func_t rx_Func, uint8_t *rx_Dat
         }
       }
 
-      rs485_error_t ret = RS485_Chk_Reg_AddrVal(handler_found, Data_return, tx_Func, tx_Data, tx_Data_len);
+      rs485_error_t ret = RS485_Chk_Reg_AddrVal(handler_found, Data_return, rx_Func, tx_Func, tx_Data, tx_Data_len);
       if (ret != RS485_OK) return ret;
     }
 
@@ -268,9 +272,35 @@ rs485_error_t RS485_Decode(rs485_t *rs485, rs485_func_t rx_Func, uint8_t *rx_Dat
   return ILLIGAL_FUNC;
 }
 
-void RS485_Pkg(rs485_t *rs485, rs485_func_t pkg_func, uint8_t *pkg_data, uint8_t pkg_data_len) {
+rs485_error_t RS485_Encode(rs485_t *rs485, rs485_func_t Func, uint16_t stat_addr, uint8_t *Data_or_Num, uint8_t Data_len, uint8_t *tx_Data,
+                           uint8_t *tx_Data_len) {
+  tx_Data[0] = (stat_addr >> 8) & 0xFF;
+  tx_Data[1] = stat_addr & 0xFF;
+  if (Func == READ_HOLDING_REGISTERS || Func == WRITE_SINGLE_REGISTER) {
+    tx_Data[2] = Data_or_Num[0];
+    tx_Data[3] = Data_or_Num[1];
+    *tx_Data_len = 4;
+    if (Func == READ_HOLDING_REGISTERS && Data_len != 2) {
+      return ENCODE_FOR_NUMBER;
+    } else if (Func == WRITE_SINGLE_REGISTER && Data_len != 2) {
+      return ENCODE_FOR_SINGLE_DATA;
+    }
+  } else if (Func == WRITE_MULTIPLE_REGISTERS) {
+    if (Data_len & 0X01) return ENCODE_FOR_NUMBER;
+    tx_Data[2] = 0;
+    tx_Data[3] = (Data_len >> 1) & 0xFF;
+    tx_Data[4] = Data_len;
+    for (int i = 0; i < Data_len; i++) {
+      tx_Data[i + 5] = Data_or_Num[i];
+    }
+    *tx_Data_len = Data_len + 5;
+  }
+  return RS485_OK;
+}
+
+void RS485_Pkg(rs485_t *rs485, uint8_t DstIpAddr, rs485_func_t pkg_func, uint8_t *pkg_data, uint8_t pkg_data_len) {
   uint8_t CRC_frame[pkg_data_len + 4];
-  CRC_frame[0] = rs485->IpAddr;
+  CRC_frame[0] = DstIpAddr;
   CRC_frame[1] = pkg_func;
   for (int i = 0; i < pkg_data_len; i++) {
     CRC_frame[i + 2] = pkg_data[i];

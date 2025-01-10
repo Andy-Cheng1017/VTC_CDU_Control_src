@@ -191,3 +191,43 @@ uint32_t EthConfig_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint
   }
   return 0;
 }
+
+uint32_t SensCard_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len) {
+  switch (addr) {
+    case 0x0010:
+      break;
+    case 0x0011:
+      break;
+    case 0x0012:
+      break;
+    case 0x0013:
+      break;
+    case 0x0014:
+      break;
+    case 0x0015:
+      break;
+    case 0x0016:
+      break;
+    case 0x0017:
+      break;
+    case 0x0018:
+      break;
+    case 0x0019:
+      break;
+    case 0x001A:
+      break;
+    case 0x001B:
+      break;
+    case 0x001C:
+      break;
+    case 0x001D:
+      break;
+    case 0x001E:
+      break;
+    case 0x001F:
+      break;
+    default:
+      break;
+  }
+  return 0;
+}

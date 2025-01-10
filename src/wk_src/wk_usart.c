@@ -150,9 +150,9 @@ void wk_uart4_init(void) {
   gpio_init_type gpio_init_struct;
   gpio_default_para_init(&gpio_init_struct);
 
-#if defined(__GNUC__) && !defined(__clang__)
-  setvbuf(stdout, NULL, _IONBF, 0);
-#endif
+// #if defined(__GNUC__) && !defined(__clang__)
+//   setvbuf(stdout, NULL, _IONBF, 0);
+// #endif
 
   /* add user code begin uart4_init 1 */
 

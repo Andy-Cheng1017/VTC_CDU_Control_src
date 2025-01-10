@@ -19,7 +19,6 @@
 #include "network_task.h"
 #include "LCD_task.h"
 #include "upper_task.h"
-#include "fans_task.h"
 #include "sensor_task.h"
 #include "pump_task.h"
 #include "RTC_task.h"
@@ -54,9 +53,6 @@
 
 #define UPPER_TASK_PRIO 4
 #define UPPER_STK_SIZE 512
-
-#define FANS_TASK_PRIO 4
-#define FANS_STK_SIZE 512
 
 #define SENSOR_TASK_PRIO 3
 #define SENSOR_STK_SIZE 512
@@ -178,8 +174,6 @@ void start_task(void* pvParameters) {
               (TaskHandle_t*)&LCD_handler);
   // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
   //             (TaskHandle_t*)&upper_handler);
-  // xTaskCreate((TaskFunction_t)fans_task_function, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
-  //             (TaskHandle_t*)&fans_handler);
   // xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
   //             (TaskHandle_t*)&sensor_handler);
   // xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,

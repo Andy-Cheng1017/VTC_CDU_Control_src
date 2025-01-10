@@ -42,15 +42,22 @@ typedef enum {
   ILLIGAL_DATA_ADDR,
   ILLIGAL_DATA_VALUE,
   SLAVE_DEVICE_FAILURE,
+  ENCODE_FOR_NUMBER,
+  ENCODE_FOR_SINGLE_DATA,
 } rs485_error_t;
+
+typedef enum{
+  MASTER,
+  SLAVE,
+}rs485_mode_t;
 
 typedef struct {
   usart_type *UART;
-
+  rs485_mode_t Mode;
   baud_rate_t BaudRate;
   usart_stop_bit_num_type StopBit;
   usart_data_bit_num_type DataBit;
-  uint16_t IpAddr;
+  uint8_t IpAddr;
 
   uint8_t RxData[MAX_DATA_BUFFER_SIZE];
   uint8_t RxIdex;
@@ -64,15 +71,17 @@ typedef struct {
   uint8_t TxPkg[MAX_PKG_SIZE];
   uint8_t EncodeIdex;
 
+  uint8_t RegHdlerStat;
+  uint8_t RegHdlerEnd;
+
 } rs485_t;
 
 typedef uint32_t (*rs485_handler_t)(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
 
-bool RS485_RegisterHandler(uint16_t start, uint16_t end, rs485_handler_t handler);
+bool RS485_RegisterHandler(rs485_t *rs485, rs485_handler_t handler);
 
-void RS485_init(rs485_t *rs485, usart_type *UART, baud_rate_t BaudRate, usart_data_bit_num_type DataBit, usart_stop_bit_num_type StopBit,
-                uint16_t IpAddr);
-void RS485_Re_Config(rs485_t *rs485, baud_rate_t BaudRate, usart_data_bit_num_type DataBit, usart_stop_bit_num_type StopBit, uint16_t IpAddr);
+void RS485_init(rs485_t *rs485);
+void RS485_Re_Config(rs485_t *rs485);
 
 void RS485_Rx_Cplt_ISR(rs485_t *rs485);
 
@@ -80,11 +89,13 @@ void RS485_Tx_Data_ISR(rs485_t *rs485);
 void RS485_Rx_Data_ISR(rs485_t *rs485);
 
 rs485_error_t RS485_Unpkg(rs485_t *rs485, rs485_func_t *upk_func, uint8_t *upk_data, uint8_t *upk_data_len);
+
 rs485_error_t RS485_Decode(rs485_t *rs485, rs485_func_t rx_Func, uint8_t *rx_Data, uint8_t rx_Data_len, rs485_func_t *tx_Func, uint8_t *tx_Data,
                            uint8_t *tx_Data_len);
+rs485_error_t RS485_Encode(rs485_t *rs485, rs485_func_t Func, uint16_t stat_addr, uint8_t *Data_Num, uint8_t Data_len, uint8_t *tx_Data,
+                           uint8_t *tx_Data_len);
 
-void RS485_Pkg(rs485_t *rs485, rs485_func_t pkg_func, uint8_t *pkg_data, uint8_t pkg_data_len);
-// void RS485_Encode(rs485_t *rs485, uint8_t *data, uint8_t len);
+void RS485_Pkg(rs485_t *rs485, uint8_t DstIpAddr, rs485_func_t pkg_func, uint8_t *pkg_data, uint8_t pkg_data_len);
 
 uint32_t crc8_block_calculate(uint8_t *pbuffer, uint32_t length);
 

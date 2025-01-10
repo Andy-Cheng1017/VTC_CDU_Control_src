@@ -7,7 +7,6 @@
 #include "store_data_task.h"
 #include "sensor_task.h"
 #include "pump_task.h"
-#include "fans_task.h"
 
 #define LOG_TAG "Store_Data_Task"
 #include "elog.h"
@@ -29,7 +28,7 @@ int min_idx = 0;
 void store_data_task_function(void *pvParameters) {
   while (1) {
     taskENTER_CRITICAL();
-    data_sec[sec_idx].sensor_status = sensor_status;
+    data_sec[sec_idx].sens_stat = sens_stat;
     data_sec[sec_idx].sensor_control = sensor_control;
     data_sec[sec_idx].pump_status = pump_status;
     data_sec[sec_idx].pump_control = pump_control;
@@ -41,8 +40,8 @@ void store_data_task_function(void *pvParameters) {
 
     // 滿10秒後計算平均
     if (sec_idx >= 9) {
-      //   sensor_status_type avg_sensor_status = {0};
-      //   sensor_control_type avg_sensor_control = {0};
+      //   sens_stat_t avg_sens_stat = {0};
+      //   sens_ctrl_t avg_sensor_control = {0};
       //   pump_status_type avg_pump_status = {0};
       //   pump_control_type avg_pump_control = {0};
       //   fans_status_type avg_fans_status = {0};
@@ -71,22 +70,22 @@ void store_data_task_function(void *pvParameters) {
       //   avg.power_input /= 10;
 
       for (int i = 0; i < 10; i++) {
-        data_sec_avg.sensor_status.PT100_1_temp += data_sec[i].sensor_status.PT100_1_temp;
-        data_sec_avg.sensor_status.PT100_2_temp += data_sec[i].sensor_status.PT100_2_temp;
-        data_sec_avg.sensor_status.PT100_3_temp += data_sec[i].sensor_status.PT100_3_temp;
-        data_sec_avg.sensor_status.PT100_4_temp += data_sec[i].sensor_status.PT100_4_temp;
-        // data_sec_avg.sensor_status.NTC_1_temp += data_sec[i].sensor_status.NTC_1_temp;
-        // data_sec_avg.sensor_status.NTC_2_temp += data_sec[i].sensor_status.NTC_2_temp;
-        // data_sec_avg.sensor_status.NTC_3_temp += data_sec[i].sensor_status.NTC_3_temp;
-        // data_sec_avg.sensor_status.NTC_4_temp += data_sec[i].sensor_status.NTC_4_temp;
-        // data_sec_avg.sensor_status.Presure_1_val += data_sec[i].sensor_status.Presure_1_val;
-        // data_sec_avg.sensor_status.Presure_2_val += data_sec[i].sensor_status.Presure_2_val;
-        // data_sec_avg.sensor_status.Presure_3_val += data_sec[i].sensor_status.Presure_3_val;
-        // data_sec_avg.sensor_status.Presure_4_val += data_sec[i].sensor_status.Presure_4_val;
-        // data_sec_avg.sensor_status.Flow_val += data_sec[i].sensor_status.Flow_val;
-        // data_sec_avg.sensor_status.voltage_input += data_sec[i].sensor_status.voltage_input;
-        // data_sec_avg.sensor_status.current_input += data_sec[i].sensor_status.current_input;
-        // data_sec_avg.sensor_status.power_input += data_sec[i].sensor_status.power_input;
+        data_sec_avg.sens_stat.PT100_1_temp += data_sec[i].sens_stat.PT100_1_temp;
+        data_sec_avg.sens_stat.PT100_2_temp += data_sec[i].sens_stat.PT100_2_temp;
+        data_sec_avg.sens_stat.PT100_3_temp += data_sec[i].sens_stat.PT100_3_temp;
+        data_sec_avg.sens_stat.PT100_4_temp += data_sec[i].sens_stat.PT100_4_temp;
+        // data_sec_avg.sens_stat.NTC_1_temp += data_sec[i].sens_stat.NTC_1_temp;
+        // data_sec_avg.sens_stat.NTC_2_temp += data_sec[i].sens_stat.NTC_2_temp;
+        // data_sec_avg.sens_stat.NTC_3_temp += data_sec[i].sens_stat.NTC_3_temp;
+        // data_sec_avg.sens_stat.NTC_4_temp += data_sec[i].sens_stat.NTC_4_temp;
+        // data_sec_avg.sens_stat.Presure_1_val += data_sec[i].sens_stat.Presure_1_val;
+        // data_sec_avg.sens_stat.Presure_2_val += data_sec[i].sens_stat.Presure_2_val;
+        // data_sec_avg.sens_stat.Presure_3_val += data_sec[i].sens_stat.Presure_3_val;
+        // data_sec_avg.sens_stat.Presure_4_val += data_sec[i].sens_stat.Presure_4_val;
+        // data_sec_avg.sens_stat.Flow_val += data_sec[i].sens_stat.Flow_val;
+        // data_sec_avg.sens_stat.voltage_input += data_sec[i].sens_stat.voltage_input;
+        // data_sec_avg.sens_stat.current_input += data_sec[i].sens_stat.current_input;
+        // data_sec_avg.sens_stat.power_input += data_sec[i].sens_stat.power_input;
         // data_sec_avg.sensor_control.Porpo_1_PWM += data_sec[i].sensor_control.Porpo_1_PWM;
         // data_sec_avg.sensor_control.Porpo_2_PWM += data_sec[i].sensor_control.Porpo_2_PWM;
         // data_sec_avg.pump_status.pump_1_FB += data_sec[i].pump_status.pump_1_FB;
@@ -100,7 +99,7 @@ void store_data_task_function(void *pvParameters) {
 
       if (++ten_idx > 6) ten_idx = 0;
 
-      //   calculate_average(data_sec.sensor_status, &data_10sce.sensor_status[ten_idx], sizeof(sensor_status_type), sizeof(int16_t), ten_idx, 10);
+      //   calculate_average(data_sec.sens_stat, &data_10sce.sens_stat[ten_idx], sizeof(sens_stat_t), sizeof(int16_t), ten_idx, 10);
 
       // 每60秒計算一次分鐘數據
     //   if (ten_idx >= 6) {

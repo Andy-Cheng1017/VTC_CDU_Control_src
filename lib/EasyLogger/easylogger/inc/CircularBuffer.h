@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 // 配置緩衝區大小，需為 2 的倍數
-#define BUFFER_SIZE 512
+#define BUFFER_SIZE 2048
 
 // 環形緩衝區結構體
 typedef struct {

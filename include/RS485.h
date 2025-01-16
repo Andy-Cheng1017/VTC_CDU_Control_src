@@ -3,9 +3,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "at32f403a_407.h"
+#include "FreeRTOS.h"
+#include "task.h"
 // #include "RS485_Region_handler.h"
 
-#define MAX_DATA_BUFFER_SIZE 64
+#define MAX_DATA_BUFFER_SIZE 32
 #define MAX_BUF_MASK (MAX_DATA_BUFFER_SIZE - 1)
 #define MAX_PKG_SIZE 16
 
@@ -35,7 +37,7 @@ typedef enum {
 typedef enum {
   RS485_OK = 0,
   UNPKG_FINISH,
-  NOT_MY_ADDR,
+  OTHER_ADDR,
   UNPKG_OVER_PACKGE_SIZE,
   CRC_ERROR,
   ILLIGAL_FUNC,

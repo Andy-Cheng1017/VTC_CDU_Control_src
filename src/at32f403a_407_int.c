@@ -243,21 +243,25 @@ void TMR4_GLOBAL_IRQHandler(void) {
 
 void USART1_IRQHandler(void) {
   if (usart_interrupt_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
-    start_dma_transfer();
     usart_interrupt_enable(USART1, USART_TDBE_INT, FALSE);
+    start_dma_transfer();
     // usart_flag_clear(USART1, USART_TDBE_FLAG);
   }
 }
 
 void UART8_IRQHandler(void) {
   if (usart_interrupt_flag_get(RS485_LCD.UART, USART_RDBF_FLAG) != RESET) {
+    usart_flag_clear(RS485_LCD.UART, USART_RDBF_FLAG);
     RS485_Rx_Data_ISR(&RS485_LCD);
 
   } else if (usart_interrupt_flag_get(RS485_LCD.UART, USART_IDLEF_FLAG) != RESET) {
-    RS485_Rx_Cplt_ISR(&RS485_LCD);
     usart_flag_clear(RS485_LCD.UART, USART_IDLEF_FLAG);
+    RS485_Rx_Cplt_ISR(&RS485_LCD);
 
   } else if (usart_interrupt_flag_get(RS485_LCD.UART, USART_TDBE_FLAG) != RESET) {
+    usart_flag_clear(RS485_LCD.UART, USART_TDBE_FLAG);
+    usart_interrupt_enable(RS485_LCD.UART, USART_TDBE_INT, FALSE);
+    RS485_LCD.TxIdex--;
     RS485_Tx_Data_ISR(&RS485_LCD);
   }
 }

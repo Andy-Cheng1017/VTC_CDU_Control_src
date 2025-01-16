@@ -45,25 +45,25 @@
 #define START_TASK_PRIO 1
 #define START_STK_SIZE 128
 
-#define NETWORK_TASK_PRIO 4
-#define NETWORK_STK_SIZE 1024*2
+#define NETWORK_TASK_PRIO 3
+#define NETWORK_STK_SIZE 1024 * 2
 
-#define LCD_TASK_PRIO 2
+#define LCD_TASK_PRIO 3
 #define LCD_STK_SIZE 1024
 
-#define UPPER_TASK_PRIO 4
-#define UPPER_STK_SIZE 512
+#define UPPER_TASK_PRIO 3
+#define UPPER_STK_SIZE 1024
 
-#define SENSOR_TASK_PRIO 3
+#define SENSOR_TASK_PRIO 4
 #define SENSOR_STK_SIZE 512
 
-#define PUMP_TASK_PRIO 1
+#define PUMP_TASK_PRIO 5
 #define PUMP_STK_SIZE 512
 
-#define RTC_TASK_PRIO 4
+#define RTC_TASK_PRIO 2
 #define RTC_STK_SIZE 512
 
-#define WARNNING_TASK_PRIO 3
+#define WARNNING_TASK_PRIO 4
 #define WARNNING_STK_SIZE 512
 
 /* add user code end private define */
@@ -113,6 +113,7 @@ void start_task(void* pvParameters);
  * @param  none
  * @retval none
  */
+
 int main(void) {
   /* add user code begin 1 */
   /* add user code end 1 */
@@ -155,7 +156,7 @@ int main(void) {
   wk_crc_init();
 
   /* init gpio function. */
-  // wk_gpio_config();
+  wk_gpio_config();
 
   /* add user code begin 2 */
 
@@ -167,13 +168,14 @@ int main(void) {
 }
 
 void start_task(void* pvParameters) {
+  vTaskDelay(100);
   taskENTER_CRITICAL();
   // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
   xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
               (TaskHandle_t*)&LCD_handler);
-  // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
-  //             (TaskHandle_t*)&upper_handler);
+  xTaskCreate((TaskFunction_t)UPPER_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
+              (TaskHandle_t*)&UPPER_handler);
   // xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
   //             (TaskHandle_t*)&sensor_handler);
   // xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
@@ -182,8 +184,8 @@ void start_task(void* pvParameters) {
               (TaskHandle_t*)&RTC_handler);
   // xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
-  xTaskCreate((TaskFunction_t)store_data_task_function, (const char*)"Store_data_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
-              (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&store_data_handler);
+  // xTaskCreate((TaskFunction_t)store_data_task_function, (const char*)"Store_data_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
+  //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&store_data_handler);
 
   vTaskDelete(StartTask_Handler);
   taskEXIT_CRITICAL();

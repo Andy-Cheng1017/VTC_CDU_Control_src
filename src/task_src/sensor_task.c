@@ -25,7 +25,6 @@ rs485_t RS485_sens = {
     .BaudRate = BR_115200,
     .DataBit = USART_DATA_8BITS,
     .StopBit = USART_STOP_1_BIT,
-    .IpAddr = SENSOR_CARD_ADDR,
 };
 
 uint8_t Data_or_Num[2] = {SENS_CARD_TOTLA_TEG_NUM};
@@ -39,32 +38,17 @@ fans_control_type fans_control = {0};
 fans_status_type fans_status = {0};
 
 void sensor_task_function(void* pvParameters) {
-  xTaskCreate((TaskFunction_t)Sensor_Card_Task, "Sensor_Card_Task", 256, NULL, 2, (TaskHandle_t*)&sensor_handler);
-  xTaskCreate((TaskFunction_t)fans_task_function, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
-              (TaskHandle_t*)&fans_handler);
-  while (1) {
-    vTaskDelay(1000);
-  }
-  vTaskDelete(NULL);
-}
-
-void Sensor_Card_Task(void* pvParameters) {
   RS485_init(&RS485_sens);
   RS485_sens.RegHdlerStat = 0x0010;
   RS485_sens.RegHdlerEnd = 0x001F;
   RS485_RegisterHandler(&RS485_sens, SensCard_Handler);
 
+  xTaskCreate((TaskFunction_t)Sensor_Card_Task, "Sensor_Card_Task", 256, NULL, 2, (TaskHandle_t*)&sensor_handler);
+  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)Fans_Card_Task, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
+              (TaskHandle_t*)&fans_handler);
+  vTaskDelay(100);
   while (1) {
-    sens_tx_Func = READ_HOLDING_REGISTERS;
-    rs485_error_t ret = RS485_Encode(&RS485_sens, sens_tx_Func, SENS_CARD_REG_START, Data_or_Num, NULL, sens_tx_Data, &sens_tx_Data_len);
-    if (!ret) {
-      log_i("Sensor Card Encode Success");
-      RS485_Pkg(&RS485_sens, SENSOR_CARD_ADDR, sens_tx_Func, sens_tx_Data, sens_tx_Data_len);
-    } else if (ret == ENCODE_FOR_NUMBER)
-      log_e("Sensor Card Encode ERRO For Number");
-    else if (ret == ENCODE_FOR_SINGLE_DATA)
-      log_e("Sensor Card Encode ERRO For Single Data");
-
     if (RS485_sens.RxPkgCpltFlag == TRUE) {
       memset(sens_rx_Data, 0, SENS_DATA_MAX_SIZE);
       rs485_error_t ret = RS485_Unpkg(&RS485_sens, &sens_rx_Func, sens_rx_Data, &sens_rx_Data_len);
@@ -76,7 +60,7 @@ void Sensor_Card_Task(void* pvParameters) {
         log_e("485 Over Package Size");
       else if (ret == CRC_ERROR)
         log_e("485 CRC Error");
-      else if (ret == NOT_MY_ADDR)
+      else if (ret == OTHER_ADDR)
         log_i("485 Not My Address");
     }
 
@@ -98,14 +82,42 @@ void Sensor_Card_Task(void* pvParameters) {
       sens_rx_Data_len = 0;
       memset(sens_rx_Data, 0, SENS_DATA_MAX_SIZE);
     }
+    vTaskDelay(10);
+  }
+  vTaskDelete(NULL);
+}
+
+void Sensor_Card_Task(void* pvParameters) {
+  while (1) {
+    sens_tx_Func = READ_HOLDING_REGISTERS;
+    RS485_sens.IpAddr = SENSOR_CARD_ADDR;
+    rs485_error_t ret = RS485_Encode(&RS485_sens, sens_tx_Func, SENS_CARD_REG_START, Data_or_Num, NULL, sens_tx_Data, &sens_tx_Data_len);
+    if (!ret) {
+      log_i("Sensor Card Encode Success");
+      RS485_Pkg(&RS485_sens, SENSOR_CARD_ADDR, sens_tx_Func, sens_tx_Data, sens_tx_Data_len);
+    } else if (ret == ENCODE_FOR_NUMBER)
+      log_e("Sensor Card Encode ERRO For Number");
+    else if (ret == ENCODE_FOR_SINGLE_DATA)
+      log_e("Sensor Card Encode ERRO For Single Data");
 
     vTaskDelay(1000);
   }
   vTaskDelete(NULL);
 }
 
-void fans_task_function(void* pvParameters) {
-    while (1) {
-        vTaskDelay(500);
-    }
+void Fans_Card_Task(void* pvParameters) {
+  while (1) {
+    sens_tx_Func = READ_HOLDING_REGISTERS;
+    RS485_sens.IpAddr = FANS_CARD_ADDR;
+    rs485_error_t ret = RS485_Encode(&RS485_sens, sens_tx_Func, SENS_CARD_REG_START, Data_or_Num, NULL, sens_tx_Data, &sens_tx_Data_len);
+    if (!ret) {
+      log_i("Fans Card Encode Success");
+      RS485_Pkg(&RS485_sens, FANS_CARD_ADDR, sens_tx_Func, sens_tx_Data, sens_tx_Data_len);
+    } else if (ret == ENCODE_FOR_NUMBER)
+      log_e("Fans Card Encode ERRO For Number");
+    else if (ret == ENCODE_FOR_SINGLE_DATA)
+      log_e("Fans Card Encode ERRO For Single Data");
+    vTaskDelay(1000);
+  }
+  vTaskDelete(NULL);
 }

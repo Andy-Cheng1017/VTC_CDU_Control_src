@@ -49,99 +49,108 @@ uint32_t SysStat_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_
 }
 
 uint32_t DataRead_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len) {
-  switch (addr) {
-    case 0x0030:
-      break;
-    case 0x0031:
-      break;
-    case 0x0032:
-      break;
-    case 0x0033:
-      break;
-    case 0x0034:
-      break;
-    case 0x0035:
-      break;
-    case 0x0036:
-      break;
-    case 0x0037:
-      break;
-    case 0x0038:
-      break;
-    case 0x0039:
-      break;
-    case 0x003A:
-      break;
-    case 0x003B:
-      break;
-    case 0x003C:
-      break;
-    case 0x003D:
-      break;
-    case 0x003E:
-      break;
-    case 0x003F:
-      break;
-    case 0x0040:
-      break;
-    case 0x0041:
-      break;
-    case 0x0042:
-      break;
-    case 0x0043:
-      break;
-    default:
-      break;
+  uint16_t retval = 0;
+  if (func == READ_HOLDING_REGISTERS) {
+    switch (addr) {
+      case 0x0030:
+        // retval = sens_stat.PT100_1_temp;
+        retval = 0XFF;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0031:
+        // retval = sens_stat.PT100_2_temp;
+        retval = 0XFE;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0032:
+        retval = 0XFD;
+        // retval = sens_stat.PT100_3_temp;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0033:
+        retval = 0XFC;
+        // retval = sens_stat.PT100_4_temp;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0034:
+        retval = sens_stat.NTC_1_temp;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0035:
+        retval = sens_stat.NTC_2_temp;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0036:
+        retval = sens_stat.NTC_3_temp;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0037:
+        retval = sens_stat.NTC_4_temp;
+        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0038:
+        retval = sens_stat.Presure_1_val;
+        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0039:
+        retval = sens_stat.Presure_2_val;
+        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x003A:
+        retval = sens_stat.Presure_3_val;
+        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x003B:
+        retval = sens_stat.Presure_4_val;
+        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x003C:
+        retval = sens_stat.Flow_val;
+        return (retval >= -10000 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x003E:
+        retval = sens_stat.voltage_input;
+        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x003F:
+        retval = sens_stat.current_input;
+        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0040:
+        retval = (sens_stat.power_input >> 16) & 0xFFFF;
+        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0041:
+        retval = sens_stat.power_input & 0xFFFF;
+        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0047:
+        retval = pump_status.pump_1_FB;
+        return (retval >= 0 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x0048:
+        retval = pump_status.pump_2_FB;
+        return (retval >= 0 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      default:
+        return ILLIGAL_DATA_ADDR << 16;
+    }
+  } else {
+    return ILLIGAL_FUNC << 16;
   }
-  return 0;
 }
 
 uint32_t DevCtrl_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len) {
-  switch (addr) {
-    case 0x0060:
-      break;
-    case 0x0061:
-      break;
-    case 0x0062:
-      break;
-    case 0x0063:
-      break;
-    case 0x0064:
-      break;
-    case 0x0065:
-      break;
-    case 0x0066:
-      break;
-    case 0x0067:
-      break;
-    case 0x0068:
-      break;
-    case 0x0069:
-      break;
-    case 0x006A:
-      break;
-    case 0x006B:
-      break;
-    case 0x006C:
-      break;
-    case 0x006D:
-      break;
-    case 0x006E:
-      break;
-    case 0x006F:
-      break;
-    case 0x0070:
-      break;
-    case 0x0071:
-      break;
-    case 0x0072:
-      break;
-    case 0x0073:
-      break;
-    default:
-      break;
+  if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
+    switch (addr) {
+      case 0x0062:
+        return (data >= 0 && data <= 10000) ? pump_control.pump_1_rpm = data : ILLIGAL_DATA_VALUE;
+      case 0x0063:
+        return (data >= 0 && data <= 10000) ? pump_control.pump_2_rpm = data : ILLIGAL_DATA_VALUE;
+      case 0x0066:
+        return (data >= 0 && data <= 1000) ? sensor_control.Porpo_1_PWM = data : ILLIGAL_DATA_VALUE;
+      case 0x0067:
+        return (data >= 0 && data <= 1000) ? sensor_control.Porpo_2_PWM = data : ILLIGAL_DATA_VALUE;
+      default:
+        return ILLIGAL_DATA_ADDR;
+    }
+  } else if (func == READ_HOLDING_REGISTERS) {
+    switch (addr) {
+      case 0x0062:
+        return pump_control.pump_1_rpm;
+      case 0x0063:
+        return pump_control.pump_2_rpm;
+      case 0x0066:
+        return sensor_control.Porpo_1_PWM;
+      case 0x0067:
+        return sensor_control.Porpo_2_PWM;
+      default:
+        return ILLIGAL_DATA_ADDR;
+    }
+  } else {
+    return ILLIGAL_FUNC;
   }
-  return 0;
 }
 
 uint32_t EthConfig_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len) {

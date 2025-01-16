@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include "at32f403a_407.h"
 #include "RS485.h"
+#include "sensor_task.h"
+#include "pump_task.h"
 
 #define MY_485_ADDR 0x21
 

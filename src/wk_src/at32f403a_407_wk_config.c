@@ -256,6 +256,7 @@ void wk_nvic_config(void) {
   nvic_irq_enable(TMR4_GLOBAL_IRQn, 0, 0);
   nvic_irq_enable(USART1_IRQn, 0, 0);
   nvic_irq_enable(USART2_IRQn, 2, 0);
+  // nvic_irq_enable(UART8_IRQn, 0, 0);
 }
 
 /* add user code begin 1 */

@@ -7,6 +7,8 @@
 #include "RS485_Region_handler.h"
 
 #define SENSOR_CARD_ADDR 0x22
+#define FANS_CARD_ADDR 0x23
+
 #define SENS_DATA_MAX_SIZE 32
 
 #define SENS_CARD_REG_START 0x0010
@@ -70,7 +72,7 @@ typedef struct {
 extern fans_control_type fans_control;
 
 typedef struct {
-  uint16_t fan1_FB;
+  uint16_t fan1_FB; //0x0010
   uint16_t fan2_FB;
   uint16_t fan3_FB;
   uint16_t fan4_FB;
@@ -85,13 +87,13 @@ typedef struct {
   uint16_t fan13_FB;
   uint16_t fan14_FB;
   uint16_t fan15_FB;
-  uint16_t fan16_FB;
+  uint16_t fan16_FB; //0x001F
 } fans_status_type;
 
 extern fans_status_type fans_status;
 
 void sensor_task_function(void* pvParameters);
 void Sensor_Card_Task(void* pvParameters);
-void fans_task_function(void* pvParameters);
+void Fans_Card_Task(void* pvParameters);
 
 #endif  // SENSOR_TASK_H

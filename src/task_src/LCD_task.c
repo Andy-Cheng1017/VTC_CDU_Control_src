@@ -16,6 +16,9 @@ rs485_func_t LCD_tx_Func = 0;
 uint8_t LCD_tx_Data[LCD_DATA_MAX_SIZE] = {0};
 uint8_t LCD_tx_Data_len = 0;
 
+bool Unpkg_Flag = FALSE;
+bool Decode_Flag = FALSE;
+
 rs485_t RS485_LCD = {
     .UART = UART8,
     .Mode = SLAVE,
@@ -27,6 +30,7 @@ rs485_t RS485_LCD = {
 
 void LCD_task_function(void* pvParameters) {
   RS485_init(&RS485_LCD);
+  log_i("LCD Task Running");
   RS485_LCD.RegHdlerStat = 0x00;
   RS485_LCD.RegHdlerEnd = 0x2F;
   RS485_RegisterHandler(&RS485_LCD, SysStat_Handler);
@@ -44,25 +48,33 @@ void LCD_task_function(void* pvParameters) {
     if (RS485_LCD.RxPkgCpltFlag == TRUE) {
       memset(LCD_rx_Data, 0, LCD_DATA_MAX_SIZE);
       rs485_error_t ret = RS485_Unpkg(&RS485_LCD, &LCD_rx_Func, LCD_rx_Data, &LCD_rx_Data_len);
-      if (!ret) {
-        log_i("LCD Unpkg Success");
-        log_i("LCD Func: %d", LCD_rx_Func);
-        log_i("LCD Data: %d", LCD_rx_Data);
-      } else if (ret == UNPKG_OVER_PACKGE_SIZE)
-        log_e("485 Over Package Size");
-      else if (ret == CRC_ERROR)
-        log_e("485 CRC Error");
-      else if (ret == NOT_MY_ADDR)
-        log_i("485 Not My Address");
+
+      if (ret == UNPKG_FINISH) {
+        log_i("485 Unpkg Finish");
+      } else {
+        log_i("LCD rx Func: %d", LCD_rx_Func);
+        elog_hexdump("LCD_rx_Data", 16, LCD_rx_Data, sizeof(LCD_rx_Data));
+        if (!ret) {
+          log_i("LCD Unpkg Success");
+          Unpkg_Flag = TRUE;
+        } else if (ret == UNPKG_OVER_PACKGE_SIZE) {
+          log_e("485 Over Package Size");
+          Unpkg_Flag = FALSE;
+        } else if (ret == CRC_ERROR) {
+          log_e("485 CRC Error");
+          Unpkg_Flag = FALSE;
+        } else if (ret == OTHER_ADDR)
+          log_i("485 Not My Address");
+      }
     }
 
-    if (LCD_rx_Func != 0) {
+    if (LCD_rx_Func != 0 && Unpkg_Flag) {
       memset(LCD_tx_Data, 0, LCD_DATA_MAX_SIZE);
       rs485_error_t ret = RS485_Decode(&RS485_LCD, LCD_rx_Func, LCD_rx_Data, LCD_rx_Data_len, &LCD_tx_Func, LCD_tx_Data, &LCD_tx_Data_len);
+      log_i("LCD tx Func: %d", LCD_tx_Func);
+      elog_hexdump("LCD_tx_Data", 16, LCD_tx_Data, sizeof(LCD_tx_Data));
       if (!ret) {
         log_i("LCD Decode Success");
-        log_i("LCD Func: %d", LCD_tx_Func);
-        log_i("LCD Data: %d", LCD_tx_Data);
       } else if (ret == ILLIGAL_FUNC)
         log_e("485 Illegal Function");
       else if (ret == ILLIGAL_DATA_ADDR)
@@ -74,6 +86,7 @@ void LCD_task_function(void* pvParameters) {
       LCD_rx_Func = 0;
       LCD_rx_Data_len = 0;
       memset(LCD_rx_Data, 0, LCD_DATA_MAX_SIZE);
+      Unpkg_Flag = FALSE;
     }
 
     if (LCD_tx_Func != 0) {

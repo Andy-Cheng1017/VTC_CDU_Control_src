@@ -261,7 +261,7 @@ void UART8_IRQHandler(void) {
   } else if (usart_interrupt_flag_get(RS485_LCD.UART, USART_TDBE_FLAG) != RESET) {
     usart_flag_clear(RS485_LCD.UART, USART_TDBE_FLAG);
     usart_interrupt_enable(RS485_LCD.UART, USART_TDBE_INT, FALSE);
-    RS485_LCD.TxIdex--;
+    RS485_LCD.tx_idex--;
     RS485_Tx_Data_ISR(&RS485_LCD);
   }
 }

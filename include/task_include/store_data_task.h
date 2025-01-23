@@ -5,34 +5,35 @@
 #include "task.h"
 #include "sensor_task.h"
 #include "pump_task.h"
+#include "side_card_task.h"
 
 extern TaskHandle_t store_data_handler;
 
 typedef struct {
-    sens_stat_t sens_stat;
-    sens_ctrl_t sensor_control;
+    SensStat_t SensStat;
+    SensCtrl_t SensCtrl;
     pump_status_type pump_status;
     pump_control_type pump_control;
-    fans_status_type fans_status;
-    fans_control_type fans_control;
+    FansCardStat_t FansCardStat;
+    FansCardCtrl_t FansCardCtrl;
 } data_sec_t;
 
 typedef struct {
-    sens_stat_t sens_stat;
-    sens_ctrl_t sensor_control;
+    SensStat_t SensStat;
+    SensCtrl_t SensCtrl;
     pump_status_type pump_status;
     pump_control_type pump_control;
-    fans_status_type fans_status;
-    fans_control_type fans_control;
+    FansCardStat_t FansCardStat;
+    FansCardCtrl_t FansCardCtrl;
 } data_ten_t;
 
 typedef struct {
-    sens_stat_t sens_stat;
-    sens_ctrl_t sensor_control;
+    SensStat_t SensStat;
+    SensCtrl_t SensCtrl;
     pump_status_type pump_status;
     pump_control_type pump_control;
-    fans_status_type fans_status;
-    fans_control_type fans_control;
+    FansCardStat_t FansCardStat;
+    FansCardCtrl_t FansCardCtrl;
 } data_min_t;
 
 void store_data_task_function(void* pvParameters);

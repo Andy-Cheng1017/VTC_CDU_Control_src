@@ -9,10 +9,10 @@
 
 #define UPPER_DATA_MAX_SIZE 32
 
-extern TaskHandle_t UPPER_handler;
+extern TaskHandle_t upper_handler;
 
-extern rs485_t RS485_UPPER;
+extern Rs485_t RS485_UPPER;
 
-void UPPER_task_function(void* pvParameters);
+void upper_task_function(void* pvParameters);
 
 #endif  // UPPER_TASK_H

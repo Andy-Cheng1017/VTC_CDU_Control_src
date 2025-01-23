@@ -11,7 +11,7 @@ extern TaskHandle_t LCD_handler;
 
 #define LCD_DATA_MAX_SIZE 32
 
-extern rs485_t RS485_LCD;
+extern Rs485_t RS485_LCD;
 
 void LCD_task_function(void* pvParameters);
 

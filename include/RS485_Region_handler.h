@@ -9,10 +9,11 @@
 
 #define MY_485_ADDR 0x21
 
-uint32_t SysStat_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
-uint32_t DataRead_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
-uint32_t DevCtrl_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
-uint32_t EthConfig_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
-uint32_t SensCard_Handler(rs485_func_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t SysStat_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t EthConfig_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t SensCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len);
+uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len);
 
 #endif  // __RS485_REGION_H_

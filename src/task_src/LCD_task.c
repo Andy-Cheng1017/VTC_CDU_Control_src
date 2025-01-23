@@ -8,46 +8,45 @@
 
 TaskHandle_t LCD_handler;
 
-rs485_func_t LCD_rx_Func = 0;
+RsFunc_t LCD_rx_Func = 0;
 uint8_t LCD_rx_Data[LCD_DATA_MAX_SIZE] = {0};
 uint8_t LCD_rx_Data_len = 0;
 
-rs485_func_t LCD_tx_Func = 0;
+RsFunc_t LCD_tx_Func = 0;
 uint8_t LCD_tx_Data[LCD_DATA_MAX_SIZE] = {0};
 uint8_t LCD_tx_Data_len = 0;
 
-bool Unpkg_Flag = FALSE;
-bool Decode_Flag = FALSE;
+static bool Unpkg_Flag = FALSE;
 
-rs485_t RS485_LCD = {
+Rs485_t RS485_LCD = {
     .UART = UART8,
     .Mode = SLAVE,
     .BaudRate = BR_115200,
     .DataBit = USART_DATA_8BITS,
     .StopBit = USART_STOP_1_BIT,
-    .IpAddr = MY_485_ADDR,
+    .ip_addr = MY_485_ADDR,
 };
 
 void LCD_task_function(void* pvParameters) {
-  RS485_init(&RS485_LCD);
+  RsInit(&RS485_LCD);
   log_i("LCD Task Running");
-  RS485_LCD.RegHdlerStat = 0x00;
-  RS485_LCD.RegHdlerEnd = 0x2F;
-  RS485_RegisterHandler(&RS485_LCD, SysStat_Handler);
-  RS485_LCD.RegHdlerStat = 0x30;
-  RS485_LCD.RegHdlerEnd = 0x5F;
-  RS485_RegisterHandler(&RS485_LCD, DataRead_Handler);
-  RS485_LCD.RegHdlerStat = 0x60;
-  RS485_LCD.RegHdlerEnd = 0x7F;
-  RS485_RegisterHandler(&RS485_LCD, DevCtrl_Handler);
-  RS485_LCD.RegHdlerStat = 0x80;
-  RS485_LCD.RegHdlerEnd = 0x8F;
-  RS485_RegisterHandler(&RS485_LCD, EthConfig_Handler);
+  RS485_LCD.reg_hdle_stat = 0x00;
+  RS485_LCD.reg_hdle_end = 0x2F;
+  RsRegHdle(&RS485_LCD, SysStat_Handler);
+  RS485_LCD.reg_hdle_stat = 0x30;
+  RS485_LCD.reg_hdle_end = 0x5F;
+  RsRegHdle(&RS485_LCD, DataRead_Handler);
+  RS485_LCD.reg_hdle_stat = 0x60;
+  RS485_LCD.reg_hdle_end = 0x7F;
+  RsRegHdle(&RS485_LCD, DevCtrl_Handler);
+  RS485_LCD.reg_hdle_stat = 0x80;
+  RS485_LCD.reg_hdle_end = 0x8F;
+  RsRegHdle(&RS485_LCD, EthConfig_Handler);
 
   while (1) {
-    if (RS485_LCD.RxPkgCpltFlag == TRUE) {
+    if (RS485_LCD.rx_pkg_cplt_f == TRUE) {
       memset(LCD_rx_Data, 0, LCD_DATA_MAX_SIZE);
-      rs485_error_t ret = RS485_Unpkg(&RS485_LCD, &LCD_rx_Func, LCD_rx_Data, &LCD_rx_Data_len);
+      RsError_t ret = RsUnpkg(&RS485_LCD, &LCD_rx_Func, LCD_rx_Data, &LCD_rx_Data_len);
 
       if (ret == UNPKG_FINISH) {
         log_i("485 Unpkg Finish");
@@ -70,7 +69,7 @@ void LCD_task_function(void* pvParameters) {
 
     if (LCD_rx_Func != 0 && Unpkg_Flag) {
       memset(LCD_tx_Data, 0, LCD_DATA_MAX_SIZE);
-      rs485_error_t ret = RS485_Decode(&RS485_LCD, LCD_rx_Func, LCD_rx_Data, LCD_rx_Data_len, &LCD_tx_Func, LCD_tx_Data, &LCD_tx_Data_len);
+      RsError_t ret = RsDecd(&RS485_LCD, LCD_rx_Func, LCD_rx_Data, LCD_rx_Data_len, &LCD_tx_Func, LCD_tx_Data, &LCD_tx_Data_len);
       log_i("LCD tx Func: %d", LCD_tx_Func);
       elog_hexdump("LCD_tx_Data", 16, LCD_tx_Data, sizeof(LCD_tx_Data));
       if (!ret) {

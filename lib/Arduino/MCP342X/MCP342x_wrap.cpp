@@ -31,7 +31,7 @@ MCP342x_error_t convertError(MCP342x::error_t error) {
 MCP342x_error_t MCP342x_convertAndRead(MCP342x_channel_t channel, long *result) {
   const MCP342x::Mode mode = MCP342x::oneShot;
   const MCP342x::Resolution resolution = MCP342x::resolution18;
-  const MCP342x::Gain gain = MCP342x::gain1;
+  const MCP342x::Gain gain = MCP342x::gain8;
   const unsigned long timeout = 1000;
 
   MCP342x::Config status;

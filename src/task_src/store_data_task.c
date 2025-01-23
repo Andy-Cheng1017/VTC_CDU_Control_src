@@ -28,24 +28,24 @@ int min_idx = 0;
 void store_data_task_function(void *pvParameters) {
   while (1) {
     taskENTER_CRITICAL();
-    data_sec[sec_idx].sens_stat = sens_stat;
-    data_sec[sec_idx].sensor_control = sensor_control;
+    data_sec[sec_idx].SensStat = SensStat;
+    data_sec[sec_idx].SensCtrl = SensCtrl;
     data_sec[sec_idx].pump_status = pump_status;
     data_sec[sec_idx].pump_control = pump_control;
-    data_sec[sec_idx].fans_status = fans_status;
-    data_sec[sec_idx].fans_control = fans_control;
+    data_sec[sec_idx].FansCardStat = FansCardStat;
+    data_sec[sec_idx].FansCardCtrl = FansCardCtrl;
     taskEXIT_CRITICAL();
 
     if (++sec_idx > 9) sec_idx = 0;
 
     // 滿10秒後計算平均
     if (sec_idx >= 9) {
-      //   sens_stat_t avg_sens_stat = {0};
-      //   sens_ctrl_t avg_sensor_control = {0};
+      //   SensStat_t avg_sens_stat = {0};
+      //   SensCtrl_t avg_sensor_control = {0};
       //   pump_status_type avg_pump_status = {0};
       //   pump_control_type avg_pump_control = {0};
-      //   fans_status_type avg_fans_status = {0};
-      //   fans_control_type avg_fans_control = {0};
+      //   FansCardStat_t avg_fans_status = {0};
+      //   FansCardCtrl_t avg_fans_control = {0};
 
       //   // 計算每秒數據的平均
       //   for (int i = 0; i < 10; i++) {
@@ -70,36 +70,36 @@ void store_data_task_function(void *pvParameters) {
       //   avg.power_input /= 10;
 
       for (int i = 0; i < 10; i++) {
-        data_sec_avg.sens_stat.PT100_1_temp += data_sec[i].sens_stat.PT100_1_temp;
-        data_sec_avg.sens_stat.PT100_2_temp += data_sec[i].sens_stat.PT100_2_temp;
-        data_sec_avg.sens_stat.PT100_3_temp += data_sec[i].sens_stat.PT100_3_temp;
-        data_sec_avg.sens_stat.PT100_4_temp += data_sec[i].sens_stat.PT100_4_temp;
-        // data_sec_avg.sens_stat.NTC_1_temp += data_sec[i].sens_stat.NTC_1_temp;
-        // data_sec_avg.sens_stat.NTC_2_temp += data_sec[i].sens_stat.NTC_2_temp;
-        // data_sec_avg.sens_stat.NTC_3_temp += data_sec[i].sens_stat.NTC_3_temp;
-        // data_sec_avg.sens_stat.NTC_4_temp += data_sec[i].sens_stat.NTC_4_temp;
-        // data_sec_avg.sens_stat.Presure_1_val += data_sec[i].sens_stat.Presure_1_val;
-        // data_sec_avg.sens_stat.Presure_2_val += data_sec[i].sens_stat.Presure_2_val;
-        // data_sec_avg.sens_stat.Presure_3_val += data_sec[i].sens_stat.Presure_3_val;
-        // data_sec_avg.sens_stat.Presure_4_val += data_sec[i].sens_stat.Presure_4_val;
-        // data_sec_avg.sens_stat.Flow_val += data_sec[i].sens_stat.Flow_val;
-        // data_sec_avg.sens_stat.voltage_input += data_sec[i].sens_stat.voltage_input;
-        // data_sec_avg.sens_stat.current_input += data_sec[i].sens_stat.current_input;
-        // data_sec_avg.sens_stat.power_input += data_sec[i].sens_stat.power_input;
-        // data_sec_avg.sensor_control.Porpo_1_PWM += data_sec[i].sensor_control.Porpo_1_PWM;
-        // data_sec_avg.sensor_control.Porpo_2_PWM += data_sec[i].sensor_control.Porpo_2_PWM;
+        data_sec_avg.SensStat.pt100_1_temp_m += data_sec[i].SensStat.pt100_1_temp_m;
+        data_sec_avg.SensStat.pt100_2_temp_m += data_sec[i].SensStat.pt100_2_temp_m;
+        data_sec_avg.SensStat.pt100_3_temp_m += data_sec[i].SensStat.pt100_3_temp_m;
+        data_sec_avg.SensStat.pt100_4_temp_m += data_sec[i].SensStat.pt100_4_temp_m;
+        // data_sec_avg.SensStat.NTC_1_temp += data_sec[i].SensStat.NTC_1_temp;
+        // data_sec_avg.SensStat.NTC_2_temp += data_sec[i].SensStat.NTC_2_temp;
+        // data_sec_avg.SensStat.NTC_3_temp += data_sec[i].SensStat.NTC_3_temp;
+        // data_sec_avg.SensStat.NTC_4_temp += data_sec[i].SensStat.NTC_4_temp;
+        // data_sec_avg.SensStat.Presure_1_val += data_sec[i].SensStat.Presure_1_val;
+        // data_sec_avg.SensStat.Presure_2_val += data_sec[i].SensStat.Presure_2_val;
+        // data_sec_avg.SensStat.Presure_3_val += data_sec[i].SensStat.Presure_3_val;
+        // data_sec_avg.SensStat.Presure_4_val += data_sec[i].SensStat.Presure_4_val;
+        // data_sec_avg.SensStat.Flow_val += data_sec[i].SensStat.Flow_val;
+        // data_sec_avg.SensStat.voltage_input += data_sec[i].SensStat.voltage_input;
+        // data_sec_avg.SensStat.current_input += data_sec[i].SensStat.current_input;
+        // data_sec_avg.SensStat.power_input += data_sec[i].SensStat.power_input;
+        // data_sec_avg.SensCtrl.porpo_1_pwm += data_sec[i].SensCtrl.porpo_1_pwm;
+        // data_sec_avg.SensCtrl.porpo_2_pwm += data_sec[i].SensCtrl.porpo_2_pwm;
         // data_sec_avg.pump_status.pump_1_FB += data_sec[i].pump_status.pump_1_FB;
         // data_sec_avg.pump_status.pump_2_FB += data_sec[i].pump_status.pump_2_FB;
         // data_sec_avg.pump_control.pump_1_rpm += data_sec[i].pump_control.pump_1_rpm;
         // data_sec_avg.pump_control.pump_2_rpm += data_sec[i].pump_control.pump_2_rpm;
-        // data_sec_avg.fans_status.fan1_FB += data_sec[i].fans_status.fan1_FB;
-        // data_sec_avg.fans_status.fan2_FB += data_sec[i].fans_status.fan2_FB;
-        // data_sec_avg.fans_status.fan3_FB += data_sec[i].fans_status.fan3_FB;
+        // data_sec_avg.FansCardStat.fan1_FB += data_sec[i].FansCardStat.fan1_FB;
+        // data_sec_avg.FansCardStat.fan2_FB += data_sec[i].FansCardStat.fan2_FB;
+        // data_sec_avg.FansCardStat.fan3_FB += data_sec[i].FansCardStat.fan3_FB;
       }
 
       if (++ten_idx > 6) ten_idx = 0;
 
-      //   calculate_average(data_sec.sens_stat, &data_10sce.sens_stat[ten_idx], sizeof(sens_stat_t), sizeof(int16_t), ten_idx, 10);
+      //   calculate_average(data_sec.SensStat, &data_10sce.SensStat[ten_idx], sizeof(SensStat_t), sizeof(int16_t), ten_idx, 10);
 
       // 每60秒計算一次分鐘數據
     //   if (ten_idx >= 6) {

@@ -1,123 +1,110 @@
 #include <stdio.h>
 #include <string.h>
-#include "FreeRTOS.h"
-#include "task.h"
 #include "sensor_task.h"
 
 #define LOG_TAG "Sensor_Task"
 #include "elog.h"
 
 TaskHandle_t sensor_handler;
-TaskHandle_t sensor_card_handler;
-TaskHandle_t fans_handler;
 
-rs485_func_t sens_rx_Func = 0;
-uint8_t sens_rx_Data[SENS_DATA_MAX_SIZE] = {0};
-uint8_t sens_rx_Data_len = 0;
-
-rs485_func_t sens_tx_Func = 0;
-uint8_t sens_tx_Data[SENS_DATA_MAX_SIZE] = {0};
-uint8_t sens_tx_Data_len = 0;
-
-rs485_t RS485_sens = {
-    .UART = UART4,
-    .Mode = MASTER,
-    .BaudRate = BR_115200,
-    .DataBit = USART_DATA_8BITS,
-    .StopBit = USART_STOP_1_BIT,
+SensStat_t SensStat = {0};
+SensCtrl_t SensCtrl = {
+    .porpo_1_pwm = 0,
+    .porpo_2_pwm = 0,
+    .pt100_1_raw_l_val = 26433,
+    .pt100_2_raw_l_val = 28333,
+    .pt100_3_raw_l_val = 26306,
+    .pt100_4_raw_l_val = 25476,
+    .pt100_1_raw_h_val = 92256,
+    .pt100_2_raw_h_val = 94654,
+    .pt100_3_raw_h_val = 92379,
+    .pt100_4_raw_h_val = 90957,
+    .pt100_ideal_l_val = 25684,
+    .pt100_ideal_h_val = 90770,
 };
 
-uint8_t Data_or_Num[2] = {SENS_CARD_TOTLA_TEG_NUM};
-
-sens_stat_t sens_stat = {0};
-sens_ctrl_t sensor_control = {0};
-
-sens_card_stat_t sens_card_stat = {0};
-
-fans_control_type fans_control = {0};
-fans_status_type fans_status = {0};
+int32_t raw_val = 0;
+CalParam_t PtCal_1 = {
+    .offset = 0.0f,
+    .slope = 1.0f,
+    .raw_l = &SensCtrl.pt100_1_raw_l_val,
+    .raw_h = &SensCtrl.pt100_1_raw_h_val,
+    .ideal_l = &SensCtrl.pt100_ideal_l_val,
+    .ideal_h = &SensCtrl.pt100_ideal_h_val,
+};
+CalParam_t PtCal_2 = {
+    .offset = 0.0f,
+    .slope = 1.0f,
+    .raw_l = &SensCtrl.pt100_2_raw_l_val,
+    .raw_h = &SensCtrl.pt100_2_raw_h_val,
+    .ideal_l = &SensCtrl.pt100_ideal_l_val,
+    .ideal_h = &SensCtrl.pt100_ideal_h_val,
+};
+CalParam_t PtCal_3 = {
+    .offset = 0.0f,
+    .slope = 1.0f,
+    .raw_l = &SensCtrl.pt100_3_raw_l_val,
+    .raw_h = &SensCtrl.pt100_3_raw_h_val,
+    .ideal_l = &SensCtrl.pt100_ideal_l_val,
+    .ideal_h = &SensCtrl.pt100_ideal_h_val,
+};
+CalParam_t PtCal_4 = {
+    .offset = 0.0f,
+    .slope = 1.0f,
+    .raw_l = &SensCtrl.pt100_4_raw_l_val,
+    .raw_h = &SensCtrl.pt100_4_raw_h_val,
+    .ideal_l = &SensCtrl.pt100_ideal_l_val,
+    .ideal_h = &SensCtrl.pt100_ideal_h_val,
+};
 
 void sensor_task_function(void* pvParameters) {
-  RS485_init(&RS485_sens);
-  RS485_sens.RegHdlerStat = 0x0010;
-  RS485_sens.RegHdlerEnd = 0x001F;
-  RS485_RegisterHandler(&RS485_sens, SensCard_Handler);
+  if (Cal_CalcParams(&PtCal_1)) log_e("PtCal_1 CalcParams failed");
+  if (Cal_CalcParams(&PtCal_2)) log_e("PtCal_2 CalcParams failed");
+  if (Cal_CalcParams(&PtCal_3)) log_e("PtCal_3 CalcParams failed");
+  if (Cal_CalcParams(&PtCal_4)) log_e("PtCal_4 CalcParams failed");
 
-  xTaskCreate((TaskFunction_t)Sensor_Card_Task, "Sensor_Card_Task", 256, NULL, 2, (TaskHandle_t*)&sensor_handler);
-  vTaskDelay(100);
-  xTaskCreate((TaskFunction_t)Fans_Card_Task, (const char*)"Fans_task", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
-              (TaskHandle_t*)&fans_handler);
-  vTaskDelay(100);
+  MCP342x_generalCallReset();
+  vTaskDelay(5);
+
   while (1) {
-    if (RS485_sens.RxPkgCpltFlag == TRUE) {
-      memset(sens_rx_Data, 0, SENS_DATA_MAX_SIZE);
-      rs485_error_t ret = RS485_Unpkg(&RS485_sens, &sens_rx_Func, sens_rx_Data, &sens_rx_Data_len);
-      if (!ret) {
-        log_i("sens Unpkg Success");
-        log_i("sens Func: %d", sens_rx_Func);
-        log_i("sens Data: %d", sens_rx_Data);
-      } else if (ret == UNPKG_OVER_PACKGE_SIZE)
-        log_e("485 Over Package Size");
-      else if (ret == CRC_ERROR)
-        log_e("485 CRC Error");
-      else if (ret == OTHER_ADDR)
-        log_i("485 Not My Address");
+    vTaskDelay(2000);
+    long result;
+
+    err = MCP342x_convertAndRead(MCP342x_CHANNEL_1, &result);
+    if (err == errorNone) {
+      raw_val = PT100_CalcTemp(3, result);
+      SensStat.pt100_1_temp_m = Cal_Apply(&PtCal_1, raw_val);
+      log_i("pt100_1_temp_m: %d", SensStat.pt100_1_temp_m);
+    } else {
+      log_e("MCP342x_convertAndRead error: %d", err);
     }
 
-    if (sens_rx_Func != 0) {
-      rs485_error_t ret = RS485_Decode(&RS485_sens, sens_rx_Func, sens_rx_Data, sens_rx_Data_len, NULL, NULL, NULL);
-      if (!ret) {
-        log_i("sens Decode Success");
-        log_i("sens Func: %d", sens_tx_Func);
-        log_i("sens Data: %d", sens_tx_Data);
-      } else if (ret == ILLIGAL_FUNC)
-        log_e("485 Illegal Function");
-      else if (ret == ILLIGAL_DATA_ADDR)
-        log_e("485 Illegal Data Address");
-      else if (ret == ILLIGAL_DATA_VALUE)
-        log_e("485 Illegal Data Value");
-      else if (ret == SLAVE_DEVICE_FAILURE)
-        log_e("485 Slave Device Failure");
-      sens_rx_Func = 0;
-      sens_rx_Data_len = 0;
-      memset(sens_rx_Data, 0, SENS_DATA_MAX_SIZE);
+    err = MCP342x_convertAndRead(MCP342x_CHANNEL_2, &result);
+    if (err == errorNone) {
+      raw_val = PT100_CalcTemp(3, result);
+      SensStat.pt100_2_temp_m = Cal_Apply(&PtCal_2, raw_val);
+      log_i("pt100_2_temp_m: %d", SensStat.pt100_2_temp_m);
+    } else {
+      log_e("MCP342x_convertAndRead error: %d", err);
     }
-    vTaskDelay(10);
-  }
-  vTaskDelete(NULL);
-}
 
-void Sensor_Card_Task(void* pvParameters) {
-  while (1) {
-    sens_tx_Func = READ_HOLDING_REGISTERS;
-    RS485_sens.IpAddr = SENSOR_CARD_ADDR;
-    rs485_error_t ret = RS485_Encode(&RS485_sens, sens_tx_Func, SENS_CARD_REG_START, Data_or_Num, NULL, sens_tx_Data, &sens_tx_Data_len);
-    if (!ret) {
-      log_i("Sensor Card Encode Success");
-      RS485_Pkg(&RS485_sens, SENSOR_CARD_ADDR, sens_tx_Func, sens_tx_Data, sens_tx_Data_len);
-    } else if (ret == ENCODE_FOR_NUMBER)
-      log_e("Sensor Card Encode ERRO For Number");
-    else if (ret == ENCODE_FOR_SINGLE_DATA)
-      log_e("Sensor Card Encode ERRO For Single Data");
+    err = MCP342x_convertAndRead(MCP342x_CHANNEL_3, &result);
+    if (err == errorNone) {
+      raw_val = PT100_CalcTemp(3, result);
+      SensStat.pt100_3_temp_m = Cal_Apply(&PtCal_3, raw_val);
+      log_i("pt100_3_temp_m: %d", SensStat.pt100_3_temp_m);
+    } else {
+      log_e("MCP342x_convertAndRead error: %d", err);
+    }
 
-    vTaskDelay(1000);
-  }
-  vTaskDelete(NULL);
-}
-
-void Fans_Card_Task(void* pvParameters) {
-  while (1) {
-    sens_tx_Func = READ_HOLDING_REGISTERS;
-    RS485_sens.IpAddr = FANS_CARD_ADDR;
-    rs485_error_t ret = RS485_Encode(&RS485_sens, sens_tx_Func, SENS_CARD_REG_START, Data_or_Num, NULL, sens_tx_Data, &sens_tx_Data_len);
-    if (!ret) {
-      log_i("Fans Card Encode Success");
-      RS485_Pkg(&RS485_sens, FANS_CARD_ADDR, sens_tx_Func, sens_tx_Data, sens_tx_Data_len);
-    } else if (ret == ENCODE_FOR_NUMBER)
-      log_e("Fans Card Encode ERRO For Number");
-    else if (ret == ENCODE_FOR_SINGLE_DATA)
-      log_e("Fans Card Encode ERRO For Single Data");
-    vTaskDelay(1000);
+    err = MCP342x_convertAndRead(MCP342x_CHANNEL_4, &result);
+    if (err == errorNone) {
+      raw_val = PT100_CalcTemp(3, result);
+      SensStat.pt100_4_temp_m = Cal_Apply(&PtCal_4, raw_val);
+      log_i("pt100_4_temp_m: %d", SensStat.pt100_4_temp_m);
+    } else {
+      log_e("MCP342x_convertAndRead error: %d", err);
+    }
   }
   vTaskDelete(NULL);
 }

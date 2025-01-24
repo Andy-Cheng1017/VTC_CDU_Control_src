@@ -69,7 +69,7 @@ void SideCardTaskFunc(void* pvParameters) {
         } else if (ret == CRC_ERROR) {
           log_e("485 CRC Error");
           Unpkg_Flag = FALSE;
-        } else if (ret == OTHER_ADDR)
+        } else if (ret == OTHER_SLAVE_ADDR)
           log_i("485 Not My Address");
       }
     }

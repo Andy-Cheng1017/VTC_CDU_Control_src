@@ -34,8 +34,9 @@ typedef enum {
 typedef enum {
   RS485_OK = 0,
   UNPKG_FINISH,
-  OTHER_ADDR,
+  OTHER_SLAVE_ADDR,
   UNPKG_OVER_PACKGE_SIZE,
+  UNPKG_TOO_SHORT,
   CRC_ERROR,
   ILLIGAL_FUNC,
   ILLIGAL_DATA_ADDR,
@@ -61,6 +62,7 @@ typedef struct {
   uint8_t rx_data[MAX_DATA_BUFFER_SIZE];
   uint8_t rx_idex;
   bool rx_pkg_cplt_f;
+  bool rx_pkg_start_f;
   uint8_t rx_pkg[MAX_PKG_SIZE];
   uint8_t decd_idex;
 
@@ -85,7 +87,7 @@ void RS485_Re_Config(Rs485_t *rs485);
 void RS485_Rx_Cplt_ISR(Rs485_t *rs485);
 
 void RS485_Tx_Data_ISR(Rs485_t *rs485);
-void RS485_Rx_Data_ISR(Rs485_t *rs485);
+RsError_t RS485_Rx_Data_ISR(Rs485_t *rs485);
 
 RsError_t RsUnpkg(Rs485_t *rs485, RsFunc_t *upk_func, uint8_t *upk_data, uint8_t *upk_data_len);
 

@@ -6,6 +6,7 @@
 #include "RS485.h"
 #include "sensor_task.h"
 #include "pump_task.h"
+#include "pt100_task.h"
 
 #define MY_485_ADDR 0x21
 

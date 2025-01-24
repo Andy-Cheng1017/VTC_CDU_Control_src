@@ -7,6 +7,7 @@
 #include "store_data_task.h"
 #include "sensor_task.h"
 #include "pump_task.h"
+#include "pt100.h"
 
 #define LOG_TAG "Store_Data_Task"
 #include "elog.h"
@@ -28,7 +29,7 @@ int min_idx = 0;
 void store_data_task_function(void *pvParameters) {
   while (1) {
     taskENTER_CRITICAL();
-    data_sec[sec_idx].SensStat = SensStat;
+    data_sec[sec_idx].Pt100Stat = Pt100Stat;
     data_sec[sec_idx].SensCtrl = SensCtrl;
     data_sec[sec_idx].pump_status = pump_status;
     data_sec[sec_idx].pump_control = pump_control;
@@ -40,7 +41,7 @@ void store_data_task_function(void *pvParameters) {
 
     // 滿10秒後計算平均
     if (sec_idx >= 9) {
-      //   SensStat_t avg_sens_stat = {0};
+      //   Pt100Stat_t avg_sens_stat = {0};
       //   SensCtrl_t avg_sensor_control = {0};
       //   pump_status_type avg_pump_status = {0};
       //   pump_control_type avg_pump_control = {0};
@@ -70,22 +71,22 @@ void store_data_task_function(void *pvParameters) {
       //   avg.power_input /= 10;
 
       for (int i = 0; i < 10; i++) {
-        data_sec_avg.SensStat.pt100_1_temp_m += data_sec[i].SensStat.pt100_1_temp_m;
-        data_sec_avg.SensStat.pt100_2_temp_m += data_sec[i].SensStat.pt100_2_temp_m;
-        data_sec_avg.SensStat.pt100_3_temp_m += data_sec[i].SensStat.pt100_3_temp_m;
-        data_sec_avg.SensStat.pt100_4_temp_m += data_sec[i].SensStat.pt100_4_temp_m;
-        // data_sec_avg.SensStat.NTC_1_temp += data_sec[i].SensStat.NTC_1_temp;
-        // data_sec_avg.SensStat.NTC_2_temp += data_sec[i].SensStat.NTC_2_temp;
-        // data_sec_avg.SensStat.NTC_3_temp += data_sec[i].SensStat.NTC_3_temp;
-        // data_sec_avg.SensStat.NTC_4_temp += data_sec[i].SensStat.NTC_4_temp;
-        // data_sec_avg.SensStat.Presure_1_val += data_sec[i].SensStat.Presure_1_val;
-        // data_sec_avg.SensStat.Presure_2_val += data_sec[i].SensStat.Presure_2_val;
-        // data_sec_avg.SensStat.Presure_3_val += data_sec[i].SensStat.Presure_3_val;
-        // data_sec_avg.SensStat.Presure_4_val += data_sec[i].SensStat.Presure_4_val;
-        // data_sec_avg.SensStat.Flow_val += data_sec[i].SensStat.Flow_val;
-        // data_sec_avg.SensStat.voltage_input += data_sec[i].SensStat.voltage_input;
-        // data_sec_avg.SensStat.current_input += data_sec[i].SensStat.current_input;
-        // data_sec_avg.SensStat.power_input += data_sec[i].SensStat.power_input;
+        data_sec_avg.Pt100Stat.pt100_1_temp_m += data_sec[i].Pt100Stat.pt100_1_temp_m;
+        data_sec_avg.Pt100Stat.pt100_2_temp_m += data_sec[i].Pt100Stat.pt100_2_temp_m;
+        data_sec_avg.Pt100Stat.pt100_3_temp_m += data_sec[i].Pt100Stat.pt100_3_temp_m;
+        data_sec_avg.Pt100Stat.pt100_4_temp_m += data_sec[i].Pt100Stat.pt100_4_temp_m;
+        // data_sec_avg.Pt100Stat.NTC_1_temp += data_sec[i].Pt100Stat.NTC_1_temp;
+        // data_sec_avg.Pt100Stat.NTC_2_temp += data_sec[i].Pt100Stat.NTC_2_temp;
+        // data_sec_avg.Pt100Stat.NTC_3_temp += data_sec[i].Pt100Stat.NTC_3_temp;
+        // data_sec_avg.Pt100Stat.NTC_4_temp += data_sec[i].Pt100Stat.NTC_4_temp;
+        // data_sec_avg.Pt100Stat.Presure_1_val += data_sec[i].Pt100Stat.Presure_1_val;
+        // data_sec_avg.Pt100Stat.Presure_2_val += data_sec[i].Pt100Stat.Presure_2_val;
+        // data_sec_avg.Pt100Stat.Presure_3_val += data_sec[i].Pt100Stat.Presure_3_val;
+        // data_sec_avg.Pt100Stat.Presure_4_val += data_sec[i].Pt100Stat.Presure_4_val;
+        // data_sec_avg.Pt100Stat.Flow_val += data_sec[i].Pt100Stat.Flow_val;
+        // data_sec_avg.Pt100Stat.voltage_input += data_sec[i].Pt100Stat.voltage_input;
+        // data_sec_avg.Pt100Stat.current_input += data_sec[i].Pt100Stat.current_input;
+        // data_sec_avg.Pt100Stat.power_input += data_sec[i].Pt100Stat.power_input;
         // data_sec_avg.SensCtrl.porpo_1_pwm += data_sec[i].SensCtrl.porpo_1_pwm;
         // data_sec_avg.SensCtrl.porpo_2_pwm += data_sec[i].SensCtrl.porpo_2_pwm;
         // data_sec_avg.pump_status.pump_1_FB += data_sec[i].pump_status.pump_1_FB;
@@ -99,7 +100,7 @@ void store_data_task_function(void *pvParameters) {
 
       if (++ten_idx > 6) ten_idx = 0;
 
-      //   calculate_average(data_sec.SensStat, &data_10sce.SensStat[ten_idx], sizeof(SensStat_t), sizeof(int16_t), ten_idx, 10);
+      //   calculate_average(data_sec.Pt100Stat, &data_10sce.Pt100Stat[ten_idx], sizeof(Pt100Stat_t), sizeof(int16_t), ten_idx, 10);
 
       // 每60秒計算一次分鐘數據
     //   if (ten_idx >= 6) {

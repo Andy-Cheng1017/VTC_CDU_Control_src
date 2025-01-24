@@ -53,13 +53,13 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
   if (func == READ_HOLDING_REGISTERS) {
     switch (addr) {
       case 0x0030:
-        return SensStat.pt100_1_temp_m / 10;
+        return Pt100Stat.pt100_1_temp_m / 10;
       case 0x0031:
-        return SensStat.pt100_2_temp_m / 10;
+        return Pt100Stat.pt100_2_temp_m / 10;
       case 0x0032:
-        return SensStat.pt100_3_temp_m / 10;
+        return Pt100Stat.pt100_3_temp_m / 10;
       case 0x0033:
-        return SensStat.pt100_4_temp_m / 10;
+        return Pt100Stat.pt100_4_temp_m / 10;
       case 0x0034:
         retval = SensStat.NTC_1_temp;
         return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;

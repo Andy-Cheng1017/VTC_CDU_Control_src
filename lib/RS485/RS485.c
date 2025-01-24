@@ -88,6 +88,7 @@ void RsInit(Rs485_t *rs485) {
   rs485->rx_data[0] = 0x7E;
   rs485->rx_idex = 0;
   rs485->rx_pkg_cplt_f = FALSE;
+  rs485->rx_pkg_start_f = TRUE;
   rs485->decd_idex = 0;
 
   memset(rs485->tx_data, 0, MAX_DATA_BUFFER_SIZE);
@@ -118,8 +119,12 @@ void RS485_Tx_Data_ISR(Rs485_t *rs485) {
   }
 }
 
-void RS485_Rx_Data_ISR(Rs485_t *rs485) {
+RsError_t RS485_Rx_Data_ISR(Rs485_t *rs485) {
   uint16_t data = usart_data_receive(rs485->UART);
+
+  if (rs485->Mode == SLAVE && rs485->rx_pkg_start_f && data != rs485->ip_addr) return OTHER_SLAVE_ADDR;
+  rs485->rx_pkg_start_f = FALSE;
+
   if (data == 0x7E || data == 0x7D) {
     rs485->rx_data[rs485->rx_idex = ((rs485->rx_idex + 1) & MAX_BUF_MASK)] = 0x7D;
     rs485->rx_data[rs485->rx_idex = ((rs485->rx_idex + 1) & MAX_BUF_MASK)] = data ^ 0x20;
@@ -127,11 +132,13 @@ void RS485_Rx_Data_ISR(Rs485_t *rs485) {
   } else {
     rs485->rx_data[rs485->rx_idex = ((rs485->rx_idex + 1) & MAX_BUF_MASK)] = data;
   }
+  return RS485_OK;
 }
 
 void RS485_Rx_Cplt_ISR(Rs485_t *rs485) {
   rs485->rx_data[rs485->rx_idex = ((rs485->rx_idex + 1) & MAX_BUF_MASK)] = 0X7E;
   rs485->rx_pkg_cplt_f = TRUE;
+  rs485->rx_pkg_start_f = TRUE;
 }
 
 RsError_t RsUnpkg(Rs485_t *rs485, RsFunc_t *upk_func, uint8_t *upk_data, uint8_t *upk_data_len) {
@@ -153,13 +160,17 @@ RsError_t RsUnpkg(Rs485_t *rs485, RsFunc_t *upk_func, uint8_t *upk_data, uint8_t
     return UNPKG_FINISH;
   }
 
+  if (i < 6) return UNPKG_TOO_SHORT;
+
+  if (rs485->Mode == SLAVE) {
+    if (rs485->rx_pkg[0] != rs485->ip_addr) return OTHER_SLAVE_ADDR;
+  }
+
   *upk_func = rs485->rx_pkg[1];
   for (int j = 0; j < i - 4; j++) {
     upk_data[j] = rs485->rx_pkg[j + 2];
   }
   *upk_data_len = i - 4;
-
-  if (rs485->rx_pkg[0] != rs485->ip_addr) return OTHER_ADDR;
 
   volatile uint32_t crc_value = crc8_block_calculate((uint8_t *)rs485->rx_pkg, i - 2);
   uint16_t calculatedCRC = (uint16_t)(crc_value & 0xFFFF);
@@ -172,7 +183,7 @@ RsError_t RsUnpkg(Rs485_t *rs485, RsFunc_t *upk_func, uint8_t *upk_data, uint8_t
 }
 
 RsError_t RS485_Chk_Reg_AddrVal(bool handler_found, uint32_t Data_return, RsFunc_t rx_Func, RsFunc_t *tx_Func, uint8_t *tx_Data,
-                                    uint8_t *tx_Data_len) {
+                                uint8_t *tx_Data_len) {
   if ((Data_return >> 16) == ILLIGAL_FUNC) {
     *tx_Func = rx_Func + 0x80;
     tx_Data[0] = 0x01;
@@ -197,8 +208,7 @@ RsError_t RS485_Chk_Reg_AddrVal(bool handler_found, uint32_t Data_return, RsFunc
   return RS485_OK;
 }
 
-RsError_t RsDecd(Rs485_t *rs485, RsFunc_t rx_Func, uint8_t *rx_Data, uint8_t rx_Data_len, RsFunc_t *tx_Func, uint8_t *tx_Data,
-                           uint8_t *tx_Data_len) {
+RsError_t RsDecd(Rs485_t *rs485, RsFunc_t rx_Func, uint8_t *rx_Data, uint8_t rx_Data_len, RsFunc_t *tx_Func, uint8_t *tx_Data, uint8_t *tx_Data_len) {
   if (rx_Func == READ_HOLDING_REGISTERS) {
     uint16_t Start_addr = rx_Data[0] << 8 | rx_Data[1];
     uint16_t Read_num = rx_Data[2] << 8 | rx_Data[3];
@@ -286,8 +296,7 @@ RsError_t RsDecd(Rs485_t *rs485, RsFunc_t rx_Func, uint8_t *rx_Data, uint8_t rx_
   return RS485_OK;
 }
 
-RsError_t RsEncd(Rs485_t *rs485, RsFunc_t Func, uint16_t stat_addr, uint8_t *data_or_num, uint8_t Data_len, uint8_t *tx_Data,
-                           uint8_t *tx_Data_len) {
+RsError_t RsEncd(Rs485_t *rs485, RsFunc_t Func, uint16_t stat_addr, uint8_t *data_or_num, uint8_t Data_len, uint8_t *tx_Data, uint8_t *tx_Data_len) {
   tx_Data[0] = (stat_addr >> 8) & 0xFF;
   tx_Data[1] = stat_addr & 0xFF;
   if (Func == READ_HOLDING_REGISTERS || Func == WRITE_SINGLE_REGISTER) {

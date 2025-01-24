@@ -25,9 +25,12 @@
 #include "warning_task.h"
 #include "store_data_task.h"
 #include "side_card_task.h"
+#include "pt100_task.h"
 #include "RS485.h"
 #include "pt100.h"
 #include "Two_Pt_Cal.h"
+#include "NTC.h"
+#include "SensConvVal.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -72,6 +75,9 @@
 
 #define SIDE_CARD_TASK_PRIO 4
 #define SIDE_CARD_STK_SIZE 512
+
+#define PT100_TASK_PRIO 3
+#define PT100_STK_SIZE 256
 
 /* add user code end private define */
 
@@ -185,7 +191,7 @@ void start_task(void* pvParameters) {
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
               (TaskHandle_t*)&upper_handler);
-  // vTaskDelay(50);
+  vTaskDelay(50);
   xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
               (TaskHandle_t*)&sensor_handler);
   // xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
@@ -193,6 +199,9 @@ void start_task(void* pvParameters) {
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
               (TaskHandle_t*)&RTC_handler);
+  vTaskDelay(50);
+  xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
+              (TaskHandle_t*)&pt100_handler);
   // xTaskCreate((TaskFunction_t)SideCardTaskFunc, (const char*)"SideCard_task", (uint16_t)SIDE_CARD_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)SIDE_CARD_TASK_PRIO, (TaskHandle_t*)&SideCardHandler);
   // xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,

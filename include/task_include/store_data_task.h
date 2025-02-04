@@ -14,7 +14,7 @@ typedef struct {
   SensStat_t SensStat;
   SensCtrl_t SensCtrl;
   Pt100Stat_t Pt100Stat;
-  Pt100Ctrl_t Pt100Ctrl;
+  Pt100TwoCal_t Pt100TwoCal;
   pump_status_type pump_status;
   pump_control_type pump_control;
   FansCardStat_t FansCardStat;
@@ -25,7 +25,7 @@ typedef struct {
   SensStat_t SensStat;
   SensCtrl_t SensCtrl;
   Pt100Stat_t Pt100Stat;
-  Pt100Ctrl_t Pt100Ctrl;
+  Pt100TwoCal_t Pt100TwoCal;
   pump_status_type pump_status;
   pump_control_type pump_control;
   FansCardStat_t FansCardStat;
@@ -36,7 +36,7 @@ typedef struct {
   SensStat_t SensStat;
   SensCtrl_t SensCtrl;
   Pt100Stat_t Pt100Stat;
-  Pt100Ctrl_t Pt100Ctrl;
+  Pt100TwoCal_t Pt100TwoCal;
   pump_status_type pump_status;
   pump_control_type pump_control;
   FansCardStat_t FansCardStat;

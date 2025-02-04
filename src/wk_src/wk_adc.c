@@ -92,7 +92,9 @@ void wk_adc1_init(void)
   gpio_init_struct.gpio_pins = GPIO_PINS_1;
   gpio_init(GPIOB, &gpio_init_struct);
 
-  crm_adc_clock_div_set(CRM_ADC_DIV_6);
+  crm_adc_clock_div_set(CRM_ADC_DIV_16);
+
+  adc_tempersensor_vintrv_enable(TRUE);
 
   /*adc_common_settings-------------------------------------------------------------*/ 
   adc_combine_mode_select(ADC_INDEPENDENT_MODE);
@@ -102,23 +104,25 @@ void wk_adc1_init(void)
   adc_base_struct.sequence_mode = TRUE;
   adc_base_struct.repeat_mode = FALSE;
   adc_base_struct.data_align = ADC_RIGHT_ALIGNMENT;
-  adc_base_struct.ordinary_channel_length = 8;
+  adc_base_struct.ordinary_channel_length = 9;
   adc_base_config(ADC1, &adc_base_struct);
 
   /* adc_ordinary_conversionmode-------------------------------------------- */
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_0, 1, ADC_SAMPLETIME_1_5);
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_3, 2, ADC_SAMPLETIME_1_5);
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_6, 3, ADC_SAMPLETIME_1_5);
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_7, 4, ADC_SAMPLETIME_1_5);
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_8, 5, ADC_SAMPLETIME_1_5);
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_9, 6, ADC_SAMPLETIME_1_5);
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_14, 7, ADC_SAMPLETIME_1_5);
-  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_15, 8, ADC_SAMPLETIME_1_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_0, 1, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_3, 2, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_6, 3, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_7, 4, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_14, 5, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_15, 6, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_8, 7, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_9, 8, ADC_SAMPLETIME_239_5);
+  adc_ordinary_channel_set(ADC1, ADC_CHANNEL_17, 9, ADC_SAMPLETIME_239_5);
 
   adc_ordinary_conversion_trigger_set(ADC1, ADC12_ORDINARY_TRIG_SOFTWARE, TRUE);
 
   adc_ordinary_part_mode_enable(ADC1, FALSE);
 
+  adc_dma_mode_enable(ADC1, TRUE);
   /* add user code begin adc1_init 2 */
 
   /* add user code end adc1_init 2 */

@@ -9,7 +9,7 @@ TaskHandle_t pt100_handler;
 
 Pt100Stat_t Pt100Stat = {0};
 
-Pt100Ctrl_t Pt100Ctrl = {
+Pt100TwoCal_t Pt100TwoCal = {
     .pt100_1_raw_l_val = 26433,
     .pt100_2_raw_l_val = 28333,
     .pt100_3_raw_l_val = 26306,
@@ -18,42 +18,46 @@ Pt100Ctrl_t Pt100Ctrl = {
     .pt100_2_raw_h_val = 94654,
     .pt100_3_raw_h_val = 92379,
     .pt100_4_raw_h_val = 90957,
-    .pt100_ideal_l_val = 25684,
-    .pt100_ideal_h_val = 90770,
+    .pt100_ideal_l_val = 25684,  // 110ohm
+    .pt100_ideal_h_val = 90770,  // 135ohm
 };
 
-int32_t raw_val = 0;
+static int32_t raw_val = 0;
 CalParam_t PtCal_1 = {
     .offset = 0.0f,
     .slope = 1.0f,
-    .raw_l = &Pt100Ctrl.pt100_1_raw_l_val,
-    .raw_h = &Pt100Ctrl.pt100_1_raw_h_val,
-    .ideal_l = &Pt100Ctrl.pt100_ideal_l_val,
-    .ideal_h = &Pt100Ctrl.pt100_ideal_h_val,
+    .raw_l = &Pt100TwoCal.pt100_1_raw_l_val,
+    .raw_h = &Pt100TwoCal.pt100_1_raw_h_val,
+    .ideal_l = &Pt100TwoCal.pt100_ideal_l_val,
+    .ideal_h = &Pt100TwoCal.pt100_ideal_h_val,
+    .data_type = DATA_TYPE_INT32,
 };
 CalParam_t PtCal_2 = {
     .offset = 0.0f,
     .slope = 1.0f,
-    .raw_l = &Pt100Ctrl.pt100_2_raw_l_val,
-    .raw_h = &Pt100Ctrl.pt100_2_raw_h_val,
-    .ideal_l = &Pt100Ctrl.pt100_ideal_l_val,
-    .ideal_h = &Pt100Ctrl.pt100_ideal_h_val,
+    .raw_l = &Pt100TwoCal.pt100_2_raw_l_val,
+    .raw_h = &Pt100TwoCal.pt100_2_raw_h_val,
+    .ideal_l = &Pt100TwoCal.pt100_ideal_l_val,
+    .ideal_h = &Pt100TwoCal.pt100_ideal_h_val,
+    .data_type = DATA_TYPE_INT32,
 };
 CalParam_t PtCal_3 = {
     .offset = 0.0f,
     .slope = 1.0f,
-    .raw_l = &Pt100Ctrl.pt100_3_raw_l_val,
-    .raw_h = &Pt100Ctrl.pt100_3_raw_h_val,
-    .ideal_l = &Pt100Ctrl.pt100_ideal_l_val,
-    .ideal_h = &Pt100Ctrl.pt100_ideal_h_val,
+    .raw_l = &Pt100TwoCal.pt100_3_raw_l_val,
+    .raw_h = &Pt100TwoCal.pt100_3_raw_h_val,
+    .ideal_l = &Pt100TwoCal.pt100_ideal_l_val,
+    .ideal_h = &Pt100TwoCal.pt100_ideal_h_val,
+    .data_type = DATA_TYPE_INT32,
 };
 CalParam_t PtCal_4 = {
     .offset = 0.0f,
     .slope = 1.0f,
-    .raw_l = &Pt100Ctrl.pt100_4_raw_l_val,
-    .raw_h = &Pt100Ctrl.pt100_4_raw_h_val,
-    .ideal_l = &Pt100Ctrl.pt100_ideal_l_val,
-    .ideal_h = &Pt100Ctrl.pt100_ideal_h_val,
+    .raw_l = &Pt100TwoCal.pt100_4_raw_l_val,
+    .raw_h = &Pt100TwoCal.pt100_4_raw_h_val,
+    .ideal_l = &Pt100TwoCal.pt100_ideal_l_val,
+    .ideal_h = &Pt100TwoCal.pt100_ideal_h_val,
+    .data_type = DATA_TYPE_INT32,
 };
 
 void pt100_task_function(void* pvParameters) {

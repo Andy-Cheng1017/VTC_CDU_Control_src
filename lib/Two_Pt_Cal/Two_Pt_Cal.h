@@ -7,14 +7,28 @@ extern "C" {
 
 #include <stdint.h>
 
+typedef enum {
+  CAL_SUCCESS = 0,          // 成功
+  CAL_ERR_NULL_PARAM,       // 傳入的參數結構為 NULL
+  CAL_ERR_NULL_POINTER,     // 結構中的某個指標為 NULL
+  CAL_ERR_INVALID_INPUT,    // 輸入數值無效（例如 raw_l 與 raw_h 相等）
+  CAL_ERR_UNKNOWN_DATATYPE  // 未知的資料型態
+} ErrCal_t;
+
+typedef enum {
+  DATA_TYPE_INT16,
+  DATA_TYPE_INT32
+} DataType_t;
+
 // 校正数据结构
 typedef struct {
   float offset;  // 偏移量
   float slope;   // 斜率
-  uint32_t *raw_l;
-  uint32_t *raw_h;
-  uint32_t *ideal_l;
-  uint32_t *ideal_h;
+  void *raw_l;
+  void *raw_h;
+  void *ideal_l;
+  void *ideal_h;
+  DataType_t data_type;
 } CalParam_t;
 
 /**

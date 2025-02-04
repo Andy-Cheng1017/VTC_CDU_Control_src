@@ -1,7 +1,7 @@
 #include "SensConvVal.h"
 
 // 初始化感測器配置
-void InitConv(SensConvVal_t *cfg) {
+void Conv_Init(SensConvVal_t *cfg) {
   // 計算電壓範圍
   cfg->volt_range = cfg->volt_max - cfg->volt_min;
 
@@ -13,19 +13,34 @@ void InitConv(SensConvVal_t *cfg) {
 }
 
 // 將 ADC 值轉換為感測器數值
-ValStat_t GetConvVal(SensConvVal_t *cfg, uint16_t adc_val, uint32_t *ret_val) {
+ErrConv_t Conv_GetVal_ADC(SensConvVal_t *cfg, uint16_t adc_val, int32_t *ret_val) {
   // 將 ADC 值轉換為電壓
   float volt = (float)adc_val * cfg->adc_to_volt;
 
   // 將電壓映射到感測器數值範圍
   float sens_val = cfg->sens_min + (volt - cfg->volt_min) * (cfg->sens_range / cfg->volt_range);
 
-  if (sens_val < cfg->thres_low) {
+  if (sens_val < cfg->sens_min) {
     return VAL_LOWER;
-  } else if (sens_val > cfg->thres_high) {
+  } else if (sens_val > cfg->sens_max) {
     return VAL_HIGHER;
   } else {
-    *ret_val = (uint32_t)sens_val;
+    *ret_val = (int32_t)sens_val;
+    return VAL_OK;
+  }
+}
+
+// 將 ADC 值轉換為感測器數值
+ErrConv_t Conv_GetVal_Volt(SensConvVal_t *cfg, float volt, int32_t *ret_val) {
+  // 將電壓映射到感測器數值範圍
+  float sens_val = cfg->sens_min + (volt - cfg->volt_min) * (cfg->sens_range / cfg->volt_range);
+
+  if (sens_val < cfg->sens_min) {
+    return VAL_LOWER;
+  } else if (sens_val > cfg->sens_max) {
+    return VAL_HIGHER;
+  } else {
+    *ret_val = (int32_t)sens_val;
     return VAL_OK;
   }
 }

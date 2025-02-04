@@ -31,7 +31,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#include <string.h>
 /* includes -----------------------------------------------------------------------*/
 #include "at32f403a_407_wk_config.h"
 
@@ -47,7 +47,9 @@ extern "C" {
 
 /* exported constants --------------------------------------------------------*/
 /* add user code begin exported constants */
-char uart_tx_buf[BUFFER_SIZE];
+uint8_t uart_tx_buf[BUFFER_SIZE];
+
+uint16_t adc1_ordinary_valuetab[9];
 /* add user code end exported constants */
 
 /* exported macro ------------------------------------------------------------*/
@@ -59,6 +61,7 @@ char uart_tx_buf[BUFFER_SIZE];
 
 /* init dma1 channel1 */
 void wk_dma1_channel4_init(void);
+void wk_dma1_channel1_init(void);
 
 /* config dma channel transfer parameter */
 /* user need to modify parameters memory_base_addr and buffer_size */

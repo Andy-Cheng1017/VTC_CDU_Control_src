@@ -5,7 +5,7 @@
 #include <stdbool.h>
 
 // 配置緩衝區大小，需為 2 的倍數
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 256
 
 // 環形緩衝區結構體
 typedef struct {
@@ -21,16 +21,16 @@ extern CircularBuffer txBuffer;
 void CircularBuffer_Init(CircularBuffer *cb);
 
 // 將數據寫入環形緩衝區
-bool CircularBuffer_Write(CircularBuffer *cb, const char data);
+bool CircularBuffer_Write(CircularBuffer *cb, const uint8_t data);
 
 // 批量寫入數據
-uint16_t CircularBuffer_WriteBuffer(CircularBuffer *cb, const char *data, uint16_t len);
+uint16_t CircularBuffer_WriteBuffer(CircularBuffer *cb, const uint8_t *data, uint16_t len);
 
 // 從環形緩衝區讀取數據
-bool CircularBuffer_Read(CircularBuffer *cb, char *data);
+bool CircularBuffer_Read(CircularBuffer *cb, uint8_t *data);
 
 // 批量讀取數據
-uint16_t CircularBuffer_ReadBuffer(CircularBuffer *cb, char *data, uint16_t len);
+uint16_t CircularBuffer_ReadBuffer(CircularBuffer *cb, uint8_t *data, uint16_t len);
 
 // 獲取緩衝區可用空間
 uint16_t CircularBuffer_AvailableSpace(CircularBuffer *cb);

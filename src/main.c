@@ -13,9 +13,9 @@
 #include "wk_dma.h"
 #include "wk_gpio.h"
 #include "wk_system.h"
+#include "wk_i2c.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "init_task.h"
 #include "network_task.h"
 #include "LCD_task.h"
 #include "upper_task.h"
@@ -46,8 +46,6 @@
 
 /* private define ------------------------------------------------------------*/
 /* add user code begin private define */
-#define INIT_TASK_PRIO 2
-#define INIT_STK_SIZE 128
 
 #define START_TASK_PRIO 1
 #define START_STK_SIZE 128
@@ -62,7 +60,7 @@
 #define UPPER_STK_SIZE 1024
 
 #define SENSOR_TASK_PRIO 4
-#define SENSOR_STK_SIZE 512
+#define SENSOR_STK_SIZE 1024
 
 #define PUMP_TASK_PRIO 5
 #define PUMP_STK_SIZE 512
@@ -97,22 +95,17 @@ void start_task(void* pvParameters);
 /* private function prototypes --------------------------------------------*/
 /* add user code begin function prototypes */
 
-// void Logger_init(void) {
-//   wk_usart1_init();
-//   wk_dma1_channel4_init();
-//   memset(uart_tx_buf, 0, MAX_LEN);
-//   wk_dma_channel_config(DMA1_CHANNEL4, (uint32_t)&USART1->dt, DMA1_CHANNEL4_MEMORY_BASE_ADDR, DMA1_CHANNEL4_BUFFER_SIZE);
-//   dma_channel_enable(DMA1_CHANNEL4, TRUE);
-//   elog_init();
-//   elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
-//   elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-//   elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-//   elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-//   elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-//   elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-//   elog_set_text_color_enabled(TRUE);
-//   elog_start();
-// }
+void Logger_init(void) {
+  elog_init();
+  elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
+  elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
+  elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+  elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
+  elog_set_text_color_enabled(TRUE);
+  elog_start();
+}
 
 /* add user code end function prototypes */
 
@@ -151,7 +144,8 @@ int main(void) {
   // wk_spi1_init();
 
   /* init adc1 function. */
-  // wk_adc1_init();
+  wk_adc1_init();
+  wk_dma1_channel1_init();
 
   /* init rtc function. */
   // wk_rtc_init();
@@ -173,7 +167,13 @@ int main(void) {
 
   /* add user code begin 2 */
 
-  init_task_function(NULL);
+  wk_usart1_init();
+  wk_dma1_channel4_init();
+  Logger_init();
+
+  wk_i2c3_init();
+
+  wk_uart8_init();
 
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);

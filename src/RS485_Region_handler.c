@@ -61,29 +61,21 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
       case 0x0033:
         return Pt100Stat.pt100_4_temp_m / 10;
       case 0x0034:
-        retval = SensStat.NTC_1_temp;
-        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.ntc_1_temp / 10;
       case 0x0035:
-        retval = SensStat.NTC_2_temp;
-        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.ntc_2_temp / 10;
       case 0x0036:
-        retval = SensStat.NTC_3_temp;
-        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.ntc_3_temp / 10;
       case 0x0037:
-        retval = SensStat.NTC_4_temp;
-        return (retval >= -500 && retval <= 1500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.ntc_4_temp / 10;
       case 0x0038:
-        retval = SensStat.Presure_1_val;
-        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.press_1_val;
       case 0x0039:
-        retval = SensStat.Presure_2_val;
-        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.press_2_val;
       case 0x003A:
-        retval = SensStat.Presure_3_val;
-        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.press_3_val;
       case 0x003B:
-        retval = SensStat.Presure_4_val;
-        return (retval >= -500 && retval <= 500) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return SensStat.press_4_val;
       case 0x003C:
         retval = SensStat.Flow_val;
         return (retval >= -10000 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;

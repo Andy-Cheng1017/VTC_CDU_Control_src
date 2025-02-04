@@ -8,7 +8,7 @@ void CircularBuffer_Init(CircularBuffer *cb) {
 }
 
 // 將數據寫入環形緩衝區
-bool CircularBuffer_Write(CircularBuffer *cb, const char data) {
+bool CircularBuffer_Write(CircularBuffer *cb, const uint8_t data) {
   // 緩衝區是否已滿
   if (cb->count == BUFFER_SIZE) {
     return false;  // 緩衝區滿，寫入失敗
@@ -21,7 +21,7 @@ bool CircularBuffer_Write(CircularBuffer *cb, const char data) {
 }
 
 // 批量寫入數據
-uint16_t CircularBuffer_WriteBuffer(CircularBuffer *cb, const char *data, uint16_t len) {
+uint16_t CircularBuffer_WriteBuffer(CircularBuffer *cb, const uint8_t *data, uint16_t len) {
   uint16_t bytesWritten = 0;
 
   for (uint16_t i = 0; i < len; i++) {
@@ -35,7 +35,7 @@ uint16_t CircularBuffer_WriteBuffer(CircularBuffer *cb, const char *data, uint16
 }
 
 // 從環形緩衝區讀取數據
-bool CircularBuffer_Read(CircularBuffer *cb, char *data) {
+bool CircularBuffer_Read(CircularBuffer *cb, uint8_t *data) {
   // 檢查緩衝區是否為空
   if (cb->count == 0) {
     return false;
@@ -48,7 +48,7 @@ bool CircularBuffer_Read(CircularBuffer *cb, char *data) {
 }
 
 // 批量讀取數據
-uint16_t CircularBuffer_ReadBuffer(CircularBuffer *cb, char *data, uint16_t len) {
+uint16_t CircularBuffer_ReadBuffer(CircularBuffer *cb, uint8_t *data, uint16_t len) {
   uint16_t bytesRead = 0;
 
   for (uint16_t i = 0; i < len; i++) {

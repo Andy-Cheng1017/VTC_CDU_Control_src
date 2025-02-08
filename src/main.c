@@ -54,7 +54,7 @@
 #define NETWORK_STK_SIZE 1024 * 2
 
 #define LCD_TASK_PRIO 3
-#define LCD_STK_SIZE 1024
+#define LCD_STK_SIZE 1024 
 
 #define UPPER_TASK_PRIO 3
 #define UPPER_STK_SIZE 1024
@@ -144,8 +144,9 @@ int main(void) {
   // wk_spi1_init();
 
   /* init adc1 function. */
-  wk_adc1_init();
+  wk_tmr1_init();
   wk_dma1_channel1_init();
+  wk_adc1_init();
 
   /* init rtc function. */
   // wk_rtc_init();

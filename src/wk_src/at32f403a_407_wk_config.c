@@ -103,8 +103,7 @@ void wk_system_clock_config(void) {
   crm_clock_source_enable(CRM_CLOCK_SOURCE_LICK, TRUE);
 
   /* wait till lick is ready */
-  while(crm_flag_get(CRM_LICK_STABLE_FLAG) != SET)
-  {
+  while (crm_flag_get(CRM_LICK_STABLE_FLAG) != SET) {
   }
 
   /* enable hext */
@@ -163,24 +162,11 @@ void wk_system_clock_config(void) {
  * @param  none
  * @retval none
  */
-void wk_periph_clock_config(void) {
-  /* enable dma1 periph clock */
+void wk_periph_clock_config(void) { /* enable dma1 periph clock */
   crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
 
   /* enable crc periph clock */
   crm_periph_clock_enable(CRM_CRC_PERIPH_CLOCK, TRUE);
-
-  /* enable emac periph clock */
-  crm_periph_clock_enable(CRM_EMAC_PERIPH_CLOCK, TRUE);
-
-  /* enable emactx periph clock */
-  crm_periph_clock_enable(CRM_EMACTX_PERIPH_CLOCK, TRUE);
-
-  /* enable emacrx periph clock */
-  crm_periph_clock_enable(CRM_EMACRX_PERIPH_CLOCK, TRUE);
-
-  /* enable emacptp periph clock */
-  crm_periph_clock_enable(CRM_EMACPTP_PERIPH_CLOCK, TRUE);
 
   /* enable iomux periph clock */
   crm_periph_clock_enable(CRM_IOMUX_PERIPH_CLOCK, TRUE);
@@ -202,6 +188,9 @@ void wk_periph_clock_config(void) {
 
   /* enable adc1 periph clock */
   crm_periph_clock_enable(CRM_ADC1_PERIPH_CLOCK, TRUE);
+
+  /* enable tmr1 periph clock */
+  crm_periph_clock_enable(CRM_TMR1_PERIPH_CLOCK, TRUE);
 
   /* enable spi1 periph clock */
   crm_periph_clock_enable(CRM_SPI1_PERIPH_CLOCK, TRUE);
@@ -252,11 +241,12 @@ void wk_nvic_config(void) {
   NVIC_SetPriority(DebugMonitor_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
   NVIC_SetPriority(PendSV_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
   NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
+  // nvic_irq_enable(TMR1_OVF_TMR10_IRQn, 0, 0);
   nvic_irq_enable(TMR3_GLOBAL_IRQn, 0, 0);
   nvic_irq_enable(TMR4_GLOBAL_IRQn, 0, 0);
   nvic_irq_enable(USART1_IRQn, 0, 0);
   nvic_irq_enable(USART2_IRQn, 2, 0);
-  // nvic_irq_enable(UART8_IRQn, 0, 0);
+  nvic_irq_enable(UART8_IRQn, 0, 0);
 }
 
 /* add user code begin 1 */

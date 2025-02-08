@@ -1,23 +1,30 @@
 #include <stdio.h>
 #include <string.h>
 #include "sensor_task.h"
+#include "wk_adc.h"
+#include "wk_dma.h"
+#include "NTC.h"
+#include "SensConvVal.h"
+#include "Two_Pt_Cal.h"
 
 #define LOG_TAG "Sensor_Task"
 #include "elog.h"
 
+uint16_t adc1_ordinary_valuetab[ADC1_SAMPLE_NUM][ADC1_CHANNEL_NUM] = {0};
+
 TaskHandle_t sensor_handler;
 
 NtcTwoCal_t NtcTwoCal = {
-    .ntc_1_raw_l_val = 25000,
-    .ntc_2_raw_l_val = 25000,
-    .ntc_3_raw_l_val = 25000,
-    .ntc_4_raw_l_val = 25000,
-    .ntc_1_raw_h_val = 99874,
-    .ntc_2_raw_h_val = 99874,
-    .ntc_3_raw_h_val = 99874,
-    .ntc_4_raw_h_val = 99874,
-    .ntc_ideal_l_val = 25000,  // 10kohm
-    .ntc_ideal_h_val = 99874,  // 700ohm
+    .ntc_1_raw_l_val = 24987,
+    .ntc_2_raw_l_val = 24987,
+    .ntc_3_raw_l_val = 24962,
+    .ntc_4_raw_l_val = 24836,
+    .ntc_1_raw_h_val = 103662,
+    .ntc_2_raw_h_val = 103529,
+    .ntc_3_raw_h_val = 103529,
+    .ntc_4_raw_h_val = 103529,
+    .ntc_ideal_l_val = 25000,   // 10kohm
+    .ntc_ideal_h_val = 103779,  // 900ohm
 };
 
 PressTwoCal_t PressTwoCal = {
@@ -32,7 +39,6 @@ PressTwoCal_t PressTwoCal = {
     .press_ideal_l_val = 0,     // 4ma
     .press_ideal_h_val = 2000,  // 7.2ma
 };
- 
 
 CalParam_t NtcCal_1 = {
     .offset = 0.0f,
@@ -134,7 +140,10 @@ SensCtrl_t SensCtrl = {
 
 void sensor_task_function(void* pvParameters) {
   log_i("Sensor Task Running");
-  int32_t raw_val;
+
+  tmr_counter_enable(TMR1, TRUE);
+
+  int32_t raw_val = 0;
 
   Conv_Init(&PressConv);
 
@@ -150,51 +159,58 @@ void sensor_task_function(void* pvParameters) {
   vTaskDelay(5);
 
   while (1) {
-    adc_ordinary_software_trigger_enable(ADC1, TRUE);
-    while (dma_flag_get(DMA1_FDT1_FLAG) == RESET);
-    dma_flag_clear(DMA1_FDT1_FLAG);
+    // adc_ordinary_software_trigger_enable(ADC1, TRUE);
+    // while (dma_flag_get(DMA1_FDT1_FLAG) == RESET);
+    // dma_flag_clear(DMA1_FDT1_FLAG);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)adc1_ordinary_valuetab[0]) / adc1_ordinary_valuetab[8]) * 1.2f, &raw_val);
+    uint32_t adc_sum_val[ADC1_CHANNEL_NUM] = {0};
+    for (int i = 0; i < ADC1_CHANNEL_NUM; i++) {
+      for (int j = 0; j < ADC1_SAMPLE_NUM; j++) {
+        adc_sum_val[i] += adc1_ordinary_valuetab[j][i];
+      }
+    }
+
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[0] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
     if (err_conv == VAL_OK) SensStat.press_1_val = (int16_t)Cal_Apply(&PressCal_1, raw_val);
     // else
     //   log_e("Conv_GetVal_Volt error: %d", err_conv);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)adc1_ordinary_valuetab[1]) / adc1_ordinary_valuetab[8]) * 1.2f, &raw_val);
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[1] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
     if (err_conv == VAL_OK) SensStat.press_2_val = (int16_t)Cal_Apply(&PressCal_2, raw_val);
     // else
     //   log_e("Conv_GetVal_Volt error: %d", err_conv);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)adc1_ordinary_valuetab[2]) / adc1_ordinary_valuetab[8]) * 1.2f, &raw_val);
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[2] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
     if (err_conv == VAL_OK) SensStat.press_3_val = (int16_t)Cal_Apply(&PressCal_3, raw_val);
     // else
     //   log_e("Conv_GetVal_Volt error: %d", err_conv);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)adc1_ordinary_valuetab[3]) / adc1_ordinary_valuetab[8]) * 1.2f, &raw_val);
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[3] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
     if (err_conv == VAL_OK) SensStat.press_4_val = (int16_t)Cal_Apply(&PressCal_4, raw_val);
     // else
     //   log_e("Conv_GetVal_Volt error: %d", err_conv);
 
-    err_ntc = Ntc_ConvertToC(adc1_ordinary_valuetab[4], &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[4] >> SMP_NUM_PWR, &raw_val);
     if (err_ntc == NTC_OK) SensStat.ntc_1_temp = Cal_Apply(&NtcCal_1, raw_val);
     // else
     // log_e("Ntc_ConvertToC error: %d", err_ntc);
 
-    err_ntc = Ntc_ConvertToC(adc1_ordinary_valuetab[5], &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[5] >> SMP_NUM_PWR, &raw_val);
     if (err_ntc == NTC_OK) SensStat.ntc_2_temp = Cal_Apply(&NtcCal_2, raw_val);
     // else
     // log_e("Ntc_ConvertToC error: %d", err_ntc);
 
-    err_ntc = Ntc_ConvertToC(adc1_ordinary_valuetab[6], &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[6] >> SMP_NUM_PWR, &raw_val);
     if (err_ntc == NTC_OK) SensStat.ntc_3_temp = Cal_Apply(&NtcCal_3, raw_val);
     // else
     // log_e("Ntc_ConvertToC error: %d", err_ntc);
 
-    err_ntc = Ntc_ConvertToC(adc1_ordinary_valuetab[7], &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[7] >> SMP_NUM_PWR, &raw_val);
     if (err_ntc == NTC_OK) SensStat.ntc_4_temp = Cal_Apply(&NtcCal_4, raw_val);
     // else
     // log_e("Ntc_ConvertToC error: %d", err_ntc);
 
-    vTaskDelay(1000);
+    vTaskDelay(500);
   }
 
   vTaskDelete(NULL);

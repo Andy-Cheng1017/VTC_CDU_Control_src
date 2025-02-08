@@ -1,32 +1,35 @@
 /* add user code begin Header */
 /**
-  **************************************************************************
-  * @file     at32f403a_407_wk_config.h
-  * @brief    header file of work bench config
-  **************************************************************************
-  *                       Copyright notice & Disclaimer
-  *
-  * The software Board Support Package (BSP) that is made available to
-  * download from Artery official website is the copyrighted work of Artery.
-  * Artery authorizes customers to use, copy, and distribute the BSP
-  * software and its related documentation for the purpose of design and
-  * development in conjunction with Artery microcontrollers. Use of the
-  * software is governed by this copyright notice and the following disclaimer.
-  *
-  * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
-  * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
-  * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
-  * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
-  * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
-  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
-  *
-  **************************************************************************
-  */
+ **************************************************************************
+ * @file     at32f403a_407_wk_config.h
+ * @brief    header file of work bench config
+ **************************************************************************
+ *                       Copyright notice & Disclaimer
+ *
+ * The software Board Support Package (BSP) that is made available to
+ * download from Artery official website is the copyrighted work of Artery.
+ * Artery authorizes customers to use, copy, and distribute the BSP
+ * software and its related documentation for the purpose of design and
+ * development in conjunction with Artery microcontrollers. Use of the
+ * software is governed by this copyright notice and the following disclaimer.
+ *
+ * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
+ * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
+ * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
+ * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
+ * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+ *
+ **************************************************************************
+ */
 /* add user code end Header */
 
 /* define to prevent recursive inclusion -----------------------------------*/
 #ifndef __AT32F403A_407_WK_CONFIG_H
 #define __AT32F403A_407_WK_CONFIG_H
+
+#define COUNTOF(a) (sizeof(a) / sizeof(*(a)))
+#define COUNT_OF_ALL(arr) (sizeof(arr) / sizeof((arr)[0][0]))
 
 #ifdef __cplusplus
 extern "C" {
@@ -34,14 +37,16 @@ extern "C" {
 
 /* includes -----------------------------------------------------------------------*/
 #include "at32f403a_407.h"
-
 /* private includes -------------------------------------------------------------*/
 /* add user code begin private includes */
+#include "sensor_task.h"
 
 /* add user code end private includes */
 
 /* exported types -------------------------------------------------------------*/
 /* add user code begin exported types */
+// extern uint16_t adc1_ordinary_valuetab;
+// extern uint8_t uart_tx_buf[256];
 
 /* add user code end exported types */
 
@@ -57,78 +62,78 @@ extern "C" {
 
 /* add user code begin dma define */
 /* user can only modify the dma define value */
-#define DMA1_CHANNEL1_BUFFER_SIZE   9
-#define DMA1_CHANNEL1_MEMORY_BASE_ADDR   (uint32_t)adc1_ordinary_valuetab
-//#define DMA1_CHANNEL1_PERIPHERAL_BASE_ADDR  0
+#define DMA1_CHANNEL1_BUFFER_SIZE COUNT_OF_ALL(adc1_ordinary_valuetab)
+#define DMA1_CHANNEL1_MEMORY_BASE_ADDR (uint32_t)adc1_ordinary_valuetab
+// #define DMA1_CHANNEL1_PERIPHERAL_BASE_ADDR  0
 
-//#define DMA1_CHANNEL2_BUFFER_SIZE   0
-//#define DMA1_CHANNEL2_MEMORY_BASE_ADDR   0
-//#define DMA1_CHANNEL2_PERIPHERAL_BASE_ADDR   0
+// #define DMA1_CHANNEL2_BUFFER_SIZE   0
+// #define DMA1_CHANNEL2_MEMORY_BASE_ADDR   0
+// #define DMA1_CHANNEL2_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA1_CHANNEL3_BUFFER_SIZE   0
-//#define DMA1_CHANNEL3_MEMORY_BASE_ADDR   0
-//#define DMA1_CHANNEL3_PERIPHERAL_BASE_ADDR   0
-#define COUNTOF(a)                       (sizeof(a) / sizeof(*(a)))
-#define DMA1_CHANNEL4_BUFFER_SIZE   (COUNTOF(uart_tx_buf) - 1)
-#define DMA1_CHANNEL4_MEMORY_BASE_ADDR   (uint32_t)uart_tx_buf
-//#define DMA1_CHANNEL4_PERIPHERAL_BASE_ADDR   0
+// #define DMA1_CHANNEL3_BUFFER_SIZE   0
+// #define DMA1_CHANNEL3_MEMORY_BASE_ADDR   0
+// #define DMA1_CHANNEL3_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA1_CHANNEL5_BUFFER_SIZE   0
-//#define DMA1_CHANNEL5_MEMORY_BASE_ADDR   0
-//#define DMA1_CHANNEL5_PERIPHERAL_BASE_ADDR   0
+#define DMA1_CHANNEL4_BUFFER_SIZE (COUNTOF(uart_tx_buf) - 1)
+#define DMA1_CHANNEL4_MEMORY_BASE_ADDR (uint32_t)uart_tx_buf
+// #define DMA1_CHANNEL4_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA1_CHANNEL6_BUFFER_SIZE   0
-//#define DMA1_CHANNEL6_MEMORY_BASE_ADDR   0
-//#define DMA1_CHANNEL6_PERIPHERAL_BASE_ADDR   0
+// #define DMA1_CHANNEL5_BUFFER_SIZE   0
+// #define DMA1_CHANNEL5_MEMORY_BASE_ADDR   0
+// #define DMA1_CHANNEL5_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA1_CHANNEL7_BUFFER_SIZE   0
-//#define DMA1_CHANNEL7_MEMORY_BASE_ADDR   0
-//#define DMA1_CHANNEL7_PERIPHERAL_BASE_ADDR   0
+// #define DMA1_CHANNEL6_BUFFER_SIZE   0
+// #define DMA1_CHANNEL6_MEMORY_BASE_ADDR   0
+// #define DMA1_CHANNEL6_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA2_CHANNEL1_BUFFER_SIZE   0
-//#define DMA2_CHANNEL1_MEMORY_BASE_ADDR   0
-//#define DMA2_CHANNEL1_PERIPHERAL_BASE_ADDR   0
+// #define DMA1_CHANNEL7_BUFFER_SIZE   0
+// #define DMA1_CHANNEL7_MEMORY_BASE_ADDR   0
+// #define DMA1_CHANNEL7_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA2_CHANNEL2_BUFFER_SIZE   0
-//#define DMA2_CHANNEL2_MEMORY_BASE_ADDR   0
-//#define DMA2_CHANNEL2_PERIPHERAL_BASE_ADDR   0
+// #define DMA2_CHANNEL1_BUFFER_SIZE   0
+// #define DMA2_CHANNEL1_MEMORY_BASE_ADDR   0
+// #define DMA2_CHANNEL1_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA2_CHANNEL3_BUFFER_SIZE   0
-//#define DMA2_CHANNEL3_MEMORY_BASE_ADDR   0
-//#define DMA2_CHANNEL3_PERIPHERAL_BASE_ADDR   0
+// #define DMA2_CHANNEL2_BUFFER_SIZE   0
+// #define DMA2_CHANNEL2_MEMORY_BASE_ADDR   0
+// #define DMA2_CHANNEL2_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA2_CHANNEL4_BUFFER_SIZE   0
-//#define DMA2_CHANNEL4_MEMORY_BASE_ADDR   0
-//#define DMA2_CHANNEL4_PERIPHERAL_BASE_ADDR   0
+// #define DMA2_CHANNEL3_BUFFER_SIZE   0
+// #define DMA2_CHANNEL3_MEMORY_BASE_ADDR   0
+// #define DMA2_CHANNEL3_PERIPHERAL_BASE_ADDR   0
+
+// #define DMA2_CHANNEL4_BUFFER_SIZE   0
+// #define DMA2_CHANNEL4_MEMORY_BASE_ADDR   0
+// #define DMA2_CHANNEL4_PERIPHERAL_BASE_ADDR   0
 
 // #define DMA2_CHANNEL5_BUFFER_SIZE   0
-// #define DMA2_CHANNEL5_MEMORY_BASE_ADDR   
-//#define DMA2_CHANNEL5_PERIPHERAL_BASE_ADDR   0
+// #define DMA2_CHANNEL5_MEMORY_BASE_ADDR
+// #define DMA2_CHANNEL5_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA2_CHANNEL6_BUFFER_SIZE   0
-//#define DMA2_CHANNEL6_MEMORY_BASE_ADDR   0
-//#define DMA2_CHANNEL6_PERIPHERAL_BASE_ADDR   0
+// #define DMA2_CHANNEL6_BUFFER_SIZE   0
+// #define DMA2_CHANNEL6_MEMORY_BASE_ADDR   0
+// #define DMA2_CHANNEL6_PERIPHERAL_BASE_ADDR   0
 
-//#define DMA2_CHANNEL7_BUFFER_SIZE   0
-//#define DMA2_CHANNEL7_MEMORY_BASE_ADDR   0
-//#define DMA2_CHANNEL7_PERIPHERAL_BASE_ADDR   0
+// #define DMA2_CHANNEL7_BUFFER_SIZE   0
+// #define DMA2_CHANNEL7_MEMORY_BASE_ADDR   0
+// #define DMA2_CHANNEL7_PERIPHERAL_BASE_ADDR   0
 /* add user code end dma define */
 
 /* Private defines -------------------------------------------------------------*/
-#define MCU_RTC_TAMPER_PIN    GPIO_PINS_13
-#define MCU_RTC_TAMPER_GPIO_PORT    GPIOC
-#define Crystal_32768K_O_PIN    GPIO_PINS_14
-#define Crystal_32768K_O_GPIO_PORT    GPIOC
+#define MCU_RTC_TAMPER_PIN GPIO_PINS_13
+#define MCU_RTC_TAMPER_GPIO_PORT GPIOC
+#define Crystal_32768K_O_PIN GPIO_PINS_14
+#define Crystal_32768K_O_GPIO_PORT GPIOC
 
 /* exported functions ------------------------------------------------------- */
-  /* system clock config. */
-  void wk_system_clock_config(void);
+/* system clock config. */
+void wk_system_clock_config(void);
 
-  /* config periph clock. */
-  void wk_periph_clock_config(void);
+/* config periph clock. */
+void wk_periph_clock_config(void);
 
-  /* nvic config. */
-  void wk_nvic_config(void);
+/* nvic config. */
+void wk_nvic_config(void);
 
 /* add user code begin exported functions */
 

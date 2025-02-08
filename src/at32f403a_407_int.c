@@ -31,6 +31,9 @@
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
 #include "LCD_task.h"
+
+#define LOG_TAG "407_Int"
+#include "elog.h"
 /* add user code end private includes */
 
 /* private typedef -----------------------------------------------------------*/
@@ -90,7 +93,7 @@ void NMI_Handler(void) {
  */
 void HardFault_Handler(void) {
   /* add user code begin HardFault_IRQ 0 */
-
+  log_e("HardFault_Handler");
   /* add user code end HardFault_IRQ 0 */
   /* go to infinite loop when hard fault exception occurs */
   while (1) {
@@ -107,7 +110,7 @@ void HardFault_Handler(void) {
  */
 void MemManage_Handler(void) {
   /* add user code begin MemoryManagement_IRQ 0 */
-
+  log_e("MemManage_Handler");
   /* add user code end MemoryManagement_IRQ 0 */
   /* go to infinite loop when memory manage exception occurs */
   while (1) {
@@ -124,7 +127,7 @@ void MemManage_Handler(void) {
  */
 void BusFault_Handler(void) {
   /* add user code begin BusFault_IRQ 0 */
-
+  log_e("BusFault_Handler");
   /* add user code end BusFault_IRQ 0 */
   /* go to infinite loop when bus fault exception occurs */
   while (1) {
@@ -141,7 +144,7 @@ void BusFault_Handler(void) {
  */
 void UsageFault_Handler(void) {
   /* add user code begin UsageFault_IRQ 0 */
-
+  log_e("UsageFault_Handler");
   /* add user code end UsageFault_IRQ 0 */
   /* go to infinite loop when usage fault exception occurs */
   while (1) {
@@ -210,6 +213,24 @@ void DebugMon_Handler(void) {
 
 //   /* add user code end SysTick_IRQ 1 */
 // }
+
+// /**
+//   * @brief  this function handles TMR1 Overflow and TMR10 handler.
+//   * @param  none
+//   * @retval none
+//   */
+// void TMR1_OVF_TMR10_IRQHandler(void)
+// {
+//   /* add user code begin TMR1_OVF_TMR10_IRQ 0 */
+
+//   /* add user code end TMR1_OVF_TMR10_IRQ 0 */
+
+
+//   /* add user code begin TMR1_OVF_TMR10_IRQ 1 */
+
+//   /* add user code end TMR1_OVF_TMR10_IRQ 1 */
+// }
+
 
 /**
  * @brief  this function handles TMR3 handler.

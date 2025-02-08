@@ -34,10 +34,9 @@ extern "C" {
 #include <string.h>
 /* includes -----------------------------------------------------------------------*/
 #include "at32f403a_407_wk_config.h"
-
+#include "CircularBuffer.h"
 /* private includes -------------------------------------------------------------*/
 /* add user code begin private includes */
-#include "CircularBuffer.h"
 /* add user code end private includes */
 
 /* exported types -------------------------------------------------------------*/
@@ -47,9 +46,10 @@ extern "C" {
 
 /* exported constants --------------------------------------------------------*/
 /* add user code begin exported constants */
-uint8_t uart_tx_buf[BUFFER_SIZE];
 
-uint16_t adc1_ordinary_valuetab[9];
+// uint16_t adc1_ordinary_valuetab[9];
+extern uint8_t uart_tx_buf[BUFFER_SIZE];
+
 /* add user code end exported constants */
 
 /* exported macro ------------------------------------------------------------*/

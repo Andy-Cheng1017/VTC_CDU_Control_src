@@ -1,27 +1,27 @@
 /* add user code begin Header */
 /**
-  **************************************************************************
-  * @file     wk_tmr.c
-  * @brief    work bench config program
-  **************************************************************************
-  *                       Copyright notice & Disclaimer
-  *
-  * The software Board Support Package (BSP) that is made available to
-  * download from Artery official website is the copyrighted work of Artery.
-  * Artery authorizes customers to use, copy, and distribute the BSP
-  * software and its related documentation for the purpose of design and
-  * development in conjunction with Artery microcontrollers. Use of the
-  * software is governed by this copyright notice and the following disclaimer.
-  *
-  * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
-  * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
-  * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
-  * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
-  * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
-  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
-  *
-  **************************************************************************
-  */
+ **************************************************************************
+ * @file     wk_tmr.c
+ * @brief    work bench config program
+ **************************************************************************
+ *                       Copyright notice & Disclaimer
+ *
+ * The software Board Support Package (BSP) that is made available to
+ * download from Artery official website is the copyrighted work of Artery.
+ * Artery authorizes customers to use, copy, and distribute the BSP
+ * software and its related documentation for the purpose of design and
+ * development in conjunction with Artery microcontrollers. Use of the
+ * software is governed by this copyright notice and the following disclaimer.
+ *
+ * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
+ * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
+ * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
+ * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
+ * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+ *
+ **************************************************************************
+ */
 /* add user code end Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -32,18 +32,50 @@
 /* add user code end 0 */
 
 /**
-  * @brief  init tmr3 function.
-  * @param  none
-  * @retval none
-  */
-void wk_tmr3_init(void)
-{
+ * @brief  init tmr1 function.
+ * @param  none
+ * @retval none
+ */
+void wk_tmr1_init(void) {
+  /* add user code begin tmr1_init 0 */
+
+  /* add user code end tmr1_init 0 */
+
+  /* add user code begin tmr1_init 1 */
+
+  /* add user code end tmr1_init 1 */
+
+  /* configure counter settings */
+  tmr_base_init(TMR1, 59999, 199);
+  tmr_cnt_dir_set(TMR1, TMR_COUNT_UP);
+  tmr_clock_source_div_set(TMR1, TMR_CLOCK_DIV1);
+  tmr_repetition_counter_set(TMR1, 0x0);
+  tmr_period_buffer_enable(TMR1, FALSE);
+
+  /* configure primary mode settings */
+  tmr_sub_sync_mode_set(TMR1, FALSE);
+  tmr_primary_mode_select(TMR1, TMR_PRIMARY_SEL_OVERFLOW);
+
+  // tmr_interrupt_enable(TMR1, TMR_OVF_INT, TRUE);
+
+
+  /* add user code begin tmr1_init 2 */
+
+  /* add user code end tmr1_init 2 */
+}
+
+/**
+ * @brief  init tmr3 function.
+ * @param  none
+ * @retval none
+ */
+void wk_tmr3_init(void) {
   /* add user code begin tmr3_init 0 */
 
   /* add user code end tmr3_init 0 */
 
   gpio_init_type gpio_init_struct;
-  tmr_input_config_type  tmr_input_struct;
+  tmr_input_config_type tmr_input_struct;
 
   gpio_default_para_init(&gpio_init_struct);
 
@@ -68,7 +100,7 @@ void wk_tmr3_init(void)
   gpio_init(GPIOC, &gpio_init_struct);
 
   /* GPIO PIN remap */
-  gpio_pin_remap_config(TMR3_GMUX_0011, TRUE); 
+  gpio_pin_remap_config(TMR3_GMUX_0011, TRUE);
 
   /* configure counter settings */
   tmr_base_init(TMR3, 59999, 4000);
@@ -110,12 +142,11 @@ void wk_tmr3_init(void)
 }
 
 /**
-  * @brief  init tmr4 function.
-  * @param  none
-  * @retval none
-  */
-void wk_tmr4_init(void)
-{
+ * @brief  init tmr4 function.
+ * @param  none
+ * @retval none
+ */
+void wk_tmr4_init(void) {
   /* add user code begin tmr4_init 0 */
 
   /* add user code end tmr4_init 0 */
@@ -146,7 +177,7 @@ void wk_tmr4_init(void)
   gpio_init(GPIOD, &gpio_init_struct);
 
   /* GPIO PIN remap */
-  gpio_pin_remap_config(TMR4_GMUX_0001, TRUE); 
+  gpio_pin_remap_config(TMR4_GMUX_0001, TRUE);
 
   /* configure counter settings */
   tmr_base_init(TMR4, 65535, 0);
@@ -181,7 +212,6 @@ void wk_tmr4_init(void)
   tmr_output_channel_config(TMR4, TMR_SELECT_CHANNEL_4, &tmr_output_struct);
   tmr_channel_value_set(TMR4, TMR_SELECT_CHANNEL_4, 0);
   tmr_output_channel_buffer_enable(TMR4, TMR_SELECT_CHANNEL_4, FALSE);
-
 
   tmr_counter_enable(TMR4, TRUE);
 

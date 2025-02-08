@@ -34,5 +34,7 @@ typedef enum{
 
 ErrNtc_t Ntc_ConvertToC(uint32_t adcValue, int32_t *ret_temp);
 ErrNtc_t Ntc_ConvertToF(uint32_t adcValue, int32_t *ret_temp);
+
+ErrNtc_t Ntc_ConvertToC_Volt(float_t volt, int32_t *ret_temp);
   
 #endif

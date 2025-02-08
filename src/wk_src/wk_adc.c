@@ -92,7 +92,7 @@ void wk_adc1_init(void)
   gpio_init_struct.gpio_pins = GPIO_PINS_1;
   gpio_init(GPIOB, &gpio_init_struct);
 
-  crm_adc_clock_div_set(CRM_ADC_DIV_16);
+  crm_adc_clock_div_set(CRM_ADC_DIV_6);
 
   adc_tempersensor_vintrv_enable(TRUE);
 
@@ -118,7 +118,7 @@ void wk_adc1_init(void)
   adc_ordinary_channel_set(ADC1, ADC_CHANNEL_9, 8, ADC_SAMPLETIME_239_5);
   adc_ordinary_channel_set(ADC1, ADC_CHANNEL_17, 9, ADC_SAMPLETIME_239_5);
 
-  adc_ordinary_conversion_trigger_set(ADC1, ADC12_ORDINARY_TRIG_SOFTWARE, TRUE);
+  adc_ordinary_conversion_trigger_set(ADC1, ADC12_ORDINARY_TRIG_TMR1TRGOUT, TRUE);
 
   adc_ordinary_part_mode_enable(ADC1, FALSE);
 

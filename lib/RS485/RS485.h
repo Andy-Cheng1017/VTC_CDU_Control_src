@@ -4,9 +4,9 @@
 #include <stdbool.h>
 #include "at32f403a_407.h"
 
-#define MAX_DATA_BUFFER_SIZE 32
+#define MAX_DATA_BUFFER_SIZE 128
 #define MAX_BUF_MASK (MAX_DATA_BUFFER_SIZE - 1)
-#define MAX_PKG_SIZE 16
+#define MAX_PKG_SIZE 128
 
 typedef enum {
   BR_4800 = 4800,

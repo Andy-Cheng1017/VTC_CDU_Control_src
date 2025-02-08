@@ -27,7 +27,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "wk_dma.h"
 
+
 /* add user code begin 0 */
+uint8_t uart_tx_buf[BUFFER_SIZE] = {0};
 /* add user code end 0 */
 
 /**

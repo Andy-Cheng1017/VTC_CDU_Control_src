@@ -36,8 +36,10 @@ ErrConv_t Conv_GetVal_Volt(SensConvVal_t *cfg, float volt, int32_t *ret_val) {
   float sens_val = cfg->sens_min + (volt - cfg->volt_min) * (cfg->sens_range / cfg->volt_range);
 
   if (sens_val < cfg->sens_min) {
+    *ret_val = (int32_t)0x0;
     return VAL_LOWER;
   } else if (sens_val > cfg->sens_max) {
+    *ret_val = (int32_t)0xFFFFFFFF;
     return VAL_HIGHER;
   } else {
     *ret_val = (int32_t)sens_val;

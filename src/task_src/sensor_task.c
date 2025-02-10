@@ -171,44 +171,28 @@ void sensor_task_function(void* pvParameters) {
     }
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[0] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    if (err_conv == VAL_OK) SensStat.press_1_val = (int16_t)Cal_Apply(&PressCal_1, raw_val);
-    // else
-    //   log_e("Conv_GetVal_Volt error: %d", err_conv);
+    SensStat.press_1_val = (int16_t)Cal_Apply(&PressCal_1, raw_val);
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[1] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    if (err_conv == VAL_OK) SensStat.press_2_val = (int16_t)Cal_Apply(&PressCal_2, raw_val);
-    // else
-    //   log_e("Conv_GetVal_Volt error: %d", err_conv);
+    SensStat.press_2_val = (int16_t)Cal_Apply(&PressCal_2, raw_val);
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[2] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    if (err_conv == VAL_OK) SensStat.press_3_val = (int16_t)Cal_Apply(&PressCal_3, raw_val);
-    // else
-    //   log_e("Conv_GetVal_Volt error: %d", err_conv);
+    SensStat.press_3_val = (int16_t)Cal_Apply(&PressCal_3, raw_val);
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[3] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    if (err_conv == VAL_OK) SensStat.press_4_val = (int16_t)Cal_Apply(&PressCal_4, raw_val);
-    // else
-    //   log_e("Conv_GetVal_Volt error: %d", err_conv);
+    SensStat.press_4_val = (int16_t)Cal_Apply(&PressCal_4, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[4] >> SMP_NUM_PWR, &raw_val);
-    if (err_ntc == NTC_OK) SensStat.ntc_1_temp = Cal_Apply(&NtcCal_1, raw_val);
-    // else
-    // log_e("Ntc_ConvertToC error: %d", err_ntc);
+    SensStat.ntc_1_temp = Cal_Apply(&NtcCal_1, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[5] >> SMP_NUM_PWR, &raw_val);
-    if (err_ntc == NTC_OK) SensStat.ntc_2_temp = Cal_Apply(&NtcCal_2, raw_val);
-    // else
-    // log_e("Ntc_ConvertToC error: %d", err_ntc);
+    SensStat.ntc_2_temp = Cal_Apply(&NtcCal_2, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[6] >> SMP_NUM_PWR, &raw_val);
-    if (err_ntc == NTC_OK) SensStat.ntc_3_temp = Cal_Apply(&NtcCal_3, raw_val);
-    // else
-    // log_e("Ntc_ConvertToC error: %d", err_ntc);
+    SensStat.ntc_3_temp = Cal_Apply(&NtcCal_3, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[7] >> SMP_NUM_PWR, &raw_val);
-    if (err_ntc == NTC_OK) SensStat.ntc_4_temp = Cal_Apply(&NtcCal_4, raw_val);
-    // else
-    // log_e("Ntc_ConvertToC error: %d", err_ntc);
+    SensStat.ntc_4_temp = Cal_Apply(&NtcCal_4, raw_val);
 
     vTaskDelay(500);
   }

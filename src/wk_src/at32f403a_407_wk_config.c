@@ -84,9 +84,9 @@ void wk_system_clock_config(void) {
   crm_reset();
 
   /* enable pwc periph clock */
-  crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, TRUE);
+  // crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, TRUE);
   /* enable battery powered domain access */
-  pwc_battery_powered_domain_access(TRUE);
+  // pwc_battery_powered_domain_access(TRUE);
 
   // /* check lext enabled or not */
   // if (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
@@ -95,16 +95,16 @@ void wk_system_clock_config(void) {
   //   }
   // }
   /* disable battery powered domain access */
-  pwc_battery_powered_domain_access(FALSE);
+  // pwc_battery_powered_domain_access(FALSE);
   /* disable pwc periph clock */
-  crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, FALSE);
+  // crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, FALSE);
 
   /* enable lick */
-  crm_clock_source_enable(CRM_CLOCK_SOURCE_LICK, TRUE);
+  // crm_clock_source_enable(CRM_CLOCK_SOURCE_LICK, TRUE);
 
   /* wait till lick is ready */
-  while (crm_flag_get(CRM_LICK_STABLE_FLAG) != SET) {
-  }
+  // while (crm_flag_get(CRM_LICK_STABLE_FLAG) != SET) {
+  // }
 
   /* enable hext */
   crm_clock_source_enable(CRM_CLOCK_SOURCE_HEXT, TRUE);
@@ -220,10 +220,10 @@ void wk_periph_clock_config(void) { /* enable dma1 periph clock */
   crm_periph_clock_enable(CRM_BPR_PERIPH_CLOCK, TRUE);
 
   /* enable pwc periph clock */
-  crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, TRUE);
+  // crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, TRUE);
 
   /* enable dac periph clock */
-  crm_periph_clock_enable(CRM_DAC_PERIPH_CLOCK, TRUE);
+  // crm_periph_clock_enable(CRM_DAC_PERIPH_CLOCK, TRUE);
 }
 
 /**

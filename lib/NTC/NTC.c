@@ -3,8 +3,10 @@
 
 ErrNtc_t Ntc_ConvertToC(uint32_t adcValue, int32_t *ret_temp) {
   if (adcValue <= 20) {
+    *ret_temp = 0X0;
     return NTC_LOWER;
   } else if (adcValue >= 4020) {
+    *ret_temp = 0xFFFFFFFF;
     return NTC_HIGHER;
   }
   float rntc = (float)_NTC_R_SERIES * (((float)_NTC_ADC_MAX / (float)adcValue) - 1.0f);

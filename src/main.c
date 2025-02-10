@@ -167,6 +167,8 @@ int main(void) {
   wk_gpio_config();
 
   /* add user code begin 2 */
+  // wk_usart2_init();
+  // wk_uart4_init();
 
   wk_usart1_init();
   wk_dma1_channel4_init();
@@ -190,8 +192,8 @@ void start_task(void* pvParameters) {
   xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
               (TaskHandle_t*)&LCD_handler);
   vTaskDelay(50);
-  xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
-              (TaskHandle_t*)&upper_handler);
+  // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
+  //             (TaskHandle_t*)&upper_handler);
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
               (TaskHandle_t*)&sensor_handler);

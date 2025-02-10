@@ -120,8 +120,8 @@ void wk_usart2_init(void) {
   usart_init(USART2, 115200, USART_DATA_8BITS, USART_STOP_1_BIT);
   usart_transmitter_enable(USART2, TRUE);
   usart_receiver_enable(USART2, TRUE);
-  usart_interrupt_enable(USART2, USART_TDBE_INT, TRUE);
-  usart_interrupt_enable(USART1, USART_RDBF_INT, TRUE);
+  // usart_interrupt_enable(USART2, USART_TDBE_INT, TRUE);
+  // usart_interrupt_enable(USART1, USART_RDBF_INT, TRUE);
   usart_parity_selection_config(USART2, USART_PARITY_NONE);
 
   usart_hardware_flow_control_set(USART2, USART_HARDWARE_FLOW_NONE);

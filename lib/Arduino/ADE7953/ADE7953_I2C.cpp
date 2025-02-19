@@ -598,10 +598,10 @@ void ADE7953::initialize(){
 
   Wire.begin();
   delay(50);
-  pinMode(_CS, OUTPUT);
-  pinMode(_CLK, OUTPUT); 
-  digitalWrite(_CS, HIGH);// set CS & CLK pin HIGH for autodection of ADE7953 in I2C communication mode
-  digitalWrite(_CLK, HIGH);
+  // pinMode(_CS, OUTPUT);
+  // pinMode(_CLK, OUTPUT); 
+  // digitalWrite(_CS, HIGH);// set CS & CLK pin HIGH for autodection of ADE7953 in I2C communication mode
+  // digitalWrite(_CLK, HIGH);
 
   delay(50);
   

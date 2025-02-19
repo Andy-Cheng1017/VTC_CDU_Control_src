@@ -37,9 +37,9 @@
  */
 void wk_i2c3_init(void) {
   /* add user code begin i2c3_init 0 */
-  hi2cx.i2cx = I2Cx_PORT;
+  I2C3_h.i2cx = I2C3;
 
-  i2c_config(&hi2cx);
+  i2c_config(&I2C3_h);
   /* add user code end i2c3_init 0 */
 
   gpio_init_type gpio_init_struct;

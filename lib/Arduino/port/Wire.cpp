@@ -131,7 +131,7 @@ uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddres
   }
   // perform blocking read into buffer
   //   uint8_t read = twi_readFrom(address, rxBuffer, quantity, sendStop);
-  i2c_master_receive(&hi2cx, address, rxBuffer, quantity, I2C_TIMEOUT);
+  i2c_master_receive(&I2C3_h, address, rxBuffer, quantity, I2C_TIMEOUT);
   // set rx buffer iterator vars
   rxBufferIndex = 0;
   rxBufferLength = quantity;
@@ -177,7 +177,7 @@ void TwoWire::beginTransmission(int address) { beginTransmission((uint8_t)addres
 uint8_t TwoWire::endTransmission(uint8_t sendStop) {
   // transmit buffer (blocking)
   //   uint8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
-  i2c_status_type ret = i2c_master_transmit(&hi2cx, txAddress, txBuffer, txBufferLength, I2C_TIMEOUT);
+  i2c_status_type ret = i2c_master_transmit(&I2C3_h, txAddress, txBuffer, txBufferLength, I2C_TIMEOUT);
   if(ret != I2C_OK) {
     log_e("I2C error: %d", ret);
     return ret;

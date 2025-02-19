@@ -30,12 +30,15 @@
 #include <string.h>
 #include <math.h>
 
+#define LOG_TAG "Arduino"
+#include "elog.h"
+
 #ifdef __cplusplus
-extern "C"{
+extern "C" {
 #endif
 
 #define HIGH 0x1
-#define LOW  0x0
+#define LOW 0x0
 
 #define INPUT 0x0
 #define OUTPUT 0x1
@@ -48,7 +51,7 @@ extern "C"{
 #define RAD_TO_DEG 57.295779513082320876798154814105
 #define EULER 2.718281828459045235360287471352
 
-#define SERIAL  0x0
+#define SERIAL 0x0
 #define DISPLAY 0x1
 
 #define LSBFIRST 0
@@ -63,20 +66,20 @@ extern "C"{
 #undef abs
 #endif
 
-#define min(a,b) ((a)<(b)?(a):(b))
-#define max(a,b) ((a)>(b)?(a):(b))
-#define abs(x) ((x)>0?(x):-(x))
-#define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
-#define round(x)     ((x)>=0?(long)((x)+0.5):(long)((x)-0.5))
-#define radians(deg) ((deg)*DEG_TO_RAD)
-#define degrees(rad) ((rad)*RAD_TO_DEG)
-#define sq(x) ((x)*(x))
+#define min(a, b) ((a) < (b) ? (a) : (b))
+#define max(a, b) ((a) > (b) ? (a) : (b))
+#define abs(x) ((x) > 0 ? (x) : -(x))
+#define constrain(amt, low, high) ((amt) < (low) ? (low) : ((amt) > (high) ? (high) : (amt)))
+#define round(x) ((x) >= 0 ? (long)((x) + 0.5) : (long)((x) - 0.5))
+#define radians(deg) ((deg) * DEG_TO_RAD)
+#define degrees(rad) ((rad) * RAD_TO_DEG)
+#define sq(x) ((x) * (x))
 
 #define interrupts() sei()
 #define noInterrupts() cli()
 
-#define lowByte(w) ((uint8_t) ((w) & 0xff))
-#define highByte(w) ((uint8_t) ((w) >> 8))
+#define lowByte(w) ((uint8_t)((w) & 0xff))
+#define highByte(w) ((uint8_t)((w) >> 8))
 
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
 #define bitSet(value, bit) ((value) |= (1UL << (bit)))
@@ -100,9 +103,8 @@ void delay(unsigned long ms);
 void delayMicroseconds(unsigned int us);
 
 #ifdef __cplusplus
-} // extern "C"
+}  // extern "C"
 #endif
-
 
 uint16_t makeWord(uint16_t w);
 uint16_t makeWord(byte h, byte l);
@@ -120,5 +122,38 @@ long random(long);
 long random(long, long);
 void randomSeed(unsigned long);
 long map(long, long, long, long, long);
+
+// 加入官方 Print.h (你已經移植過來的)
+#include "Print.h"
+
+//====================================================
+// 宣告一個繼承自 Print 的類別，用來實作 Serial
+//====================================================
+class MySerial : public Print {
+ public:
+  MySerial() {}
+
+  // 實作純虛函式 write(uint8_t)
+  virtual size_t write(uint8_t c) override {
+    // 最簡單的做法：把單一字元呼叫到 log_i
+    // (或你想直接 fwrite / putchar... 皆可)
+    log_i("%c", c);
+    return 1;
+  }
+
+  // 覆寫另外一個 write(...)
+  virtual size_t write(const uint8_t *buffer, size_t size) override {
+    // 這裡示範一下：把多字元都印出
+    for (size_t i = 0; i < size; i++) {
+      log_i("%c", buffer[i]);
+    }
+    return size;
+  }
+};
+
+//====================================================
+// 宣告一個全域物件 Serial
+//====================================================
+extern MySerial Serial;
 
 #endif

@@ -31,6 +31,7 @@
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
 #include "LCD_task.h"
+#include "upper_task.h"
 
 #define LOG_TAG "407_Int"
 #include "elog.h"
@@ -214,59 +215,48 @@ void DebugMon_Handler(void) {
 //   /* add user code end SysTick_IRQ 1 */
 // }
 
-// /**
-//   * @brief  this function handles TMR1 Overflow and TMR10 handler.
-//   * @param  none
-//   * @retval none
-//   */
-// void TMR1_OVF_TMR10_IRQHandler(void)
-// {
-//   /* add user code begin TMR1_OVF_TMR10_IRQ 0 */
-
-//   /* add user code end TMR1_OVF_TMR10_IRQ 0 */
-
-
-//   /* add user code begin TMR1_OVF_TMR10_IRQ 1 */
-
-//   /* add user code end TMR1_OVF_TMR10_IRQ 1 */
-// }
-
-
-/**
- * @brief  this function handles TMR3 handler.
- * @param  none
- * @retval none
- */
-void TMR3_GLOBAL_IRQHandler(void) {
-  /* add user code begin TMR3_GLOBAL_IRQ 0 */
-
-  /* add user code end TMR3_GLOBAL_IRQ 0 */
-
-  /* add user code begin TMR3_GLOBAL_IRQ 1 */
-
-  /* add user code end TMR3_GLOBAL_IRQ 1 */
-}
-
-/**
- * @brief  this function handles TMR4 handler.
- * @param  none
- * @retval none
- */
-void TMR4_GLOBAL_IRQHandler(void) {
-  /* add user code begin TMR4_GLOBAL_IRQ 0 */
-
-  /* add user code end TMR4_GLOBAL_IRQ 0 */
-
-  /* add user code begin TMR4_GLOBAL_IRQ 1 */
-
-  /* add user code end TMR4_GLOBAL_IRQ 1 */
-}
 
 void USART1_IRQHandler(void) {
   if (usart_interrupt_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
     usart_interrupt_enable(USART1, USART_TDBE_INT, FALSE);
     start_dma_transfer();
     // usart_flag_clear(USART1, USART_TDBE_FLAG);
+  }
+}
+
+/**
+ * @brief  this function handles USART2 handler.
+ * @param  none
+ * @retval none
+ */
+void USART2_IRQHandler(void) {
+  /* add user code begin USART2_IRQ 0 */
+
+  /* add user code end USART2_IRQ 0 */
+  /* add user code begin USART2_IRQ 1 */
+
+  /* add user code end USART2_IRQ 1 */
+}
+
+/**
+ * @brief  this function handles UART4 handler.
+ * @param  none
+ * @retval none
+ */
+void UART4_IRQHandler(void) {
+  if (usart_interrupt_flag_get(RS485_UPPER.UART, USART_RDBF_FLAG) != RESET) {
+    usart_flag_clear(RS485_UPPER.UART, USART_RDBF_FLAG);
+    RS485_Rx_Data_ISR(&RS485_UPPER);
+
+  } else if (usart_interrupt_flag_get(RS485_UPPER.UART, USART_IDLEF_FLAG) != RESET) {
+    usart_flag_clear(RS485_UPPER.UART, USART_IDLEF_FLAG);
+    RS485_Rx_Cplt_ISR(&RS485_UPPER);
+
+  } else if (usart_interrupt_flag_get(RS485_UPPER.UART, USART_TDBE_FLAG) != RESET) {
+    usart_flag_clear(RS485_UPPER.UART, USART_TDBE_FLAG);
+    usart_interrupt_enable(RS485_UPPER.UART, USART_TDBE_INT, FALSE);
+    RS485_UPPER.tx_idex--;
+    RS485_Tx_Data_ISR(&RS485_UPPER);
   }
 }
 

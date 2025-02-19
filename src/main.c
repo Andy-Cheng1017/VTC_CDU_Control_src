@@ -4,16 +4,15 @@
 #include "at32f403a_407_wk_config.h"
 #include "wk_adc.h"
 #include "wk_crc.h"
-#include "wk_dac.h"
 #include "wk_debug.h"
-#include "wk_rtc.h"
+#include "wk_exint.h"
+#include "wk_i2c.h"
 #include "wk_spi.h"
 #include "wk_tmr.h"
 #include "wk_usart.h"
 #include "wk_dma.h"
 #include "wk_gpio.h"
 #include "wk_system.h"
-#include "wk_i2c.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "network_task.h"
@@ -26,11 +25,12 @@
 #include "store_data_task.h"
 #include "side_card_task.h"
 #include "pt100_task.h"
-#include "RS485.h"
-#include "pt100.h"
-#include "Two_Pt_Cal.h"
-#include "NTC.h"
-#include "SensConvVal.h"
+// #include "RS485.h"
+// #include "pt100.h"
+// #include "Two_Pt_Cal.h"
+// #include "NTC.h"
+// #include "SensConvVal.h"
+// #include "FG_RPM.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -54,7 +54,7 @@
 #define NETWORK_STK_SIZE 1024 * 2
 
 #define LCD_TASK_PRIO 3
-#define LCD_STK_SIZE 1024 
+#define LCD_STK_SIZE 1024
 
 #define UPPER_TASK_PRIO 3
 #define UPPER_STK_SIZE 1024
@@ -63,7 +63,7 @@
 #define SENSOR_STK_SIZE 1024
 
 #define PUMP_TASK_PRIO 5
-#define PUMP_STK_SIZE 512
+#define PUMP_STK_SIZE 1024
 
 #define RTC_TASK_PRIO 2
 #define RTC_STK_SIZE 512
@@ -135,7 +135,6 @@ int main(void) {
 
   /* nvic config. */
   wk_nvic_config();
-  // nvic_priority_group_config(NVIC_PRIORITY_GROUP_4);
 
   /* timebase config. */
   wk_timebase_init();
@@ -143,22 +142,22 @@ int main(void) {
   /* init spi1 function. */
   // wk_spi1_init();
 
+  /* init exint function. */
+  wk_exint_config();
+
   /* init adc1 function. */
   wk_tmr1_init();
   wk_dma1_channel1_init();
   wk_adc1_init();
 
-  /* init rtc function. */
-  // wk_rtc_init();
-
   /* init tmr3 function. */
-  // wk_tmr3_init();
+  wk_tmr3_init();
+
+  /* init tmr9 function. */
+  wk_tmr9_init();
 
   /* init tmr4 function. */
-  // wk_tmr4_init();
-
-  /* init dac function. */
-  // wk_dac_init();
+  wk_tmr4_init();
 
   /* init crc function. */
   wk_crc_init();
@@ -167,8 +166,8 @@ int main(void) {
   wk_gpio_config();
 
   /* add user code begin 2 */
-  // wk_usart2_init();
-  // wk_uart4_init();
+  wk_usart2_init();
+  wk_uart4_init();
 
   wk_usart1_init();
   wk_dma1_channel4_init();
@@ -189,16 +188,17 @@ void start_task(void* pvParameters) {
   // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
   vTaskDelay(50);
-  xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
-              (TaskHandle_t*)&LCD_handler);
+  // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
+  //             (TaskHandle_t*)&LCD_handler);
   vTaskDelay(50);
-  // xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
-  //             (TaskHandle_t*)&upper_handler);
+  xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
+              (TaskHandle_t*)&upper_handler);
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
               (TaskHandle_t*)&sensor_handler);
-  // xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
-  //             (TaskHandle_t*)&pump_handler);
+  vTaskDelay(50);
+  xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
+              (TaskHandle_t*)&pump_handler);
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
               (TaskHandle_t*)&RTC_handler);

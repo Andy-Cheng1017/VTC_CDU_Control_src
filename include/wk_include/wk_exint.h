@@ -1,7 +1,7 @@
 /* add user code begin Header */
 /**
   **************************************************************************
-  * @file     wk_dac.h
+  * @file     wk_exint.h
   * @brief    header file of work bench config
   **************************************************************************
   *                       Copyright notice & Disclaimer
@@ -25,8 +25,8 @@
 /* add user code end Header */
 
 /* define to prevent recursive inclusion -----------------------------------*/
-#ifndef __WK_DAC_H
-#define __WK_DAC_H
+#ifndef __WK_EXINT_H
+#define __WK_EXINT_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,8 +57,8 @@ extern "C" {
 
 /* exported functions ------------------------------------------------------- */
 
-  /* init dac function. */
-  void wk_dac_init(void);
+  /* init exint function. */
+  void wk_exint_config(void);
 
 /* add user code begin exported functions */
 

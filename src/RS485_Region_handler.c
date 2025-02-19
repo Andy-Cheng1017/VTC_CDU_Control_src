@@ -53,50 +53,49 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
   if (func == READ_HOLDING_REGISTERS) {
     switch (addr) {
       case 0x0030:
-        return Pt100Stat.pt100_1_temp_m / 10;
+        return (Pt100Stat.pt100_1_temp_m / 10) & 0xFFFF;
       case 0x0031:
-        return Pt100Stat.pt100_2_temp_m / 10;
+        return (Pt100Stat.pt100_2_temp_m / 10) & 0xFFFF;
       case 0x0032:
-        return Pt100Stat.pt100_3_temp_m / 10;
+        return (Pt100Stat.pt100_3_temp_m / 10) & 0xFFFF;
       case 0x0033:
-        return Pt100Stat.pt100_4_temp_m / 10;
+        return (Pt100Stat.pt100_4_temp_m / 10) & 0xFFFF;
       case 0x0034:
-        return SensStat.ntc_1_temp / 10;
+        return (SensStat.ntc_1_temp / 10) & 0xFFFF;
       case 0x0035:
-        return SensStat.ntc_2_temp / 10;
+        return (SensStat.ntc_2_temp / 10) & 0xFFFF;
       case 0x0036:
-        return SensStat.ntc_3_temp / 10;
+        return (SensStat.ntc_3_temp / 10) & 0xFFFF;
       case 0x0037:
-        return SensStat.ntc_4_temp / 10;
+        return (SensStat.ntc_4_temp / 10) & 0xFFFF;
       case 0x0038:
-        return SensStat.press_1_val;
+        return (SensStat.press_1_val) & 0xFFFF;
       case 0x0039:
-        return SensStat.press_2_val;
+        return (SensStat.press_2_val) & 0xFFFF;
       case 0x003A:
-        return SensStat.press_3_val;
+        return (SensStat.press_3_val) & 0xFFFF;
       case 0x003B:
-        return SensStat.press_4_val;
+        return (SensStat.press_4_val) & 0xFFFF;
       case 0x003C:
         retval = SensStat.Flow_val;
         return (retval >= -10000 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      case 0x003D:
+        return pump_status.pump_1_FB & 0xFFFF;
       case 0x003E:
-        retval = SensStat.voltage_input;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x003F:
-        retval = SensStat.current_input;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0040:
-        retval = (SensStat.power_input >> 16) & 0xFFFF;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0041:
-        retval = SensStat.power_input & 0xFFFF;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0047:
-        retval = pump_status.pump_1_FB;
-        return (retval >= 0 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0048:
-        retval = pump_status.pump_2_FB;
-        return (retval >= 0 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+        return pump_status.pump_2_FB & 0xFFFF;
+      // case 0x003E:
+      //   retval = SensStat.voltage_input;
+      //   return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      // case 0x003F:
+      //   retval = SensStat.current_input;
+      //   return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      // case 0x0040:
+      //   retval = (SensStat.power_input >> 16) & 0xFFFF;
+      //   return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+      // case 0x0041:
+      //   retval = SensStat.power_input & 0xFFFF;
+      //   return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
+
       default:
         return ILLIGAL_DATA_ADDR << 16;
     }
@@ -109,9 +108,9 @@ uint32_t DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t le
   if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
     switch (addr) {
       case 0x0062:
-        return (data >= 0 && data <= 10000) ? pump_control.pump_1_rpm = data : ILLIGAL_DATA_VALUE;
+        return (data >= 0 && data <= 1000) ? pump_control.pump_1_rpm = data : ILLIGAL_DATA_VALUE;
       case 0x0063:
-        return (data >= 0 && data <= 10000) ? pump_control.pump_2_rpm = data : ILLIGAL_DATA_VALUE;
+        return (data >= 0 && data <= 1000) ? pump_control.pump_2_rpm = data : ILLIGAL_DATA_VALUE;
       case 0x0066:
         return (data >= 0 && data <= 1000) ? SensCtrl.porpo_1_pwm = data : ILLIGAL_DATA_VALUE;
       case 0x0067:

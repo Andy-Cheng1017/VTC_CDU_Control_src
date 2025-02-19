@@ -141,8 +141,6 @@ SensCtrl_t SensCtrl = {
 void sensor_task_function(void* pvParameters) {
   log_i("Sensor Task Running");
 
-  tmr_counter_enable(TMR1, TRUE);
-
   int32_t raw_val = 0;
 
   Conv_Init(&PressConv);

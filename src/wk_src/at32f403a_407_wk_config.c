@@ -83,28 +83,12 @@ void wk_system_clock_config(void) {
   /* reset crm */
   crm_reset();
 
-  /* enable pwc periph clock */
-  // crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, TRUE);
-  /* enable battery powered domain access */
-  // pwc_battery_powered_domain_access(TRUE);
-
-  // /* check lext enabled or not */
-  // if (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
-  //   crm_clock_source_enable(CRM_CLOCK_SOURCE_LEXT, TRUE);
-  //   while (crm_flag_get(CRM_LEXT_STABLE_FLAG) == RESET) {
-  //   }
-  // }
-  /* disable battery powered domain access */
-  // pwc_battery_powered_domain_access(FALSE);
-  /* disable pwc periph clock */
-  // crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, FALSE);
-
   /* enable lick */
-  // crm_clock_source_enable(CRM_CLOCK_SOURCE_LICK, TRUE);
+  crm_clock_source_enable(CRM_CLOCK_SOURCE_LICK, TRUE);
 
   /* wait till lick is ready */
-  // while (crm_flag_get(CRM_LICK_STABLE_FLAG) != SET) {
-  // }
+  while (crm_flag_get(CRM_LICK_STABLE_FLAG) != SET) {
+  }
 
   /* enable hext */
   crm_clock_source_enable(CRM_CLOCK_SOURCE_HEXT, TRUE);
@@ -113,13 +97,12 @@ void wk_system_clock_config(void) {
   while (crm_hext_stable_wait() == ERROR) {
   }
 
-  // /* enable hick */
-  // crm_clock_source_enable(CRM_CLOCK_SOURCE_HICK, TRUE);
+  /* enable hick */
+  crm_clock_source_enable(CRM_CLOCK_SOURCE_HICK, TRUE);
 
-  // /* wait till hick is ready */
-  // while(crm_flag_get(CRM_HICK_STABLE_FLAG) != SET)
-  // {
-  // }
+  /* wait till hick is ready */
+  while (crm_flag_get(CRM_HICK_STABLE_FLAG) != SET) {
+  }
 
   /* config pll clock resource */
   crm_pll_config(CRM_PLL_SOURCE_HEXT, CRM_PLL_MULT_30, CRM_PLL_OUTPUT_RANGE_GT72MHZ);
@@ -162,7 +145,8 @@ void wk_system_clock_config(void) {
  * @param  none
  * @retval none
  */
-void wk_periph_clock_config(void) { /* enable dma1 periph clock */
+void wk_periph_clock_config(void) {
+  /* enable dma1 periph clock */
   crm_periph_clock_enable(CRM_DMA1_PERIPH_CLOCK, TRUE);
 
   /* enable crc periph clock */
@@ -198,6 +182,9 @@ void wk_periph_clock_config(void) { /* enable dma1 periph clock */
   /* enable usart1 periph clock */
   crm_periph_clock_enable(CRM_USART1_PERIPH_CLOCK, TRUE);
 
+  /* enable tmr9 periph clock */
+  crm_periph_clock_enable(CRM_TMR9_PERIPH_CLOCK, TRUE);
+
   /* enable i2c3 periph clock */
   crm_periph_clock_enable(CRM_I2C3_PERIPH_CLOCK, TRUE);
 
@@ -215,15 +202,6 @@ void wk_periph_clock_config(void) { /* enable dma1 periph clock */
 
   /* enable uart4 periph clock */
   crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, TRUE);
-
-  /* enable bpr periph clock */
-  crm_periph_clock_enable(CRM_BPR_PERIPH_CLOCK, TRUE);
-
-  /* enable pwc periph clock */
-  // crm_periph_clock_enable(CRM_PWC_PERIPH_CLOCK, TRUE);
-
-  /* enable dac periph clock */
-  // crm_periph_clock_enable(CRM_DAC_PERIPH_CLOCK, TRUE);
 }
 
 /**
@@ -241,11 +219,11 @@ void wk_nvic_config(void) {
   NVIC_SetPriority(DebugMonitor_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
   NVIC_SetPriority(PendSV_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 0, 0));
   NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
-  // nvic_irq_enable(TMR1_OVF_TMR10_IRQn, 0, 0);
-  nvic_irq_enable(TMR3_GLOBAL_IRQn, 0, 0);
-  nvic_irq_enable(TMR4_GLOBAL_IRQn, 0, 0);
+  nvic_irq_enable(EXINT9_5_IRQn, 0, 0);
+  nvic_irq_enable(TMR1_BRK_TMR9_IRQn, 0, 0);
   nvic_irq_enable(USART1_IRQn, 0, 0);
-  nvic_irq_enable(USART2_IRQn, 2, 0);
+  nvic_irq_enable(USART2_IRQn, 0, 0);
+  nvic_irq_enable(UART4_IRQn, 0, 0);
   nvic_irq_enable(UART8_IRQn, 0, 0);
 }
 

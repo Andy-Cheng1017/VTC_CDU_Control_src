@@ -20,7 +20,7 @@ bool UPPER_Unpkg_Flag = FALSE;
 bool UPPER_Decode_Flag = FALSE;
 
 Rs485_t RS485_UPPER = {
-    .UART = UART8,
+    .UART = UART4,
     .Mode = SLAVE,
     .BaudRate = BR_115200,
     .DataBit = USART_DATA_8BITS,

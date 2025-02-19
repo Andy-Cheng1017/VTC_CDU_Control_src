@@ -13,3 +13,5 @@ void delayMicroseconds(unsigned int us) {
 unsigned long micros(void){
     return xTaskGetTickCount() * portTICK_PERIOD_MS * 1000;
 }
+
+MySerial Serial;

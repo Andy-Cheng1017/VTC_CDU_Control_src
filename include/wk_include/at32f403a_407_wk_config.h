@@ -119,11 +119,6 @@ extern "C" {
 // #define DMA2_CHANNEL7_PERIPHERAL_BASE_ADDR   0
 /* add user code end dma define */
 
-/* Private defines -------------------------------------------------------------*/
-#define MCU_RTC_TAMPER_PIN GPIO_PINS_13
-#define MCU_RTC_TAMPER_GPIO_PORT GPIOC
-#define Crystal_32768K_O_PIN GPIO_PINS_14
-#define Crystal_32768K_O_GPIO_PORT GPIOC
 
 /* exported functions ------------------------------------------------------- */
 /* system clock config. */

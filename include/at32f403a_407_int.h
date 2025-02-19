@@ -61,13 +61,17 @@ void HardFault_Handler(void);
 void MemManage_Handler(void);
 void BusFault_Handler(void);
 void UsageFault_Handler(void);
-// void SVC_Handler(void);
+void SVC_Handler(void);
 void DebugMon_Handler(void);
-// void PendSV_Handler(void);
-// void SysTick_Handler(void);
+void PendSV_Handler(void);
+void SysTick_Handler(void);
 
-void TMR3_GLOBAL_IRQHandler(void);
-void TMR4_GLOBAL_IRQHandler(void);
+void EXINT9_5_IRQHandler(void);
+void TMR1_BRK_TMR9_IRQHandler(void);
+void USART1_IRQHandler(void);
+void USART2_IRQHandler(void);
+void UART4_IRQHandler(void);
+void UART8_IRQHandler(void);
 /* add user code begin exported functions */
 
 /* add user code end exported functions */

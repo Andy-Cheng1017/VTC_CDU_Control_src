@@ -40,6 +40,20 @@ void wk_debug_config(void)
 {
   /* jtag-dp disabled and sw-dp enabled */
   gpio_pin_remap_config(SWJTAG_GMUX_010, TRUE);
+
+  debug_periph_mode_set(DEBUG_TMR1_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR2_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR3_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR4_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR5_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR6_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR7_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR8_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_TMR9_PAUSE, TRUE);
+  debug_periph_mode_set(DEBUG_I2C1_SMBUS_TIMEOUT, TRUE);
+  debug_periph_mode_set(DEBUG_I2C2_SMBUS_TIMEOUT, TRUE);
+  debug_periph_mode_set(DEBUG_I2C3_SMBUS_TIMEOUT, TRUE);
+
 }
 
 /* add user code begin 1 */

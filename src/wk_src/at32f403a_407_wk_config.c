@@ -200,8 +200,14 @@ void wk_periph_clock_config(void) {
   /* enable usart2 periph clock */
   crm_periph_clock_enable(CRM_USART2_PERIPH_CLOCK, TRUE);
 
+  /* enable usart3 periph clock */
+  crm_periph_clock_enable(CRM_USART3_PERIPH_CLOCK, TRUE);
+
   /* enable uart4 periph clock */
   crm_periph_clock_enable(CRM_UART4_PERIPH_CLOCK, TRUE);
+
+  /* enable i2c2 periph clock */
+  crm_periph_clock_enable(CRM_I2C2_PERIPH_CLOCK, TRUE);
 }
 
 /**
@@ -221,8 +227,12 @@ void wk_nvic_config(void) {
   NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
   nvic_irq_enable(EXINT9_5_IRQn, 0, 0);
   nvic_irq_enable(TMR1_BRK_TMR9_IRQn, 0, 0);
+  nvic_irq_enable(TMR3_GLOBAL_IRQn, 0, 0);
+  nvic_irq_enable(TMR4_GLOBAL_IRQn, 0, 0);
   nvic_irq_enable(USART1_IRQn, 0, 0);
   nvic_irq_enable(USART2_IRQn, 0, 0);
+  nvic_irq_enable(USART3_IRQn, 0, 0);
+  nvic_irq_enable(EXINT15_10_IRQn, 0, 0);
   nvic_irq_enable(UART4_IRQn, 0, 0);
   nvic_irq_enable(UART8_IRQn, 0, 0);
 }

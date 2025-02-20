@@ -25,12 +25,6 @@
 #include "store_data_task.h"
 #include "side_card_task.h"
 #include "pt100_task.h"
-// #include "RS485.h"
-// #include "pt100.h"
-// #include "Two_Pt_Cal.h"
-// #include "NTC.h"
-// #include "SensConvVal.h"
-// #include "FG_RPM.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -168,14 +162,17 @@ int main(void) {
   /* add user code begin 2 */
   wk_usart2_init();
   wk_uart4_init();
+  wk_usart3_init();
+  wk_uart8_init();
 
   wk_usart1_init();
   wk_dma1_channel4_init();
   Logger_init();
+  
+  /* init i2c2 function. */
+  wk_i2c2_init();
 
   wk_i2c3_init();
-
-  wk_uart8_init();
 
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);
@@ -199,9 +196,9 @@ void start_task(void* pvParameters) {
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
               (TaskHandle_t*)&pump_handler);
-  vTaskDelay(50);
-  xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
-              (TaskHandle_t*)&RTC_handler);
+  // vTaskDelay(50);
+  // xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
+  //             (TaskHandle_t*)&RTC_handler);
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
               (TaskHandle_t*)&pt100_handler);

@@ -9,6 +9,9 @@ typedef struct {
   uint32_t tmr_period_val;
 } PwmParam_t;
 
-void PwmSetup(PwmParam_t *pwm, uint16_t duty);
+
+void PwmInit(PwmParam_t *pwm);
+
+void PwmSetDuty(PwmParam_t *pwm, uint16_t duty);
 
 #endif

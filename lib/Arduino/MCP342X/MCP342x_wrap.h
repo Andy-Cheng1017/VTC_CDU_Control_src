@@ -2,6 +2,7 @@
 #define MCP342X_WRAP_H
 
 #include <stdint.h>
+#include "i2c_application.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -21,7 +22,10 @@ typedef enum {
   errorReadTimeout,
   errorConversionNotReady,
   errorConfigureFailed,
+  errorDiscriminant
 } MCP342x_error_t;
+
+void MCP342xInit(i2c_handle_type *hi2c, uint8_t i2c_address);
 
 uint8_t MCP342x_generalCallReset();
 

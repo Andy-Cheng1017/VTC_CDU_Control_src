@@ -7,6 +7,16 @@
 
 TaskHandle_t pt100_handler;
 
+Pt100I2cParam_t Pt100I2cParam = {
+    .i2c_handle =
+        {
+            .i2cx = I2C3,
+            .timeout = 0xFFFFFFFF,
+        },
+    .mcp_i2c_addr = 0xD0,
+    .adc_gain = 3,
+};
+
 Pt100Stat_t Pt100Stat = {0};
 
 Pt100TwoCal_t Pt100TwoCal = {
@@ -67,43 +77,37 @@ void pt100_task_function(void* pvParameters) {
   if (Cal_CalcParams(&PtCal_3)) log_e("PtCal_3 CalcParams failed");
   if (Cal_CalcParams(&PtCal_4)) log_e("PtCal_4 CalcParams failed");
 
-  MCP342x_generalCallReset();
-  vTaskDelay(5);
+  PT100_Init(&Pt100I2cParam);
 
   while (1) {
     vTaskDelay(2000);
-    long result;
 
-    err = MCP342x_convertAndRead(MCP342x_CHANNEL_1, &result);
+    err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_1, &raw_val);
     if (err == errorNone) {
-      raw_val = PT100_CalcTemp(3, result);
       Pt100Stat.pt100_1_temp_m = Cal_Apply(&PtCal_1, raw_val);
       // log_i("pt100_1_temp_m: %d", Pt100Stat.pt100_1_temp_m);
     } else {
       log_e("MCP342x_convertAndRead error: %d", err);
     }
 
-    err = MCP342x_convertAndRead(MCP342x_CHANNEL_2, &result);
+    err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_2, &raw_val);
     if (err == errorNone) {
-      raw_val = PT100_CalcTemp(3, result);
       Pt100Stat.pt100_2_temp_m = Cal_Apply(&PtCal_2, raw_val);
       // log_i("pt100_2_temp_m: %d", Pt100Stat.pt100_2_temp_m);
     } else {
       log_e("MCP342x_convertAndRead error: %d", err);
     }
 
-    err = MCP342x_convertAndRead(MCP342x_CHANNEL_3, &result);
+    err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_3, &raw_val);
     if (err == errorNone) {
-      raw_val = PT100_CalcTemp(3, result);
       Pt100Stat.pt100_3_temp_m = Cal_Apply(&PtCal_3, raw_val);
       // log_i("pt100_3_temp_m: %d", Pt100Stat.pt100_3_temp_m);
     } else {
       log_e("MCP342x_convertAndRead error: %d", err);
     }
 
-    err = MCP342x_convertAndRead(MCP342x_CHANNEL_4, &result);
+    err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_4, &raw_val);
     if (err == errorNone) {
-      raw_val = PT100_CalcTemp(3, result);
       Pt100Stat.pt100_4_temp_m = Cal_Apply(&PtCal_4, raw_val);
       // log_i("pt100_4_temp_m: %d", Pt100Stat.pt100_4_temp_m);
     } else {

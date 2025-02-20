@@ -71,12 +71,15 @@ void pump_task_function(void* pvParameters) {
   FgInit(&Pump1_FgParam);
   FgInit(&Pump2_FgParam);
 
+  PwmInit(&Pump1_PwmParam);
+  PwmInit(&Pump2_PwmParam);
+
   while (1) {
     FgGetRPM(&Pump1_FgParam, &pump_status.pump_1_FB);
     FgGetRPM(&Pump2_FgParam, &pump_status.pump_2_FB);
 
-    PwmSetup(&Pump1_PwmParam, pump_control.pump_1_rpm);
-    PwmSetup(&Pump2_PwmParam, pump_control.pump_2_rpm);
+    PwmSetDuty(&Pump1_PwmParam, pump_control.pump_1_rpm);
+    PwmSetDuty(&Pump2_PwmParam, pump_control.pump_2_rpm);
     vTaskDelay(100);
   }
 }

@@ -1,27 +1,27 @@
 /* add user code begin Header */
 /**
-  **************************************************************************
-  * @file     wk_i2c.h
-  * @brief    header file of work bench config
-  **************************************************************************
-  *                       Copyright notice & Disclaimer
-  *
-  * The software Board Support Package (BSP) that is made available to
-  * download from Artery official website is the copyrighted work of Artery.
-  * Artery authorizes customers to use, copy, and distribute the BSP
-  * software and its related documentation for the purpose of design and
-  * development in conjunction with Artery microcontrollers. Use of the
-  * software is governed by this copyright notice and the following disclaimer.
-  *
-  * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
-  * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
-  * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
-  * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
-  * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
-  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
-  *
-  **************************************************************************
-  */
+ **************************************************************************
+ * @file     wk_i2c.h
+ * @brief    header file of work bench config
+ **************************************************************************
+ *                       Copyright notice & Disclaimer
+ *
+ * The software Board Support Package (BSP) that is made available to
+ * download from Artery official website is the copyrighted work of Artery.
+ * Artery authorizes customers to use, copy, and distribute the BSP
+ * software and its related documentation for the purpose of design and
+ * development in conjunction with Artery microcontrollers. Use of the
+ * software is governed by this copyright notice and the following disclaimer.
+ *
+ * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
+ * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
+ * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
+ * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
+ * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+ *
+ **************************************************************************
+ */
 /* add user code end Header */
 
 /* define to prevent recursive inclusion -----------------------------------*/
@@ -34,7 +34,6 @@ extern "C" {
 
 /* includes -----------------------------------------------------------------------*/
 #include "at32f403a_407_wk_config.h"
-#include "i2c_application.h"
 
 /* private includes -------------------------------------------------------------*/
 /* add user code begin private includes */
@@ -43,12 +42,12 @@ extern "C" {
 
 /* exported types -------------------------------------------------------------*/
 /* add user code begin exported types */
-#define I2C_TIMEOUT                      0xFFFFFFFF
+
 /* add user code end exported types */
 
 /* exported constants --------------------------------------------------------*/
 /* add user code begin exported constants */
-i2c_handle_type I2C3_h;
+
 /* add user code end exported constants */
 
 /* exported macro ------------------------------------------------------------*/
@@ -58,8 +57,11 @@ i2c_handle_type I2C3_h;
 
 /* exported functions ------------------------------------------------------- */
 
-  /* init i2c3 function. */
-  void wk_i2c3_init(void);
+/* init i2c2 function. */
+void wk_i2c2_init(void);
+
+/* init i2c3 function. */
+void wk_i2c3_init(void);
 
 /* add user code begin exported functions */
 

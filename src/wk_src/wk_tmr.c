@@ -56,8 +56,15 @@ void wk_tmr1_init(void) {
   tmr_sub_sync_mode_set(TMR1, FALSE);
   tmr_primary_mode_select(TMR1, TMR_PRIMARY_SEL_OVERFLOW);
 
-  // tmr_interrupt_enable(TMR1, TMR_OVF_INT, TRUE);
   tmr_counter_enable(TMR1, TRUE);
+
+  /**
+   * Users need to configure TMR1 interrupt functions according to the actual application.
+   * 1. Call the below function to enable the corresponding TMR1 interrupt.
+   *     --tmr_interrupt_enable(...)
+   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
+   *     --void TMR1_BRK_TMR9_IRQHandler(void)
+   */
 
   /* add user code begin tmr1_init 2 */
 
@@ -92,6 +99,14 @@ void wk_tmr3_init(void) {
   tmr_overflow_event_disable(TMR3, TRUE);
 
   tmr_counter_enable(TMR3, TRUE);
+
+  /**
+   * Users need to configure TMR3 interrupt functions according to the actual application.
+   * 1. Call the below function to enable the corresponding TMR3 interrupt.
+   *     --tmr_interrupt_enable(...)
+   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
+   *     --void TMR3_GLOBAL_IRQHandler(void)
+   */
 
   /* add user code begin tmr3_init 2 */
 
@@ -179,8 +194,16 @@ void wk_tmr4_init(void) {
 
   tmr_counter_enable(TMR4, TRUE);
 
+  /**
+   * Users need to configure TMR4 interrupt functions according to the actual application.
+   * 1. Call the below function to enable the corresponding TMR4 interrupt.
+   *     --tmr_interrupt_enable(...)
+   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
+   *     --void TMR4_GLOBAL_IRQHandler(void)
+   */
+
   /* add user code begin tmr4_init 2 */
-  tmr_output_enable(TMR4, TRUE);
+
   /* add user code end tmr4_init 2 */
 }
 
@@ -206,8 +229,19 @@ void wk_tmr9_init(void) {
 
   tmr_counter_enable(TMR9, TRUE);
 
-  tmr_interrupt_enable(TMR9, TMR_OVF_INT, TRUE);
+  /**
+   * Users need to configure TMR9 interrupt functions according to the actual application.
+   * 1. Call the below function to enable the corresponding TMR9 interrupt.
+   *     --tmr_interrupt_enable(...)
+   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
+   *     --void TMR1_BRK_TMR9_IRQHandler(void)
+   */
+
+  /* add user code begin tmr9_init 2 */
+
+  /* add user code end tmr9_init 2 */
 }
+
 /* add user code begin 1 */
 
 /* add user code end 1 */

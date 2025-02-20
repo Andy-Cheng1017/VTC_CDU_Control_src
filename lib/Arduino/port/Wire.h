@@ -12,6 +12,8 @@
 // WIRE_HAS_END means Wire has end()
 #define WIRE_HAS_END 1
 
+void wireSetHandle(void *hi2c);
+
 class TwoWire {
  private:
   static uint8_t rxBuffer[];

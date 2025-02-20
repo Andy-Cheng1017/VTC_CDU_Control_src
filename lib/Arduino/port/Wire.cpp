@@ -21,7 +21,6 @@
   Modified 2020 by Greyson Christoforo (grey@christoforo.net) to implement timeouts
 */
 
-
 extern "C" {
 #include <stdlib.h>
 #include <string.h>
@@ -29,12 +28,19 @@ extern "C" {
 }
 
 #include "i2c_application.h"
-#include "wk_i2c.h"
+// #include "wk_i2c.h"
 
 #define LOG_TAG "Arduino_Wire"
 
 #include "Wire.h"
 #include "elog.h"
+
+i2c_handle_type *g_wireHandle;
+
+void wireSetHandle(void *hi2c) {
+  i2c_handle_type *handle = (i2c_handle_type *)hi2c;
+  g_wireHandle = handle;
+}
 
 // Initialize Class Variables //////////////////////////////////////////////////
 
@@ -131,7 +137,7 @@ uint8_t TwoWire::requestFrom(uint8_t address, uint8_t quantity, uint32_t iaddres
   }
   // perform blocking read into buffer
   //   uint8_t read = twi_readFrom(address, rxBuffer, quantity, sendStop);
-  i2c_master_receive(&I2C3_h, address, rxBuffer, quantity, I2C_TIMEOUT);
+  i2c_master_receive(g_wireHandle, address, rxBuffer, quantity, g_wireHandle->timeout);
   // set rx buffer iterator vars
   rxBufferIndex = 0;
   rxBufferLength = quantity;
@@ -177,8 +183,8 @@ void TwoWire::beginTransmission(int address) { beginTransmission((uint8_t)addres
 uint8_t TwoWire::endTransmission(uint8_t sendStop) {
   // transmit buffer (blocking)
   //   uint8_t ret = twi_writeTo(txAddress, txBuffer, txBufferLength, 1, sendStop);
-  i2c_status_type ret = i2c_master_transmit(&I2C3_h, txAddress, txBuffer, txBufferLength, I2C_TIMEOUT);
-  if(ret != I2C_OK) {
+  i2c_status_type ret = i2c_master_transmit(g_wireHandle, txAddress, txBuffer, txBufferLength, g_wireHandle->timeout);
+  if (ret != I2C_OK) {
     log_e("I2C error: %d", ret);
     return ret;
   }
@@ -222,7 +228,7 @@ size_t TwoWire::write(uint8_t data) {
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-size_t TwoWire::write(const uint8_t* data, size_t quantity) {
+size_t TwoWire::write(const uint8_t *data, size_t quantity) {
   //   if (transmitting) {
   // in master transmitter mode
   for (size_t i = 0; i < quantity; ++i) {

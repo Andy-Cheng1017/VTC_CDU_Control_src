@@ -1,10 +1,16 @@
 #include "MCP342x_wrap.h"
 #include "MCP342x.h"
+#include "Wire.h"
 
 #define LOG_TAG "MCP342x_wrap"
 #include "elog.h"
 
-MCP342x adc = MCP342x(0xD0);
+MCP342x adc;
+
+void MCP342xInit(i2c_handle_type *hi2c, uint8_t i2c_address) {
+  wireSetHandle(hi2c);
+  adc = MCP342x(i2c_address);
+}
 
 uint8_t MCP342x_generalCallReset() { return adc.generalCallReset(); }
 
@@ -23,10 +29,7 @@ MCP342x::Channel convertChannel(MCP342x_channel_t channel) {
   }
 }
 
-MCP342x_error_t convertError(MCP342x::error_t error) {
-    return static_cast<MCP342x_error_t>(error);
-}
-
+MCP342x_error_t convertError(MCP342x::error_t error) { return static_cast<MCP342x_error_t>(error); }
 
 MCP342x_error_t MCP342x_convertAndRead(MCP342x_channel_t channel, long *result) {
   const MCP342x::Mode mode = MCP342x::oneShot;

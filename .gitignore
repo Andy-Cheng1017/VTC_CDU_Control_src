@@ -1,4 +1,3 @@
 .vscode/*
 .pio/*
-.pio/build/genericAT32F407VGT7/idedata.json
-.pio/build/project.checksum
+build/*

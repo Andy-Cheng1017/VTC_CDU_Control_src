@@ -6,128 +6,163 @@
 #include "elog.h"
 
 TaskHandle_t SideCardHandler;
-TaskHandle_t SensCardHandler;
-TaskHandle_t FansHandler;
 
-RsFunc_t CardRxFunc = 0;
-uint8_t card_rx_data[CARD_DATA_MAX_SIZE] = {0};
-uint8_t card_rx_data_len = 0;
-
-RsFunc_t CardTxFunc = 0;
-uint8_t card_tx_tata[CARD_DATA_MAX_SIZE] = {0};
-uint8_t card_tx_tata_len = 0;
-
-static bool Unpkg_Flag = FALSE;
+TaskHandle_t ReadCardHandler;
 
 Rs485_t RsCard = {
-    .UART = UART4,
+    .UART = USART2,
     .Mode = MASTER,
     .BaudRate = BR_115200,
     .DataBit = USART_DATA_8BITS,
     .StopBit = USART_STOP_1_BIT,
+    .root = true,
 };
 
-uint8_t data_or_num[2] = {SENS_CARD_TOTLA_REG_NUM};
+uint16_t fan_duty[16] = {0};
 
 SensCardStat_t SensCardStat = {0};
 
 FansCardCtrl_t FansCardCtrl = {0};
 FansCardStat_t FansCardStat = {0};
 
+void USART2_IRQHandler(void) {
+  if (usart_interrupt_flag_get(RsCard.UART, USART_RDBF_FLAG) != RESET) {
+    usart_flag_clear(RsCard.UART, USART_RDBF_FLAG);
+    RS485_Rx_Data_ISR(&RsCard);
+
+  } else if (usart_interrupt_flag_get(RsCard.UART, USART_IDLEF_FLAG) != RESET) {
+    usart_flag_clear(RsCard.UART, USART_IDLEF_FLAG);
+    RS485_Rx_Cplt_ISR(&RsCard);
+
+  } else if (usart_interrupt_flag_get(RsCard.UART, USART_TDBE_FLAG) != RESET) {
+    usart_flag_clear(RsCard.UART, USART_TDBE_FLAG);
+    usart_interrupt_enable(RsCard.UART, USART_TDBE_INT, FALSE);
+    RsCard.tx_idex--;
+    RS485_Tx_Data_ISR(&RsCard);
+  }
+}
+
 void SideCardTaskFunc(void* pvParameters) {
   RsInit(&RsCard);
-  RsCard.reg_hdle_stat = 0x0010;
-  RsCard.reg_hdle_end = 0x001F;
-  RsRegHdle(&RsCard, SensCardHdle);
-  RsCard.reg_hdle_stat = 0x0020;
-  RsCard.reg_hdle_end = 0x0033;
+
+  RsCard.reg_hdle_stat = SENS_CARD_REG_START;
+  RsCard.reg_hdle_end = SENS_CARD_REG_END;
+  RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
+  RsRegHdle(&RsCard, DataRead_Handler);
+
+  RsCard.reg_hdle_stat = FANS_CARD_REG_START;
+  RsCard.reg_hdle_end = FANS_CARD_REG_END;
+  RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
   RsRegHdle(&RsCard, FansCardHdle);
 
-  xTaskCreate((TaskFunction_t)SensCardTaskFunc, (const char*)"Sens Card Task Func", (uint16_t)SENS_STK_SIZE, (void*)NULL, (UBaseType_t)SENS_TASK_PRIO,
-              (TaskHandle_t*)&SensCardHandler);
+  xTaskCreate((TaskFunction_t)ReadCardTaskFunc, (const char*)"Read Card Task Func", (uint16_t)READ_CARD_STK_SIZE, (void*)NULL,
+              (UBaseType_t)READ_CARD_TASK_PRIO, (TaskHandle_t*)&ReadCardHandler);
   vTaskDelay(100);
-  xTaskCreate((TaskFunction_t)FansCardTaskFunc, (const char*)"Fans Card Task Func", (uint16_t)FANS_STK_SIZE, (void*)NULL, (UBaseType_t)FANS_TASK_PRIO,
-              (TaskHandle_t*)&FansHandler);
-  vTaskDelay(100);
-  while (1) {
-    if (RsCard.rx_pkg_cplt_f == TRUE) {
-      memset(card_rx_data, 0, CARD_DATA_MAX_SIZE);
-      card_rx_data_len = 0;
-      RsError_t ret = RsUnpkg(&RsCard, &CardRxFunc, card_rx_data, &card_rx_data_len);
 
-      if (ret == UNPKG_FINISH) {
-        log_i("485 Unpkg Finish");
+  RsError_t err;
+
+  while (1) {
+    if (RsChkAvailable(&RsCard)) {
+      err = RS485Read(&RsCard);
+
+      if (err == UNPKG_FINISH) {
+        continue;
+      } else if (err != RS485_OK) {
+        log_e("Error reading from RS485: %d", err);
+        continue;
       } else {
-        log_i("sens Func: %d", CardRxFunc);
-        elog_hexdump("card_rx_Data", 16, card_rx_data, sizeof(card_rx_data));
-        if (!ret) {
-          log_i("sens Unpkg Success");
-          Unpkg_Flag = TRUE;
-        } else if (ret == UNPKG_OVER_PACKGE_SIZE) {
-          log_e("485 Over Package Size");
-          Unpkg_Flag = FALSE;
-        } else if (ret == CRC_ERROR) {
-          log_e("485 CRC Error");
-          Unpkg_Flag = FALSE;
-        } else if (ret == OTHER_SLAVE_ADDR)
-          log_i("485 Not My Address");
+        log_i("RS485 Read Success");
+        elog_hexdump("Card_rx_Data", 32, RsCard.rx_Data, sizeof(RsCard.rx_Data));
+        if (RsCard.rx_Func == WRITE_MULTIPLE_REGISTERS) {
+          continue;
+        }
+      }
+
+      err = RS485ReadHandler(&RsCard);
+
+      if (err != RS485_OK) {
+        log_e("Error handling RS485: %d", err);
+        continue;
+      } else {
+        log_i("RS485 Handler Success");
+        xTaskNotifyGive(ReadCardHandler);
       }
     }
 
-    if (CardRxFunc != 0 && Unpkg_Flag) {
-      RsError_t ret = RsDecd(&RsCard, CardRxFunc, card_rx_data, card_rx_data_len, NULL, NULL, NULL);
-      if (!ret) {
-        log_i("sens Decode Success");
-        log_i("sens Func: %d", CardTxFunc);
-        log_i("sens Data: %d", card_tx_tata);
-      } else if (ret == ILLIGAL_FUNC)
-        log_e("485 Illegal Function");
-      else if (ret == ILLIGAL_DATA_ADDR)
-        log_e("485 Illegal Data Address");
-      else if (ret == ILLIGAL_DATA_VALUE)
-        log_e("485 Illegal Data Value");
-      else if (ret == SLAVE_DEVICE_FAILURE)
-        log_e("485 Slave Device Failure");
-      CardRxFunc = 0;
-      card_rx_data_len = 0;
-      memset(card_rx_data, 0, CARD_DATA_MAX_SIZE);
-      Unpkg_Flag = FALSE;
-    }
-    vTaskDelay(10);
+    vTaskDelay(25);
   }
 }
 
-void SensCardTaskFunc(void* pvParameters) {
+void ReadCardTaskFunc(void* pvParameters) {
+  TickType_t xLastWakeTime = xTaskGetTickCount();
+
+  RsError_t ret;
+
+  uint32_t notificationValue = 0;
+
   while (1) {
-    CardTxFunc = READ_HOLDING_REGISTERS;
+    vTaskDelayUntil(&xLastWakeTime, RS485_SIDECARD_READ_PERIOD);
+
+    RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = SENS_CARD_ADDR;
-    RsError_t ret = RsEncd(&RsCard, CardTxFunc, SENS_CARD_REG_START, data_or_num, NULL, card_tx_tata, &card_tx_tata_len);
-    if (!ret) {
-      log_i("Sensor Card Encode Success");
-      RS485_Pkg(&RsCard, SENS_CARD_ADDR, CardTxFunc, card_tx_tata, card_tx_tata_len);
-    } else if (ret == ENCODE_FOR_NUMBER)
-      log_e("Sensor Card Encode ERRO For Number");
-    else if (ret == ENCODE_FOR_SINGLE_DATA)
-      log_e("Sensor Card Encode ERRO For Single Data");
+    RsCard.reg_hdle_stat = SENS_CARD_REG_START;
+    RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
 
-    vTaskDelay(1000);
-  }
-  vTaskDelete(NULL);
-}
+    ret = RS485WriteHandler(&RsCard, NULL, NULL);
+    if (ret) {
+      log_e("Sens Card Write Handler Error %d", ret);
+      continue;
+    }
 
-void FansCardTaskFunc(void* pvParameters) {
-  while (1) {
-    CardTxFunc = READ_HOLDING_REGISTERS;
+    ret = RS485Write(&RsCard);
+    if (ret) {
+      log_e("Sens Card Write Error %d", ret);
+      continue;
+    }
+    notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+
+    if (notificationValue > 0) {
+    }
+
+    RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = FANS_CARD_ADDR;
-    RsError_t ret = RsEncd(&RsCard, CardTxFunc, SENS_CARD_REG_START, data_or_num, NULL, card_tx_tata, &card_tx_tata_len);
-    if (!ret) {
-      log_i("Fans Card Encode Success");
-      RS485_Pkg(&RsCard, FANS_CARD_ADDR, CardTxFunc, card_tx_tata, card_tx_tata_len);
-    } else if (ret == ENCODE_FOR_NUMBER)
-      log_e("Fans Card Encode ERRO For Number");
-    else if (ret == ENCODE_FOR_SINGLE_DATA)
-      log_e("Fans Card Encode ERRO For Single Data");
-    vTaskDelay(1000);
+    RsCard.reg_hdle_stat = FANS_CARD_REG_START;
+    RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
+
+    ret = RS485WriteHandler(&RsCard, NULL, NULL);
+    if (ret) {
+      log_e("Fans Card Write Handler Error %d", ret);
+      continue;
+    }
+
+    ret = RS485Write(&RsCard);
+    if (ret) {
+      log_e("Fans Card Write Error %d", ret);
+      continue;
+    }
+
+    notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+
+    if (notificationValue > 0) {
+      RsCard.tx_Func = WRITE_MULTIPLE_REGISTERS;
+      RsCard.ip_addr = FANS_CARD_ADDR;
+      RsCard.reg_hdle_stat = FANS_CARD_WRITE_REG_START;
+      RsCard.reg_hdle_num = FANS_CARD_WRITE_NUM;
+
+      memset(fan_duty, 1, sizeof(fan_duty));
+
+      ret = RS485WriteHandler(&RsCard, fan_duty, sizeof(fan_duty));
+      if (ret) {
+        log_e("Fans Card Write Handler Error %d", ret);
+        continue;
+      }
+
+      ret = RS485Write(&RsCard);
+      if (ret) {
+        log_e("Fans Card Write Error %d", ret);
+        continue;
+      }
+    }
   }
   vTaskDelete(NULL);
 }

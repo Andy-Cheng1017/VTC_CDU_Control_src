@@ -134,8 +134,8 @@ SensConvVal_t PressConv = {
 
 SensStat_t SensStat = {0};
 SensCtrl_t SensCtrl = {
-    .porpo_1_pwm = 0,
-    .porpo_2_pwm = 0,
+    .porpo_1_duty = 0,
+    .porpo_2_duty = 0,
 };
 
 void sensor_task_function(void* pvParameters) {

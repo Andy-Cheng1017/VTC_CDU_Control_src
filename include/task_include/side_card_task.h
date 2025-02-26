@@ -14,64 +14,82 @@
 
 #define CARD_DATA_MAX_SIZE 32
 
-#define SENS_CARD_REG_START 0x0010
-#define SENS_CARD_TOTLA_REG_NUM 7
-#define FANS_CARD_REG_START 0x0010
-#define FANS_CARD_TOTLA_REG_NUM 16
+#define SENS_CARD_REG_START 0x0030
+#define SENS_CARD_REG_END 0x005F
+#define SENS_CARD_TOTAL_REG_NUM (SENS_CARD_REG_END - SENS_CARD_REG_START + 1)
 
-#define SENS_TASK_PRIO 3
-#define SENS_STK_SIZE 512
-#define FANS_TASK_PRIO 4
-#define FANS_STK_SIZE 512
+
+#define FANS_CARD_REG_START 0x0080
+#define FANS_CARD_REG_END 0x009F
+#define FANS_CARD_TOTAL_REG_NUM (FANS_CARD_REG_END - FANS_CARD_REG_START + 1)
+#define FANS_CARD_WRITE_REG_START 0x0090
+#define FANS_CARD_WRITE_REG_END 0x009F
+#define FANS_CARD_WRITE_NUM (FANS_CARD_WRITE_REG_END - FANS_CARD_WRITE_REG_START + 1)
+
+#define READ_CARD_TASK_PRIO 2
+#define READ_CARD_STK_SIZE 512
+
+#define RS485_READ_TIMEOUT 500
+#define RS485_SIDECARD_READ_PERIOD 1000
 
 extern TaskHandle_t SideCardHandler;
-extern TaskHandle_t SensCardHandler;
-extern TaskHandle_t FansHandler;
+extern TaskHandle_t ReadCardHandler;
 
 typedef struct {
-  int16_t pt100_1_temp_m;  // 0x0010
-  int16_t pt100_2_temp_m;  // 0x0011
-  uint16_t AI1;          // 0x0012
-  uint16_t AI2;          // 0x0013
-  int16_t Temperture;    // 0x0014
-  uint16_t Humidity;     // 0x0015
-  bool DI1;              // 0x0016
-  bool DI2;
-  bool DI3;
-  bool DI4;
+  int32_t pt100_1_temp_m; 
+  int32_t pt100_2_temp_m;  
+  int32_t pt100_3_temp_m;  
+  int32_t pt100_4_temp_m;    
+  uint8_t leak_sensor;
+  int16_t temperature;    
+  uint16_t humidity;      
 } SensCardStat_t;
 
 extern SensCardStat_t SensCardStat;
 
 typedef struct {
-  uint16_t fans_speed;
+  uint16_t fan1_duty; // 0x0090
+  uint16_t fan2_duty;  
+  uint16_t fan3_duty;  
+  uint16_t fan4_duty;  
+  uint16_t fan5_duty;  
+  uint16_t fan6_duty;  
+  uint16_t fan7_duty;  
+  uint16_t fan8_duty;  
+  uint16_t fan9_duty;  
+  uint16_t fan10_duty;  
+  uint16_t fan11_duty;  
+  uint16_t fan12_duty;  
+  uint16_t fan13_duty;  
+  uint16_t fan14_duty;  
+  uint16_t fan15_duty;  
+  uint16_t fan16_duty; // 0x009F
 } FansCardCtrl_t;
 
 extern FansCardCtrl_t FansCardCtrl;
 
 typedef struct {
-  uint16_t fan1_FB;  // 0x0010
-  uint16_t fan2_FB;
-  uint16_t fan3_FB;
-  uint16_t fan4_FB;
-  uint16_t fan5_FB;
-  uint16_t fan6_FB;
-  uint16_t fan7_FB;
-  uint16_t fan8_FB;
-  uint16_t fan9_FB;
-  uint16_t fan10_FB;
-  uint16_t fan11_FB;
-  uint16_t fan12_FB;
-  uint16_t fan13_FB;
-  uint16_t fan14_FB;
-  uint16_t fan15_FB;
-  uint16_t fan16_FB;  // 0x001F
+  uint16_t fan1_fb;  // 0x0080
+  uint16_t fan2_fb;
+  uint16_t fan3_fb;
+  uint16_t fan4_fb;
+  uint16_t fan5_fb;
+  uint16_t fan6_fb;
+  uint16_t fan7_fb;
+  uint16_t fan8_fb;
+  uint16_t fan9_fb;
+  uint16_t fan10_fb;
+  uint16_t fan11_fb;
+  uint16_t fan12_fb;
+  uint16_t fan13_fb;
+  uint16_t fan14_fb;
+  uint16_t fan15_fb;
+  uint16_t fan16_fb;  // 0x008F
 } FansCardStat_t;
 
 extern FansCardStat_t FansCardStat;
 
 void SideCardTaskFunc(void* pvParameters);
-void SensCardTaskFunc(void* pvParameters);
-void FansCardTaskFunc(void* pvParameters);
+void ReadCardTaskFunc(void* pvParameters);
 
 #endif  // SIDE_CARD_TASK_H

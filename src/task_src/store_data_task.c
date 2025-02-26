@@ -87,8 +87,8 @@ void store_data_task_function(void *pvParameters) {
         // data_sec_avg.Pt100Stat.voltage_input += data_sec[i].Pt100Stat.voltage_input;
         // data_sec_avg.Pt100Stat.current_input += data_sec[i].Pt100Stat.current_input;
         // data_sec_avg.Pt100Stat.power_input += data_sec[i].Pt100Stat.power_input;
-        // data_sec_avg.SensCtrl.porpo_1_pwm += data_sec[i].SensCtrl.porpo_1_pwm;
-        // data_sec_avg.SensCtrl.porpo_2_pwm += data_sec[i].SensCtrl.porpo_2_pwm;
+        // data_sec_avg.SensCtrl.porpo_1_duty += data_sec[i].SensCtrl.porpo_1_duty;
+        // data_sec_avg.SensCtrl.porpo_2_duty += data_sec[i].SensCtrl.porpo_2_duty;
         // data_sec_avg.pump_status.pump_1_FB += data_sec[i].pump_status.pump_1_FB;
         // data_sec_avg.pump_status.pump_2_FB += data_sec[i].pump_status.pump_2_FB;
         // data_sec_avg.pump_control.pump_1_rpm += data_sec[i].pump_control.pump_1_rpm;

@@ -7,11 +7,9 @@
 #include "RS485.h"
 #include "RS485_Region_handler.h"
 
-#define UPPER_DATA_MAX_SIZE 32
-
 extern TaskHandle_t upper_handler;
 
-extern Rs485_t RS485_UPPER;
+extern Rs485_t RsUpper;
 
 void upper_task_function(void* pvParameters);
 

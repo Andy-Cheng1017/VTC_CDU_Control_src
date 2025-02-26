@@ -25,6 +25,7 @@ Rs485_t RS485_LCD = {
     .DataBit = USART_DATA_8BITS,
     .StopBit = USART_STOP_1_BIT,
     .ip_addr = MY_485_ADDR,
+    .root = false,
 };
 
 void LCD_task_function(void* pvParameters) {
@@ -41,7 +42,7 @@ void LCD_task_function(void* pvParameters) {
   RsRegHdle(&RS485_LCD, DevCtrl_Handler);
   RS485_LCD.reg_hdle_stat = 0x80;
   RS485_LCD.reg_hdle_end = 0x8F;
-  RsRegHdle(&RS485_LCD, EthConfig_Handler);
+  // RsRegHdle(&RS485_LCD, EthConfig_Handler);
 
   while (1) {
     if (RS485_LCD.rx_pkg_cplt_f == TRUE) {
@@ -72,7 +73,7 @@ void LCD_task_function(void* pvParameters) {
 
     if (LCD_rx_Func != 0 && Unpkg_Flag) {
       memset(LCD_tx_Data, 0, LCD_DATA_MAX_SIZE);
-      RsError_t ret = RsDecd(&RS485_LCD, LCD_rx_Func, LCD_rx_Data, LCD_rx_Data_len, &LCD_tx_Func, LCD_tx_Data, &LCD_tx_Data_len);
+      RsError_t ret = RsSlaveDecdEncd(&RS485_LCD, LCD_rx_Func, LCD_rx_Data, LCD_rx_Data_len, &LCD_tx_Func, LCD_tx_Data, &LCD_tx_Data_len);
       log_i("LCD tx Func: %d", LCD_tx_Func);
       elog_hexdump("LCD_tx_Data", 16, LCD_tx_Data, sizeof(LCD_tx_Data));
       if (!ret) {
@@ -92,7 +93,7 @@ void LCD_task_function(void* pvParameters) {
     }
 
     if (LCD_tx_Func != 0) {
-      RS485_Pkg(&RS485_LCD, MY_485_ADDR, LCD_tx_Func, LCD_tx_Data, LCD_tx_Data_len);
+      RsPkg(&RS485_LCD, MY_485_ADDR, LCD_tx_Func, LCD_tx_Data, LCD_tx_Data_len);
       LCD_tx_Func = 0;
       LCD_tx_Data_len = 0;
       memset(LCD_tx_Data, 0, LCD_DATA_MAX_SIZE);

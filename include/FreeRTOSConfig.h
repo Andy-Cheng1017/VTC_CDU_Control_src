@@ -94,7 +94,7 @@
 #if defined(__ICCARM__) || defined(__CC_ARM) || defined(__GNUC__)
     #include <stdint.h>
     // static uint32_t systemcoreclock = 240000000;
-    extern volatile uint32_t debug_timerTick;
+     volatile uint32_t debug_timerTick;
 #endif
 
 

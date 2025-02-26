@@ -224,41 +224,6 @@ void USART1_IRQHandler(void) {
   }
 }
 
-/**
- * @brief  this function handles USART2 handler.
- * @param  none
- * @retval none
- */
-void USART2_IRQHandler(void) {
-  /* add user code begin USART2_IRQ 0 */
-
-  /* add user code end USART2_IRQ 0 */
-  /* add user code begin USART2_IRQ 1 */
-
-  /* add user code end USART2_IRQ 1 */
-}
-
-/**
- * @brief  this function handles UART4 handler.
- * @param  none
- * @retval none
- */
-void UART4_IRQHandler(void) {
-  if (usart_interrupt_flag_get(RS485_UPPER.UART, USART_RDBF_FLAG) != RESET) {
-    usart_flag_clear(RS485_UPPER.UART, USART_RDBF_FLAG);
-    RS485_Rx_Data_ISR(&RS485_UPPER);
-
-  } else if (usart_interrupt_flag_get(RS485_UPPER.UART, USART_IDLEF_FLAG) != RESET) {
-    usart_flag_clear(RS485_UPPER.UART, USART_IDLEF_FLAG);
-    RS485_Rx_Cplt_ISR(&RS485_UPPER);
-
-  } else if (usart_interrupt_flag_get(RS485_UPPER.UART, USART_TDBE_FLAG) != RESET) {
-    usart_flag_clear(RS485_UPPER.UART, USART_TDBE_FLAG);
-    usart_interrupt_enable(RS485_UPPER.UART, USART_TDBE_INT, FALSE);
-    RS485_UPPER.tx_idex--;
-    RS485_Tx_Data_ISR(&RS485_UPPER);
-  }
-}
 
 void UART8_IRQHandler(void) {
   if (usart_interrupt_flag_get(RS485_LCD.UART, USART_RDBF_FLAG) != RESET) {

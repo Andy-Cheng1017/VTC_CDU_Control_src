@@ -28,13 +28,15 @@ typedef struct {
   uint16_t voltage_input;
   uint16_t current_input;
   int32_t power_input;
+  int16_t temperature;
+  uint16_t humidity;
 } SensStat_t;
 
 extern SensStat_t SensStat;
 
 typedef struct {
-  uint16_t porpo_1_pwm;
-  uint16_t porpo_2_pwm;
+  uint16_t porpo_1_duty;
+  uint16_t porpo_2_duty;
 } SensCtrl_t;
 
 extern SensCtrl_t SensCtrl;

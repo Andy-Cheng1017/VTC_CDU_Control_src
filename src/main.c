@@ -202,8 +202,8 @@ void start_task(void* pvParameters) {
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
               (TaskHandle_t*)&pt100_handler);
-  // xTaskCreate((TaskFunction_t)SideCardTaskFunc, (const char*)"SideCard_task", (uint16_t)SIDE_CARD_STK_SIZE, (void*)NULL,
-  //             (UBaseType_t)SIDE_CARD_TASK_PRIO, (TaskHandle_t*)&SideCardHandler);
+  xTaskCreate((TaskFunction_t)SideCardTaskFunc, (const char*)"SideCard_task", (uint16_t)SIDE_CARD_STK_SIZE, (void*)NULL,
+              (UBaseType_t)SIDE_CARD_TASK_PRIO, (TaskHandle_t*)&SideCardHandler);
   // xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
   // xTaskCreate((TaskFunction_t)store_data_task_function, (const char*)"Store_data_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,

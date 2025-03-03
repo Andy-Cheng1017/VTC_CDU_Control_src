@@ -45,7 +45,7 @@
 #define START_STK_SIZE 128
 
 #define NETWORK_TASK_PRIO 3
-#define NETWORK_STK_SIZE 1024 * 2
+#define NETWORK_STK_SIZE 512
 
 #define LCD_TASK_PRIO 3
 #define LCD_STK_SIZE 1024
@@ -184,7 +184,7 @@ void start_task(void* pvParameters) {
   // taskENTER_CRITICAL();
   // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
   //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
-  vTaskDelay(50);
+  // vTaskDelay(50);
   // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
   //             (TaskHandle_t*)&LCD_handler);
   vTaskDelay(50);
@@ -196,7 +196,7 @@ void start_task(void* pvParameters) {
   vTaskDelay(50);
   xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
               (TaskHandle_t*)&pump_handler);
-  // vTaskDelay(50);
+  vTaskDelay(50);
   // xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
   //             (TaskHandle_t*)&RTC_handler);
   vTaskDelay(50);

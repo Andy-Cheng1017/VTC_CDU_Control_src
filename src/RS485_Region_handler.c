@@ -85,33 +85,37 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
       case 0x003F:
         return (SensStat.press_4_val) & 0xFFFF;
       case 0x0040:
+        return (SensCardStat.press_1_val) & 0xFFFF;
+      case 0x0041:
+        return (SensCardStat.press_2_val) & 0xFFFF;
+      case 0x0042:
         retval = SensStat.Flow_val;
         return (retval >= -10000 && retval <= 10000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0041:
-        return pump_status.pump_1_FB & 0xFFFF;
-      case 0x0042:
-        return pump_status.pump_2_FB & 0xFFFF;
       case 0x0043:
-        return SensCardStat.leak_sensor & 0xFFFF;
+        return pump_status.pump_1_FB & 0xFFFF;
+      case 0x0044:
+        return pump_status.pump_2_FB & 0xFFFF;
       case 0x0045:
+        return SensCardStat.leak_sensor & 0xFFFF;
+      case 0x0047:
         retval = SensStat.voltage_input;
         return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0046:
+      case 0x0048:
         retval = SensStat.current_input;
         return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0047:
+      case 0x0049:
         retval = (SensStat.power_input >> 16) & 0xFFFF;
         return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0048:
+      case 0x004A:
         retval = SensStat.power_input & 0xFFFF;
         return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0049:
-        return SensStat.temperature & 0xFFFF;
-      case 0x004A:
-        return SensStat.humidity & 0xFFFF;
       case 0x004B:
-        return SensCardStat.temperature & 0xFFFF;
+        return SensStat.temperature & 0xFFFF;
       case 0x004C:
+        return SensStat.humidity & 0xFFFF;
+      case 0x004D:
+        return SensCardStat.temperature & 0xFFFF;
+      case 0x004E:
         return SensCardStat.humidity & 0xFFFF;
       default:
         return ILLIGAL_DATA_ADDR << 16;
@@ -121,13 +125,17 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
     if (root) {
       switch (addr) {
         case 0x0034:
-          return SensCardStat.pt100_1_temp_m = data;
+          return SensCardStat.pt100_1_temp_m = data * 10;
         case 0x0035:
-          return SensCardStat.pt100_2_temp_m = data;
+          return SensCardStat.pt100_2_temp_m = data * 10;
         case 0x0036:
-          return SensCardStat.pt100_3_temp_m = data;
+          return SensCardStat.pt100_3_temp_m = data * 10;
         case 0x0037:
-          return SensCardStat.pt100_4_temp_m = data;
+          return SensCardStat.pt100_4_temp_m = data * 10;
+        case 0x0040:
+          return SensCardStat.press_1_val = data;
+        case 0x0041:
+          return SensCardStat.press_2_val = data;
         case 0x0043:
           return SensCardStat.leak_sensor = data;
         case 0x004B:
@@ -180,54 +188,6 @@ uint32_t DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t le
     return ILLIGAL_FUNC << 16;
   }
 }
-
-// uint32_t EthConfig_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len) {
-//   switch (addr) {
-//     case 0x0080:
-//       break;
-//     case 0x0081:
-//       break;
-//     case 0x0082:
-//       break;
-//     case 0x0083:
-//       break;
-//     case 0x0084:
-//       break;
-//     case 0x0085:
-//       break;
-//     case 0x0086:
-//       break;
-//     case 0x0087:
-//       break;
-//     case 0x0088:
-//       break;
-//     case 0x0089:
-//       break;
-//     case 0x008A:
-//       break;
-//     case 0x008B:
-//       break;
-//     case 0x008C:
-//       break;
-//     case 0x008D:
-//       break;
-//     case 0x008E:
-//       break;
-//     case 0x008F:
-//       break;
-//     case 0x0090:
-//       break;
-//     case 0x0091:
-//       break;
-//     case 0x0092:
-//       break;
-//     case 0x0093:
-//       break;
-//     default:
-//       break;
-//   }
-//   return 0;
-// }
 
 uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
   if (func == READ_HOLDING_REGISTERS) {
@@ -300,49 +260,49 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
         return ILLIGAL_DATA_ADDR << 16;
     }
   } else if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
-    if (data >= 0 && data <= 1000) {
-      if (addr >= 0x0080 && addr <= 0x008f) {
-        if (root) {
-          switch (addr) {
-            case 0x0080:
-              return FansCardStat.fan1_fb = data;
-            case 0x0081:
-              return FansCardStat.fan2_fb = data;
-            case 0x0082:
-              return FansCardStat.fan3_fb = data;
-            case 0x0083:
-              return FansCardStat.fan4_fb = data;
-            case 0x0084:
-              return FansCardStat.fan5_fb = data;
-            case 0x0085:
-              return FansCardStat.fan6_fb = data;
-            case 0x0086:
-              return FansCardStat.fan7_fb = data;
-            case 0x0087:
-              return FansCardStat.fan8_fb = data;
-            case 0x0088:
-              return FansCardStat.fan9_fb = data;
-            case 0x0089:
-              return FansCardStat.fan10_fb = data;
-            case 0x008A:
-              return FansCardStat.fan11_fb = data;
-            case 0x008B:
-              return FansCardStat.fan12_fb = data;
-            case 0x008C:
-              return FansCardStat.fan13_fb = data;
-            case 0x008D:
-              return FansCardStat.fan14_fb = data;
-            case 0x008E:
-              return FansCardStat.fan15_fb = data;
-            case 0x008F:
-              return FansCardStat.fan16_fb = data;
-            default:
-              return ILLIGAL_DATA_ADDR << 16;
-          }
-        } else {
-          return ILLIGAL_FUNC << 16;
+    if (addr >= 0x0080 && addr <= 0x008f) {
+      if (root) {
+        switch (addr) {
+          case 0x0080:
+            return FansCardStat.fan1_fb = data;
+          case 0x0081:
+            return FansCardStat.fan2_fb = data;
+          case 0x0082:
+            return FansCardStat.fan3_fb = data;
+          case 0x0083:
+            return FansCardStat.fan4_fb = data;
+          case 0x0084:
+            return FansCardStat.fan5_fb = data;
+          case 0x0085:
+            return FansCardStat.fan6_fb = data;
+          case 0x0086:
+            return FansCardStat.fan7_fb = data;
+          case 0x0087:
+            return FansCardStat.fan8_fb = data;
+          case 0x0088:
+            return FansCardStat.fan9_fb = data;
+          case 0x0089:
+            return FansCardStat.fan10_fb = data;
+          case 0x008A:
+            return FansCardStat.fan11_fb = data;
+          case 0x008B:
+            return FansCardStat.fan12_fb = data;
+          case 0x008C:
+            return FansCardStat.fan13_fb = data;
+          case 0x008D:
+            return FansCardStat.fan14_fb = data;
+          case 0x008E:
+            return FansCardStat.fan15_fb = data;
+          case 0x008F:
+            return FansCardStat.fan16_fb = data;
+          default:
+            return ILLIGAL_DATA_ADDR << 16;
         }
-      } else if (addr >= 0x0090 && addr <= 0x009f) {
+      } else {
+        return ILLIGAL_FUNC << 16;
+      }
+    } else if (addr >= 0x0090 && addr <= 0x009f) {
+      if (data >= 0 && data <= 1000) {
         switch (addr) {
           case 0x0090:
             return FansCardCtrl.fan1_duty = data;
@@ -380,12 +340,12 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
             return ILLIGAL_DATA_ADDR << 16;
         }
       } else {
-        return ILLIGAL_DATA_ADDR << 16;
+        return ILLIGAL_FUNC << 16;
       }
     } else {
-      return ILLIGAL_DATA_VALUE << 16;
+      return ILLIGAL_DATA_ADDR << 16;
     }
   } else {
-    return ILLIGAL_FUNC << 16;
+    return ILLIGAL_DATA_VALUE << 16;
   }
 }

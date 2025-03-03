@@ -14,8 +14,8 @@
 
 #define CARD_DATA_MAX_SIZE 32
 
-#define SENS_CARD_REG_START 0x0030
-#define SENS_CARD_REG_END 0x005F
+#define SENS_CARD_REG_START 0x0034
+#define SENS_CARD_REG_END 0x0037
 #define SENS_CARD_TOTAL_REG_NUM (SENS_CARD_REG_END - SENS_CARD_REG_START + 1)
 
 
@@ -40,6 +40,8 @@ typedef struct {
   int32_t pt100_2_temp_m;  
   int32_t pt100_3_temp_m;  
   int32_t pt100_4_temp_m;    
+  int16_t press_1_val;
+  int16_t press_2_val;
   uint8_t leak_sensor;
   int16_t temperature;    
   uint16_t humidity;      

@@ -122,6 +122,7 @@ void ReadCardTaskFunc(void* pvParameters) {
     notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
 
     if (notificationValue > 0) {
+      
     }
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;

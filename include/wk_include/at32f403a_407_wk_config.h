@@ -40,6 +40,7 @@ extern "C" {
 /* private includes -------------------------------------------------------------*/
 /* add user code begin private includes */
 #include "sensor_task.h"
+#include "elog_at.h"
 
 /* add user code end private includes */
 
@@ -74,8 +75,8 @@ extern "C" {
 // #define DMA1_CHANNEL3_MEMORY_BASE_ADDR   0
 // #define DMA1_CHANNEL3_PERIPHERAL_BASE_ADDR   0
 
-#define DMA1_CHANNEL4_BUFFER_SIZE (COUNTOF(uart_tx_buf) - 1)
-#define DMA1_CHANNEL4_MEMORY_BASE_ADDR (uint32_t)uart_tx_buf
+#define DMA1_CHANNEL4_BUFFER_SIZE (COUNTOF(ElogDMA.uart_tx_buf) - 1)
+#define DMA1_CHANNEL4_MEMORY_BASE_ADDR (uint32_t)ElogDMA.uart_tx_buf
 // #define DMA1_CHANNEL4_PERIPHERAL_BASE_ADDR   0
 
 // #define DMA1_CHANNEL5_BUFFER_SIZE   0

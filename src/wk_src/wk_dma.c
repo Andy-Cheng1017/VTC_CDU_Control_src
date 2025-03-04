@@ -27,32 +27,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "wk_dma.h"
 
-
 /* add user code begin 0 */
-uint8_t uart_tx_buf[BUFFER_SIZE] = {0};
+
 /* add user code end 0 */
-
-/**
- * @brief  config dma channel transfer parameter
- * @param  dmax_channely: DMAx_CHANNELy
- * @param  peripheral_base_addr: peripheral address.
- * @param  memory_base_addr: memory address.
- * @param  buffer_size: buffer size.
- * @retval none
- */
-void wk_dma_channel_config(dma_channel_type* dmax_channely, uint32_t peripheral_base_addr, uint32_t memory_base_addr, uint16_t buffer_size) {
-  /* add user code begin dma_channel_config 0 */
-
-  /* add user code end dma_channel_config 0 */
-
-  dmax_channely->dtcnt = buffer_size;
-  dmax_channely->paddr = peripheral_base_addr;
-  dmax_channely->maddr = memory_base_addr;
-
-  /* add user code begin dma_channel_config 1 */
-
-  /* add user code end dma_channel_config 1 */
-}
 
 /**
  * @brief  init dma1 channel1 for "adc1"
@@ -77,14 +54,15 @@ void wk_dma1_channel1_init(void) {
   dma_init_struct.loop_mode_enable = TRUE;
   dma_init(DMA1_CHANNEL1, &dma_init_struct);
 
+  /* flexible function enable */
+  dma_flexible_config(DMA1, FLEX_CHANNEL1, DMA_FLEXIBLE_ADC1);
   /* add user code begin dma1_channel1 1 */
-  wk_dma_channel_config(DMA1_CHANNEL1, (uint32_t)&ADC1->odt, DMA1_CHANNEL1_MEMORY_BASE_ADDR, DMA1_CHANNEL1_BUFFER_SIZE);
-  dma_channel_enable(DMA1_CHANNEL1, TRUE);
+
   /* add user code end dma1_channel1 1 */
 }
 
 /**
- * @brief  init dma1 channel1 for "uart4_tx"
+ * @brief  init dma1 channel4 for "usart1_tx"
  * @param  none
  * @retval none
  */
@@ -106,26 +84,35 @@ void wk_dma1_channel4_init(void) {
   dma_init_struct.loop_mode_enable = FALSE;
   dma_init(DMA1_CHANNEL4, &dma_init_struct);
 
+  /* flexible function enable */
+  dma_flexible_config(DMA1, FLEX_CHANNEL4, DMA_FLEXIBLE_UART1_TX);
   /* add user code begin dma1_channel4 1 */
-  memset(uart_tx_buf, 0, BUFFER_SIZE);
-  wk_dma_channel_config(DMA1_CHANNEL4, (uint32_t)&USART1->dt, DMA1_CHANNEL4_MEMORY_BASE_ADDR, DMA1_CHANNEL4_BUFFER_SIZE);
-  dma_channel_enable(DMA1_CHANNEL4, TRUE);
+
   /* add user code end dma1_channel4 1 */
 }
 
-/* add user code begin 1 */
-void start_dma_transfer(void) {
-  if (usart_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
-    if (txBuffer.count > 0) {
-      uint16_t len = CircularBuffer_ReadBuffer(&txBuffer, uart_tx_buf, sizeof(uart_tx_buf));
-      dma_channel_enable(DMA1_CHANNEL4, FALSE);
-      dma_data_number_set(DMA1_CHANNEL4, len);
-      dma_channel_enable(DMA1_CHANNEL4, TRUE);
-    } else {
-      return;
-    }
-  } else {
-    usart_interrupt_enable(USART1, USART_TDBE_INT, TRUE);
-  }
+/**
+ * @brief  config dma channel transfer parameter
+ * @param  dmax_channely: DMAx_CHANNELy
+ * @param  peripheral_base_addr: peripheral address.
+ * @param  memory_base_addr: memory address.
+ * @param  buffer_size: buffer size.
+ * @retval none
+ */
+void wk_dma_channel_config(dma_channel_type* dmax_channely, uint32_t peripheral_base_addr, uint32_t memory_base_addr, uint16_t buffer_size) {
+  /* add user code begin dma_channel_config 0 */
+
+  /* add user code end dma_channel_config 0 */
+
+  dmax_channely->dtcnt = buffer_size;
+  dmax_channely->paddr = peripheral_base_addr;
+  dmax_channely->maddr = memory_base_addr;
+
+  /* add user code begin dma_channel_config 1 */
+
+  /* add user code end dma_channel_config 1 */
 }
+
+/* add user code begin 1 */
+
 /* add user code end 1 */

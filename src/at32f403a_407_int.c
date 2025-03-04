@@ -62,10 +62,3 @@ void UsageFault_Handler(void) {
 
 void DebugMon_Handler(void) {}
 
-void USART1_IRQHandler(void) {
-  if (usart_interrupt_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
-    usart_interrupt_enable(USART1, USART_TDBE_INT, FALSE);
-    start_dma_transfer();
-    // usart_flag_clear(USART1, USART_TDBE_FLAG);
-  }
-}

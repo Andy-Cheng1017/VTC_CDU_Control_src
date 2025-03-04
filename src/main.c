@@ -89,16 +89,11 @@ void start_task(void* pvParameters);
 /* private function prototypes --------------------------------------------*/
 /* add user code begin function prototypes */
 
-void Logger_init(void) {
-  elog_init();
-  elog_set_fmt(ELOG_LVL_ASSERT, ELOG_FMT_ALL);
-  elog_set_fmt(ELOG_LVL_ERROR, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_WARN, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_INFO, ELOG_FMT_LVL | ELOG_FMT_TAG | ELOG_FMT_TIME);
-  elog_set_fmt(ELOG_LVL_DEBUG, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-  elog_set_fmt(ELOG_LVL_VERBOSE, ELOG_FMT_ALL & ~ELOG_FMT_FUNC);
-  elog_set_text_color_enabled(TRUE);
-  elog_start();
+void USART1_IRQHandler(void) {
+  if (usart_interrupt_flag_get(USART1, USART_TDBE_FLAG) != RESET) {
+    usart_interrupt_enable(USART1, USART_TDBE_INT, FALSE);
+    ELogDmaTransfer();
+  }
 }
 
 /* add user code end function prototypes */
@@ -116,6 +111,7 @@ void Logger_init(void) {
 
 int main(void) {
   /* add user code begin 1 */
+
   /* add user code end 1 */
 
   /* system clock config. */
@@ -133,27 +129,61 @@ int main(void) {
   /* timebase config. */
   wk_timebase_init();
 
+  /* init dma1 channel1 */
+  wk_dma1_channel1_init();
+  /* config dma channel transfer parameter */
+  /* user need to modify define values DMAx_CHANNELy_XXX_BASE_ADDR and DMAx_CHANNELy_BUFFER_SIZE in at32xxx_wk_config.h */
+  wk_dma_channel_config(DMA1_CHANNEL1, (uint32_t)&ADC1->odt, DMA1_CHANNEL1_MEMORY_BASE_ADDR, DMA1_CHANNEL1_BUFFER_SIZE);
+  dma_channel_enable(DMA1_CHANNEL1, TRUE);
+
+  /* init dma1 channel4 */
+  wk_dma1_channel4_init();
+  /* config dma channel transfer parameter */
+  /* user need to modify define values DMAx_CHANNELy_XXX_BASE_ADDR and DMAx_CHANNELy_BUFFER_SIZE in at32xxx_wk_config.h */
+  wk_dma_channel_config(DMA1_CHANNEL4, (uint32_t)&USART1->dt, DMA1_CHANNEL4_MEMORY_BASE_ADDR, DMA1_CHANNEL4_BUFFER_SIZE);
+  dma_channel_enable(DMA1_CHANNEL4, TRUE);
+
+  /* init usart1 function. */
+  wk_usart1_init();
+
+  /* init usart2 function. */
+  wk_usart2_init();
+
+  /* init usart3 function. */
+  wk_usart3_init();
+
+  /* init uart4 function. */
+  wk_uart4_init();
+
+  /* init uart8 function. */
+  wk_uart8_init();
+
   /* init spi1 function. */
-  // wk_spi1_init();
+  wk_spi1_init();
+
+  /* init i2c2 function. */
+  wk_i2c2_init();
+
+  /* init i2c3 function. */
+  wk_i2c3_init();
+
+  /* init adc1 function. */
+  wk_adc1_init();
 
   /* init exint function. */
   wk_exint_config();
 
-  /* init adc1 function. */
+  /* init tmr1 function. */
   wk_tmr1_init();
-  wk_dma1_channel1_init();
-  wk_adc1_init();
 
-  /* init tmr3 function. */
-  // wk_tmr3_init();
+  /* init tmr4 function. */
+  wk_tmr4_init();
 
+  /* init tmr9 function. */
   wk_tmr9_init();
 
   /* init tmr10 function. */
   wk_tmr10_init();
-
-  /* init tmr4 function. */
-  wk_tmr4_init();
 
   /* init crc function. */
   wk_crc_init();
@@ -161,23 +191,11 @@ int main(void) {
   /* init gpio function. */
   wk_gpio_config();
 
-  /* add user code begin 2 */
-  wk_usart2_init();
-  wk_uart4_init();
-  wk_usart3_init();
-  wk_uart8_init();
-
-  wk_usart1_init();
-  wk_dma1_channel4_init();
-  Logger_init();
-
-  /* init i2c2 function. */
-  wk_i2c2_init();
-
-  wk_i2c3_init();
-
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);
+
+  Logger_init();
+
   vTaskStartScheduler();
 }
 

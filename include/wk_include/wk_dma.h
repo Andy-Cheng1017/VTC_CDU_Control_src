@@ -31,12 +31,13 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <string.h>
+
 /* includes -----------------------------------------------------------------------*/
 #include "at32f403a_407_wk_config.h"
-#include "CircularBuffer.h"
+
 /* private includes -------------------------------------------------------------*/
 /* add user code begin private includes */
+
 /* add user code end private includes */
 
 /* exported types -------------------------------------------------------------*/
@@ -46,9 +47,6 @@ extern "C" {
 
 /* exported constants --------------------------------------------------------*/
 /* add user code begin exported constants */
-
-// uint16_t adc1_ordinary_valuetab[9];
-extern uint8_t uart_tx_buf[BUFFER_SIZE];
 
 /* add user code end exported constants */
 
@@ -60,15 +58,17 @@ extern uint8_t uart_tx_buf[BUFFER_SIZE];
 /* exported functions ------------------------------------------------------- */
 
 /* init dma1 channel1 */
-void wk_dma1_channel4_init(void);
 void wk_dma1_channel1_init(void);
+
+/* init dma1 channel4 */
+void wk_dma1_channel4_init(void);
 
 /* config dma channel transfer parameter */
 /* user need to modify parameters memory_base_addr and buffer_size */
 void wk_dma_channel_config(dma_channel_type* dmax_channely, uint32_t peripheral_base_addr, uint32_t memory_base_addr, uint16_t buffer_size);
 
 /* add user code begin exported functions */
-void start_dma_transfer(void);
+
 /* add user code end exported functions */
 
 #ifdef __cplusplus

@@ -1,27 +1,27 @@
 /* add user code begin Header */
 /**
- **************************************************************************
- * @file     wk_tmr.c
- * @brief    work bench config program
- **************************************************************************
- *                       Copyright notice & Disclaimer
- *
- * The software Board Support Package (BSP) that is made available to
- * download from Artery official website is the copyrighted work of Artery.
- * Artery authorizes customers to use, copy, and distribute the BSP
- * software and its related documentation for the purpose of design and
- * development in conjunction with Artery microcontrollers. Use of the
- * software is governed by this copyright notice and the following disclaimer.
- *
- * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
- * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
- * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
- * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
- * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
- *
- **************************************************************************
- */
+  **************************************************************************
+  * @file     wk_tmr.c
+  * @brief    work bench config program
+  **************************************************************************
+  *                       Copyright notice & Disclaimer
+  *
+  * The software Board Support Package (BSP) that is made available to
+  * download from Artery official website is the copyrighted work of Artery.
+  * Artery authorizes customers to use, copy, and distribute the BSP
+  * software and its related documentation for the purpose of design and
+  * development in conjunction with Artery microcontrollers. Use of the
+  * software is governed by this copyright notice and the following disclaimer.
+  *
+  * THIS SOFTWARE IS PROVIDED ON "AS IS" BASIS WITHOUT WARRANTIES,
+  * GUARANTEES OR REPRESENTATIONS OF ANY KIND. ARTERY EXPRESSLY DISCLAIMS,
+  * TO THE FULLEST EXTENT PERMITTED BY LAW, ALL EXPRESS, IMPLIED OR
+  * STATUTORY OR OTHER WARRANTIES, GUARANTEES OR REPRESENTATIONS,
+  * INCLUDING BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY,
+  * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT.
+  *
+  **************************************************************************
+  */
 /* add user code end Header */
 
 /* Includes ------------------------------------------------------------------*/
@@ -32,14 +32,16 @@
 /* add user code end 0 */
 
 /**
- * @brief  init tmr1 function.
- * @param  none
- * @retval none
- */
-void wk_tmr1_init(void) {
+  * @brief  init tmr1 function.
+  * @param  none
+  * @retval none
+  */
+void wk_tmr1_init(void)
+{
   /* add user code begin tmr1_init 0 */
 
   /* add user code end tmr1_init 0 */
+
 
   /* add user code begin tmr1_init 1 */
 
@@ -64,6 +66,7 @@ void wk_tmr1_init(void) {
    *     --tmr_interrupt_enable(...)
    * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
    *     --void TMR1_BRK_TMR9_IRQHandler(void)
+   *     --void TMR1_OVF_TMR10_IRQHandler(void)
    */
 
   /* add user code begin tmr1_init 2 */
@@ -72,53 +75,12 @@ void wk_tmr1_init(void) {
 }
 
 /**
- * @brief  init tmr3 function.
- * @param  none
- * @retval none
- */
-void wk_tmr3_init(void) {
-  /* add user code begin tmr3_init 0 */
-
-  /* add user code end tmr3_init 0 */
-
-  /* add user code begin tmr3_init 1 */
-
-  /* add user code end tmr3_init 1 */
-
-  /* configure counter settings */
-  tmr_base_init(TMR3, 59999, 199);
-  tmr_cnt_dir_set(TMR3, TMR_COUNT_UP);
-  tmr_clock_source_div_set(TMR3, TMR_CLOCK_DIV1);
-  tmr_period_buffer_enable(TMR3, FALSE);
-
-  /* configure primary mode settings */
-  tmr_sub_sync_mode_set(TMR3, FALSE);
-  tmr_primary_mode_select(TMR3, TMR_PRIMARY_SEL_RESET);
-
-  /* configure overflow event */
-  tmr_overflow_event_disable(TMR3, TRUE);
-
-  tmr_counter_enable(TMR3, TRUE);
-
-  /**
-   * Users need to configure TMR3 interrupt functions according to the actual application.
-   * 1. Call the below function to enable the corresponding TMR3 interrupt.
-   *     --tmr_interrupt_enable(...)
-   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
-   *     --void TMR3_GLOBAL_IRQHandler(void)
-   */
-
-  /* add user code begin tmr3_init 2 */
-
-  /* add user code end tmr3_init 2 */
-}
-
-/**
- * @brief  init tmr4 function.
- * @param  none
- * @retval none
- */
-void wk_tmr4_init(void) {
+  * @brief  init tmr4 function.
+  * @param  none
+  * @retval none
+  */
+void wk_tmr4_init(void)
+{
   /* add user code begin tmr4_init 0 */
 
   /* add user code end tmr4_init 0 */
@@ -149,7 +111,7 @@ void wk_tmr4_init(void) {
   gpio_init(GPIOD, &gpio_init_struct);
 
   /* GPIO PIN remap */
-  gpio_pin_remap_config(TMR4_GMUX_0001, TRUE);
+  gpio_pin_remap_config(TMR4_GMUX_0001, TRUE); 
 
   /* configure counter settings */
   tmr_base_init(TMR4, 59999, 9);
@@ -192,15 +154,8 @@ void wk_tmr4_init(void) {
 
   tmr_output_channel_immediately_set(TMR4, TMR_SELECT_CHANNEL_4, FALSE);
 
-  tmr_counter_enable(TMR4, TRUE);
 
-  /**
-   * Users need to configure TMR4 interrupt functions according to the actual application.
-   * 1. Call the below function to enable the corresponding TMR4 interrupt.
-   *     --tmr_interrupt_enable(...)
-   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
-   *     --void TMR4_GLOBAL_IRQHandler(void)
-   */
+  tmr_counter_enable(TMR4, TRUE);
 
   /* add user code begin tmr4_init 2 */
 
@@ -208,11 +163,12 @@ void wk_tmr4_init(void) {
 }
 
 /**
- * @brief  init tmr9 function.
- * @param  none
- * @retval none
- */
-void wk_tmr9_init(void) {
+  * @brief  init tmr9 function.
+  * @param  none
+  * @retval none
+  */
+void wk_tmr9_init(void)
+{
   /* add user code begin tmr9_init 0 */
 
   /* add user code end tmr9_init 0 */
@@ -222,7 +178,7 @@ void wk_tmr9_init(void) {
   /* add user code end tmr9_init 1 */
 
   /* configure counter settings */
-  tmr_base_init(TMR9, 59999, 399);
+  tmr_base_init(TMR9, 65535, 999);
   tmr_cnt_dir_set(TMR9, TMR_COUNT_UP);
   tmr_clock_source_div_set(TMR9, TMR_CLOCK_DIV1);
   tmr_period_buffer_enable(TMR9, FALSE);
@@ -240,6 +196,42 @@ void wk_tmr9_init(void) {
   /* add user code begin tmr9_init 2 */
 
   /* add user code end tmr9_init 2 */
+}
+
+/**
+  * @brief  init tmr10 function.
+  * @param  none
+  * @retval none
+  */
+void wk_tmr10_init(void)
+{
+  /* add user code begin tmr10_init 0 */
+
+  /* add user code end tmr10_init 0 */
+
+  /* add user code begin tmr10_init 1 */
+
+  /* add user code end tmr10_init 1 */
+
+  /* configure counter settings */
+  tmr_base_init(TMR10, 65535, 2);
+  tmr_cnt_dir_set(TMR10, TMR_COUNT_UP);
+  tmr_clock_source_div_set(TMR10, TMR_CLOCK_DIV1);
+  tmr_period_buffer_enable(TMR10, FALSE);
+
+  tmr_counter_enable(TMR10, TRUE);
+
+  /**
+   * Users need to configure TMR10 interrupt functions according to the actual application.
+   * 1. Call the below function to enable the corresponding TMR10 interrupt.
+   *     --tmr_interrupt_enable(...)
+   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
+   *     --void TMR1_OVF_TMR10_IRQHandler(void)
+   */
+
+  /* add user code begin tmr10_init 2 */
+
+  /* add user code end tmr10_init 2 */
 }
 
 /* add user code begin 1 */

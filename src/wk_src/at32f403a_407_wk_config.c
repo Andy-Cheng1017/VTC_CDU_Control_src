@@ -185,14 +185,14 @@ void wk_periph_clock_config(void) {
   /* enable tmr9 periph clock */
   crm_periph_clock_enable(CRM_TMR9_PERIPH_CLOCK, TRUE);
 
+  /* enable tmr10 periph clock */
+  crm_periph_clock_enable(CRM_TMR10_PERIPH_CLOCK, TRUE);
+
   /* enable i2c3 periph clock */
   crm_periph_clock_enable(CRM_I2C3_PERIPH_CLOCK, TRUE);
 
   /* enable uart8 periph clock */
   crm_periph_clock_enable(CRM_UART8_PERIPH_CLOCK, TRUE);
-
-  /* enable tmr3 periph clock */
-  crm_periph_clock_enable(CRM_TMR3_PERIPH_CLOCK, TRUE);
 
   /* enable tmr4 periph clock */
   crm_periph_clock_enable(CRM_TMR4_PERIPH_CLOCK, TRUE);
@@ -227,8 +227,7 @@ void wk_nvic_config(void) {
   NVIC_SetPriority(SysTick_IRQn, NVIC_EncodePriority(NVIC_GetPriorityGrouping(), 15, 0));
   nvic_irq_enable(EXINT9_5_IRQn, 0, 0);
   nvic_irq_enable(TMR1_BRK_TMR9_IRQn, 0, 0);
-  nvic_irq_enable(TMR3_GLOBAL_IRQn, 0, 0);
-  nvic_irq_enable(TMR4_GLOBAL_IRQn, 0, 0);
+  nvic_irq_enable(TMR1_OVF_TMR10_IRQn, 0, 0);
   nvic_irq_enable(USART1_IRQn, 0, 0);
   nvic_irq_enable(USART2_IRQn, 0, 0);
   nvic_irq_enable(USART3_IRQn, 0, 0);

@@ -16,20 +16,16 @@ pump_control_type pump_control = {0};
 pump_status_type pump_status = {0};
 
 FgParam_t Pump1_FgParam = {
-    .tmr_x = TMR3,
+    .h_tmr_x = TMR10,
+    .l_tmr_x = TMR9,
     .exint_line = EXINT_LINE_6,
-    .tmr_clk = 240000000,
-    .tmr_clk_div = 199,
-    .tmr_period_val = 59999,
     .motor_phase = 6,
 };
 
 FgParam_t Pump2_FgParam = {
-    .tmr_x = TMR3,
+    .h_tmr_x = TMR10,
+    .l_tmr_x = TMR9,
     .exint_line = EXINT_LINE_7,
-    .tmr_clk = 240000000,
-    .tmr_clk_div = 199,
-    .tmr_period_val = 59999,
     .motor_phase = 6,
 };
 
@@ -48,8 +44,16 @@ PwmParam_t Pump2_PwmParam = {
 void TMR1_BRK_TMR9_IRQHandler(void) {
   if (tmr_flag_get(TMR9, TMR_OVF_FLAG)) {
     tmr_flag_clear(TMR9, TMR_OVF_FLAG);
-    FgIntEnable(&Pump1_FgParam);
-    FgIntEnable(&Pump2_FgParam);
+    FgLowTmrIntHandler(&Pump1_FgParam);
+    FgLowTmrIntHandler(&Pump2_FgParam);
+  }
+}
+
+void TMR1_OVF_TMR10_IRQHandler(void) {
+  if (tmr_flag_get(TMR10, TMR_OVF_FLAG)) {
+    tmr_flag_clear(TMR10, TMR_OVF_FLAG);
+    FgHighTmrIntHandler(&Pump1_FgParam);
+    FgHighTmrIntHandler(&Pump1_FgParam);
   }
 }
 
@@ -57,11 +61,11 @@ void EXINT9_5_IRQHandler(void) {
   if (exint_interrupt_flag_get(EXINT_LINE_6)) {
     exint_flag_clear(EXINT_LINE_6);
 
-    FgSampling(&Pump1_FgParam);
+    FgExintIntSampling(&Pump1_FgParam);
   } else if (exint_interrupt_flag_get(EXINT_LINE_7)) {
     exint_flag_clear(EXINT_LINE_7);
 
-    FgSampling(&Pump2_FgParam);
+    FgExintIntSampling(&Pump2_FgParam);
   }
 }
 

@@ -145,10 +145,12 @@ int main(void) {
   wk_adc1_init();
 
   /* init tmr3 function. */
-  wk_tmr3_init();
+  // wk_tmr3_init();
 
-  /* init tmr9 function. */
   wk_tmr9_init();
+
+  /* init tmr10 function. */
+  wk_tmr10_init();
 
   /* init tmr4 function. */
   wk_tmr4_init();
@@ -168,7 +170,7 @@ int main(void) {
   wk_usart1_init();
   wk_dma1_channel4_init();
   Logger_init();
-  
+
   /* init i2c2 function. */
   wk_i2c2_init();
 

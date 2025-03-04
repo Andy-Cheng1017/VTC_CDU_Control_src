@@ -119,7 +119,6 @@ extern "C" {
 // #define DMA2_CHANNEL7_PERIPHERAL_BASE_ADDR   0
 /* add user code end dma define */
 
-
 /* exported functions ------------------------------------------------------- */
 /* system clock config. */
 void wk_system_clock_config(void);

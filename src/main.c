@@ -185,6 +185,9 @@ int main(void) {
   /* init tmr10 function. */
   wk_tmr10_init();
 
+  /* init tmr11 function. */
+  wk_tmr11_init();
+
   /* init crc function. */
   wk_crc_init();
 

@@ -69,6 +69,9 @@ void wk_tmr9_init(void);
 /* init tmr10 function. */
 void wk_tmr10_init(void);
 
+/* init tmr11 function. */
+void wk_tmr11_init(void);
+
 /* add user code begin exported functions */
 
 /* add user code end exported functions */

@@ -1,6 +1,9 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "side_card_task.h"
+#include "at32f403a_407_wk_config.h"
+#include "RS485.h"
+#include "RS485_Region_handler.h"
 
 #define LOG_TAG "Side_Card_Task"
 #include "elog.h"
@@ -17,8 +20,6 @@ Rs485_t RsCard = {
     .StopBit = USART_STOP_1_BIT,
     .root = true,
 };
-
-uint16_t fan_duty[16] = {0};
 
 SensCardStat_t SensCardStat = {0};
 
@@ -150,9 +151,9 @@ void ReadCardTaskFunc(void* pvParameters) {
       RsCard.reg_hdle_stat = FANS_CARD_WRITE_REG_START;
       RsCard.reg_hdle_num = FANS_CARD_WRITE_NUM;
 
-      memset(fan_duty, 1, sizeof(fan_duty));
 
-      ret = RS485WriteHandler(&RsCard, fan_duty, sizeof(fan_duty));
+
+      ret = RS485WriteHandler(&RsCard, FansCardCtrl.fan_duty, sizeof(FansCardCtrl.fan_duty));
       if (ret) {
         log_e("Fans Card Write Handler Error %d", ret);
         continue;

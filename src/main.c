@@ -1,6 +1,4 @@
 #include <string.h>
-#include "i2c_application.h"
-#include "RX8025T_wrap.h"
 #include "at32f403a_407_wk_config.h"
 #include "wk_adc.h"
 #include "wk_crc.h"
@@ -15,16 +13,13 @@
 #include "wk_system.h"
 #include "FreeRTOS.h"
 #include "task.h"
-#include "network_task.h"
 #include "LCD_task.h"
 #include "upper_task.h"
 #include "sensor_task.h"
 #include "pump_task.h"
-#include "RTC_task.h"
-#include "warning_task.h"
-#include "store_data_task.h"
 #include "side_card_task.h"
 #include "pt100_task.h"
+#include "main_task.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -69,7 +64,10 @@
 #define SIDE_CARD_STK_SIZE 512
 
 #define PT100_TASK_PRIO 3
-#define PT100_STK_SIZE 256
+#define PT100_STK_SIZE 512
+
+#define MAIN_TASK_PRIO 2
+#define MAIN_STK_SIZE 512
 
 /* add user code end private define */
 
@@ -204,34 +202,26 @@ int main(void) {
 
 void start_task(void* pvParameters) {
   vTaskDelay(100);
-  // taskENTER_CRITICAL();
-  // xTaskCreate((TaskFunction_t)network_task_function, (const char*)"Network_task", (uint16_t)NETWORK_STK_SIZE, (void*)NULL,
-  //             (UBaseType_t)NETWORK_TASK_PRIO, (TaskHandle_t*)&network_handler);
-  // vTaskDelay(50);
   // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
   //             (TaskHandle_t*)&LCD_handler);
-  vTaskDelay(50);
+  vTaskDelay(100);
   xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
               (TaskHandle_t*)&upper_handler);
-  vTaskDelay(50);
-  xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
-              (TaskHandle_t*)&sensor_handler);
-  vTaskDelay(50);
-  xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
-              (TaskHandle_t*)&pump_handler);
-  vTaskDelay(50);
-  // xTaskCreate((TaskFunction_t)RTC_task_function, (const char*)"RTC_task", (uint16_t)RTC_STK_SIZE, (void*)NULL, (UBaseType_t)RTC_TASK_PRIO,
-  //             (TaskHandle_t*)&RTC_handler);
-  vTaskDelay(50);
-  xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
-              (TaskHandle_t*)&pt100_handler);
+  vTaskDelay(100);
   xTaskCreate((TaskFunction_t)SideCardTaskFunc, (const char*)"SideCard_task", (uint16_t)SIDE_CARD_STK_SIZE, (void*)NULL,
               (UBaseType_t)SIDE_CARD_TASK_PRIO, (TaskHandle_t*)&SideCardHandler);
-  // xTaskCreate((TaskFunction_t)warning_task_function, (const char*)"Warning_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
-  //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&warning_handler);
-  // xTaskCreate((TaskFunction_t)store_data_task_function, (const char*)"Store_data_task", (uint16_t)WARNNING_STK_SIZE, (void*)NULL,
-  //             (UBaseType_t)WARNNING_TASK_PRIO, (TaskHandle_t*)&store_data_handler);
-
+  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)sensor_task_function, (const char*)"Sensor_task", (uint16_t)SENSOR_STK_SIZE, (void*)NULL, (UBaseType_t)SENSOR_TASK_PRIO,
+              (TaskHandle_t*)&sensor_handler);
+  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
+              (TaskHandle_t*)&pump_handler);
+  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
+              (TaskHandle_t*)&main_handler);
+  // vTaskDelay(100);
+  // xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
+  //             (TaskHandle_t*)&pt100_handler);
   vTaskDelete(StartTask_Handler);
   // taskEXIT_CRITICAL();
 }

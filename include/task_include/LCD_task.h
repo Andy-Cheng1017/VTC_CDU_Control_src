@@ -4,14 +4,10 @@
 #include <string.h>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "RS485.h"
-#include "RS485_Region_handler.h"
-
-extern TaskHandle_t LCD_handler;
 
 #define LCD_DATA_MAX_SIZE 32
 
-extern Rs485_t RsLCD;
+extern TaskHandle_t LCD_handler;
 
 void LCD_task_function(void* pvParameters);
 

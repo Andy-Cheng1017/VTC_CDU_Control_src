@@ -6,6 +6,7 @@
 #include "NTC.h"
 #include "SensConvVal.h"
 #include "Two_Pt_Cal.h"
+#include "FG_RPM.h"
 
 #define LOG_TAG "Sensor_Task"
 #include "elog.h"
@@ -13,6 +14,20 @@
 uint16_t adc1_ordinary_valuetab[ADC1_SAMPLE_NUM][ADC1_CHANNEL_NUM] = {0};
 
 TaskHandle_t sensor_handler;
+
+FgParam_t Flow_Fg = {
+    .timer_count = 3,
+    .tmr_list = {TMR11, TMR10, TMR9},
+    .exint_line = EXINT_LINE_15,
+    .motor_phase = 6,
+};
+
+void EXINT15_10_IRQHandler(void) {
+  if (exint_interrupt_flag_get(EXINT_LINE_15)) {
+    exint_flag_clear(EXINT_LINE_15);
+    FgExintIntSampling(&Flow_Fg);
+  }
+}
 
 NtcTwoCal_t NtcTwoCal = {
     .ntc_1_raw_l_val = 24987,
@@ -154,13 +169,11 @@ void sensor_task_function(void* pvParameters) {
   if (Cal_CalcParams(&PressCal_3)) log_e("PressCal_3 CalcParams failed");
   if (Cal_CalcParams(&PressCal_4)) log_e("PressCal_4 CalcParams failed");
 
+  FgInit(&Flow_Fg);
+
   vTaskDelay(5);
 
   while (1) {
-    // adc_ordinary_software_trigger_enable(ADC1, TRUE);
-    // while (dma_flag_get(DMA1_FDT1_FLAG) == RESET);
-    // dma_flag_clear(DMA1_FDT1_FLAG);
-
     uint32_t adc_sum_val[ADC1_CHANNEL_NUM] = {0};
     for (int i = 0; i < ADC1_CHANNEL_NUM; i++) {
       for (int j = 0; j < ADC1_SAMPLE_NUM; j++) {
@@ -191,6 +204,8 @@ void sensor_task_function(void* pvParameters) {
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[7] >> SMP_NUM_PWR, &raw_val);
     SensStat.ntc_4_temp = Cal_Apply(&NtcCal_4, raw_val);
+
+    FgGetRPM(&Flow_Fg, &SensStat.Flow_val);
 
     vTaskDelay(500);
   }

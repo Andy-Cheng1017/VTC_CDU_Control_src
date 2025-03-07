@@ -2,6 +2,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "upper_task.h"
+#include "RS485.h"
+#include "RS485_Region_handler.h"
 
 #define LOG_TAG "UPPER_Task"
 #include "elog.h"

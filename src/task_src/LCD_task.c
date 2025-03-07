@@ -2,6 +2,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "LCD_task.h"
+#include "RS485.h"
+#include "RS485_Region_handler.h"
 
 #define LOG_TAG "LCD_Task"
 #include "elog.h"

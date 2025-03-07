@@ -125,7 +125,7 @@ void wk_tmr4_init(void) {
   tmr_overflow_event_disable(TMR4, TRUE);
 
   /* configure channel 3 output settings */
-  tmr_output_struct.oc_mode = TMR_OUTPUT_CONTROL_PWM_MODE_A;
+  tmr_output_struct.oc_mode = TMR_OUTPUT_CONTROL_PWM_MODE_B;
   tmr_output_struct.oc_output_state = TRUE;
   tmr_output_struct.occ_output_state = FALSE;
   tmr_output_struct.oc_polarity = TMR_OUTPUT_ACTIVE_HIGH;
@@ -139,7 +139,7 @@ void wk_tmr4_init(void) {
   tmr_output_channel_immediately_set(TMR4, TMR_SELECT_CHANNEL_3, FALSE);
 
   /* configure channel 4 output settings */
-  tmr_output_struct.oc_mode = TMR_OUTPUT_CONTROL_PWM_MODE_A;
+  tmr_output_struct.oc_mode = TMR_OUTPUT_CONTROL_PWM_MODE_B;
   tmr_output_struct.oc_output_state = TRUE;
   tmr_output_struct.occ_output_state = FALSE;
   tmr_output_struct.oc_polarity = TMR_OUTPUT_ACTIVE_HIGH;

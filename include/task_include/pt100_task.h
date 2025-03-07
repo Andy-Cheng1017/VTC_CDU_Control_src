@@ -1,12 +1,8 @@
 #ifndef PT100_TASK_H
 #define PT100_TASK_H
-
 #include <stdbool.h>
 #include "FreeRTOS.h"
 #include "task.h"
-#include "pt100.h"
-#include "MCP342x_wrap.h"
-#include "Two_Pt_Cal.h"
 
 extern TaskHandle_t pt100_handler;
 
@@ -33,8 +29,6 @@ typedef struct {
 } Pt100TwoCal_t;
 
 extern Pt100TwoCal_t Pt100TwoCal;
-
-MCP342x_error_t err;
 
 void pt100_task_function(void* pvParameters);
 

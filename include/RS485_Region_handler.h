@@ -1,10 +1,8 @@
 #ifndef __RS485_REGION_H_
 #define __RS485_REGION_H_
+#include <stdint.h>
+#include <stdbool.h>
 #include "RS485.h"
-#include "sensor_task.h"
-#include "pump_task.h"
-#include "pt100_task.h"
-#include "side_card_task.h"
 
 #define MY_485_ADDR 0x21
 

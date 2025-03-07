@@ -24,7 +24,7 @@ typedef struct {
   int16_t press_2_val;
   int16_t press_3_val;
   int16_t press_4_val;
-  int16_t Flow_val;
+  uint16_t Flow_val;
   uint16_t voltage_input;
   uint16_t current_input;
   int32_t power_input;

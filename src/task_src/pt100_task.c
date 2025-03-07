@@ -1,9 +1,14 @@
 #include <stdio.h>
 #include <string.h>
 #include "pt100_task.h"
+#include "pt100.h"
+#include "MCP342x_wrap.h"
+#include "Two_Pt_Cal.h"
 
 #define LOG_TAG "Pt100_Task"
 #include "elog.h"
+
+MCP342x_error_t err;
 
 TaskHandle_t pt100_handler;
 

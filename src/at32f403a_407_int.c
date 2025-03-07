@@ -31,6 +31,12 @@
 #define LOG_TAG "407_Int"
 #include "elog.h"
 
+#include "FG_RPM.h"
+
+extern FgParam_t Pump1_Fg;
+extern FgParam_t Pump2_Fg;
+extern FgParam_t Flow_Fg;
+
 void NMI_Handler(void) {}
 
 void HardFault_Handler(void) {
@@ -62,3 +68,29 @@ void UsageFault_Handler(void) {
 
 void DebugMon_Handler(void) {}
 
+void TMR1_BRK_TMR9_IRQHandler(void) {
+  if (tmr_flag_get(TMR9, TMR_OVF_FLAG)) {
+    tmr_flag_clear(TMR9, TMR_OVF_FLAG);
+    FgTimerIntHandler(&Pump1_Fg, TMR9);
+    FgTimerIntHandler(&Pump2_Fg, TMR9);
+    FgTimerIntHandler(&Flow_Fg, TMR9);
+  }
+}
+
+void TMR1_OVF_TMR10_IRQHandler(void) {
+  if (tmr_flag_get(TMR10, TMR_OVF_FLAG)) {
+    tmr_flag_clear(TMR10, TMR_OVF_FLAG);
+    FgTimerIntHandler(&Pump1_Fg, TMR10);
+    FgTimerIntHandler(&Pump2_Fg, TMR10);
+    FgTimerIntHandler(&Flow_Fg, TMR10);
+  }
+}
+
+void TMR1_TRG_HALL_TMR11_IRQHandler(void) {
+  if (tmr_flag_get(TMR11, TMR_OVF_FLAG)) {
+    tmr_flag_clear(TMR11, TMR_OVF_FLAG);
+    FgTimerIntHandler(&Pump1_Fg, TMR11);
+    FgTimerIntHandler(&Pump2_Fg, TMR11);
+    FgTimerIntHandler(&Flow_Fg, TMR11);
+  }
+}

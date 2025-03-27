@@ -8,6 +8,8 @@
 #define LOG_TAG "Pt100_Task"
 #include "elog.h"
 
+#define PT100_TASK_PERIOD 1000
+
 MCP342x_error_t err;
 
 TaskHandle_t pt100_handler;
@@ -83,9 +85,11 @@ void pt100_task_function(void* pvParameters) {
   if (Cal_CalcParams(&PtCal_4)) log_e("PtCal_4 CalcParams failed");
 
   PT100_Init(&Pt100I2cParam);
+  
+  TickType_t xLastWakeTime = xTaskGetTickCount();
 
   while (1) {
-    vTaskDelay(2000);
+    vTaskDelayUntil(&xLastWakeTime, PT100_TASK_PERIOD);
 
     err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_1, &raw_val);
     if (err == errorNone) {

@@ -65,8 +65,8 @@ void LCD_task_function(void* pvParameters) {
         log_e("Error reading from RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Read Success");
-        elog_hexdump("UPPER_rx_Data", 32, RsLCD.rx_Data, sizeof(RsLCD.rx_Data));
+        // log_i("RS485 Read Success");
+        // elog_hexdump("UPPER_rx_Data", 32, RsLCD.rx_Data, sizeof(RsLCD.rx_Data)/2);
       }
 
       err = RS485ReadHandler(&RsLCD);
@@ -75,7 +75,7 @@ void LCD_task_function(void* pvParameters) {
         log_e("Error handling RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Handler Success");
+        // log_i("RS485 Handler Success");
       }
 
       err = RS485Write(&RsLCD);
@@ -84,7 +84,7 @@ void LCD_task_function(void* pvParameters) {
         log_e("Error writing to RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Write Success");
+        // log_i("RS485 Write Success");
       }
     }
     vTaskDelay(25);

@@ -72,9 +72,10 @@ void SideCardTaskFunc(void* pvParameters) {
         log_e("Error reading from RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Read Success");
-        elog_hexdump("Card_rx_Data", 32, RsCard.rx_Data, sizeof(RsCard.rx_Data));
+        log_i("RS485 Read Success %X %X", RsCard.ip_addr, RsCard.rx_Func);
+        elog_hexdump("Card_rx_Data", 32, RsCard.rx_Data, sizeof(RsCard.rx_Data) / 2);
         if (RsCard.rx_Func == WRITE_MULTIPLE_REGISTERS) {
+          xTaskNotifyGive(ReadCardHandler);
           continue;
         }
       }
@@ -85,7 +86,7 @@ void SideCardTaskFunc(void* pvParameters) {
         log_e("Error handling RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Handler Success");
+        // log_i("RS485 Handler Success");
         xTaskNotifyGive(ReadCardHandler);
       }
     }
@@ -103,6 +104,7 @@ void ReadCardTaskFunc(void* pvParameters) {
 
   while (1) {
     vTaskDelayUntil(&xLastWakeTime, RS485_SIDECARD_READ_PERIOD);
+    // log_i("\n");
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = SENS_CARD_ADDR;
@@ -123,15 +125,14 @@ void ReadCardTaskFunc(void* pvParameters) {
     notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
 
     if (notificationValue > 0) {
-      
     }
 
-    RsCard.tx_Func = READ_HOLDING_REGISTERS;
+    RsCard.tx_Func = WRITE_MULTIPLE_REGISTERS;
     RsCard.ip_addr = FANS_CARD_ADDR;
-    RsCard.reg_hdle_stat = FANS_CARD_REG_START;
-    RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
+    RsCard.reg_hdle_stat = FANS_CARD_WRITE_REG_START;
+    RsCard.reg_hdle_num = FANS_CARD_WRITE_NUM;
 
-    ret = RS485WriteHandler(&RsCard, NULL, NULL);
+    ret = RS485WriteHandler(&RsCard, FansCardCtrl.fan_duty, sizeof(FansCardCtrl.fan_duty));
     if (ret) {
       log_e("Fans Card Write Handler Error %d", ret);
       continue;
@@ -141,19 +142,23 @@ void ReadCardTaskFunc(void* pvParameters) {
     if (ret) {
       log_e("Fans Card Write Error %d", ret);
       continue;
+    } else {
+      // log_i("Fans Card Write Success: %X %X", RsCard.ip_addr, RsCard.tx_Func);
+      // elog_hexdump("FansCardCtrl", 32, RsCard.tx_Data, sizeof(RsCard.tx_Data) / 2);
     }
+
+    vTaskDelay(100);
 
     notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
 
     if (notificationValue > 0) {
-      RsCard.tx_Func = WRITE_MULTIPLE_REGISTERS;
+
+      RsCard.tx_Func = READ_HOLDING_REGISTERS;
       RsCard.ip_addr = FANS_CARD_ADDR;
-      RsCard.reg_hdle_stat = FANS_CARD_WRITE_REG_START;
-      RsCard.reg_hdle_num = FANS_CARD_WRITE_NUM;
+      RsCard.reg_hdle_stat = FANS_CARD_REG_START;
+      RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
 
-
-
-      ret = RS485WriteHandler(&RsCard, FansCardCtrl.fan_duty, sizeof(FansCardCtrl.fan_duty));
+      ret = RS485WriteHandler(&RsCard, NULL, NULL);
       if (ret) {
         log_e("Fans Card Write Handler Error %d", ret);
         continue;
@@ -163,6 +168,13 @@ void ReadCardTaskFunc(void* pvParameters) {
       if (ret) {
         log_e("Fans Card Write Error %d", ret);
         continue;
+      }else{
+        // log_i("Fans Card Write Success: %X %X", RsCard.ip_addr, RsCard.tx_Func);
+        // elog_hexdump("FansCardCtrl", 32, RsCard.tx_Data, sizeof(RsCard.tx_Data) / 2);
+      }
+
+      notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+      if (notificationValue > 0) {
       }
     }
   }

@@ -39,9 +39,6 @@
 #define START_TASK_PRIO 1
 #define START_STK_SIZE 128
 
-#define NETWORK_TASK_PRIO 3
-#define NETWORK_STK_SIZE 512
-
 #define LCD_TASK_PRIO 3
 #define LCD_STK_SIZE 1024
 
@@ -54,14 +51,8 @@
 #define PUMP_TASK_PRIO 5
 #define PUMP_STK_SIZE 1024
 
-#define RTC_TASK_PRIO 2
-#define RTC_STK_SIZE 512
-
-#define WARNNING_TASK_PRIO 4
-#define WARNNING_STK_SIZE 512
-
 #define SIDE_CARD_TASK_PRIO 4
-#define SIDE_CARD_STK_SIZE 512
+#define SIDE_CARD_STK_SIZE 1024
 
 #define PT100_TASK_PRIO 3
 #define PT100_STK_SIZE 512
@@ -202,8 +193,8 @@ int main(void) {
 
 void start_task(void* pvParameters) {
   vTaskDelay(100);
-  // xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
-  //             (TaskHandle_t*)&LCD_handler);
+  xTaskCreate((TaskFunction_t)LCD_task_function, (const char*)"LCD_task", (uint16_t)LCD_STK_SIZE, (void*)NULL, (UBaseType_t)LCD_TASK_PRIO,
+              (TaskHandle_t*)&LCD_handler);
   vTaskDelay(100);
   xTaskCreate((TaskFunction_t)upper_task_function, (const char*)"Upper_task", (uint16_t)UPPER_STK_SIZE, (void*)NULL, (UBaseType_t)UPPER_TASK_PRIO,
               (TaskHandle_t*)&upper_handler);
@@ -219,9 +210,9 @@ void start_task(void* pvParameters) {
   vTaskDelay(100);
   xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
               (TaskHandle_t*)&main_handler);
-  // vTaskDelay(100);
-  // xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
-  //             (TaskHandle_t*)&pt100_handler);
+  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
+              (TaskHandle_t*)&pt100_handler);
   vTaskDelete(StartTask_Handler);
   // taskEXIT_CRITICAL();
 }

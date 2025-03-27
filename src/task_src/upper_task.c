@@ -65,8 +65,8 @@ void upper_task_function(void* pvParameters) {
         log_e("Error reading from RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Read Success");
-        elog_hexdump("UPPER_rx_Data", 32, RsUpper.rx_Data, sizeof(RsUpper.rx_Data));
+        // log_i("RS485 Read Success");
+        // elog_hexdump("UPPER_rx_Data", 16, RsUpper.rx_Data, sizeof(RsUpper.rx_Data)/2);
       }
 
       err = RS485ReadHandler(&RsUpper);
@@ -75,7 +75,7 @@ void upper_task_function(void* pvParameters) {
         log_e("Error handling RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Handler Success");
+        // log_i("RS485 Handler Success");
       }
 
       err = RS485Write(&RsUpper);
@@ -84,7 +84,7 @@ void upper_task_function(void* pvParameters) {
         log_e("Error writing to RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Write Success");
+        // log_i("RS485 Write Success");
       }
     }
 

@@ -38,7 +38,6 @@ void USART2_IRQHandler(void) {
   } else if (usart_interrupt_flag_get(RsCard.UART, USART_TDBE_FLAG) != RESET) {
     usart_flag_clear(RsCard.UART, USART_TDBE_FLAG);
     usart_interrupt_enable(RsCard.UART, USART_TDBE_INT, FALSE);
-    RsCard.tx_idex--;
     RS485_Tx_Data_ISR(&RsCard);
   }
 }
@@ -72,8 +71,8 @@ void SideCardTaskFunc(void* pvParameters) {
         log_e("Error reading from RS485: %d", err);
         continue;
       } else {
-        log_i("RS485 Read Success %X %X", RsCard.ip_addr, RsCard.rx_Func);
-        elog_hexdump("Card_rx_Data", 32, RsCard.rx_Data, sizeof(RsCard.rx_Data) / 2);
+        // log_i("RS485 Read Success %X %X", RsCard.ip_addr, RsCard.rx_Func);
+        // elog_hexdump("Card_rx_Data", 32, RsCard.rx_Data, sizeof(RsCard.rx_Data) / 2);
         if (RsCard.rx_Func == WRITE_MULTIPLE_REGISTERS) {
           xTaskNotifyGive(ReadCardHandler);
           continue;
@@ -104,7 +103,6 @@ void ReadCardTaskFunc(void* pvParameters) {
 
   while (1) {
     vTaskDelayUntil(&xLastWakeTime, RS485_SIDECARD_READ_PERIOD);
-    // log_i("\n");
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = SENS_CARD_ADDR;

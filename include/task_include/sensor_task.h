@@ -11,7 +11,6 @@
 // 確保 ADC1_SAMPLE_NUM 是 2 的冪次（只有 1 個位元是 1）
 _Static_assert((ADC1_SAMPLE_NUM & (ADC1_SAMPLE_NUM - 1)) == 0, "ADC1_SAMPLE_NUM must be a power of 2");
 
-
 extern uint16_t adc1_ordinary_valuetab[ADC1_SAMPLE_NUM][ADC1_CHANNEL_NUM];
 extern TaskHandle_t sensor_handler;
 
@@ -30,6 +29,7 @@ typedef struct {
   int32_t power_input;
   int16_t temperature;
   uint16_t humidity;
+  int16_t dew_temp;
 } SensStat_t;
 
 extern SensStat_t SensStat;

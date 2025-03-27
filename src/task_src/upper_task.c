@@ -32,7 +32,6 @@ void UART4_IRQHandler(void) {
   } else if (usart_interrupt_flag_get(RsUpper.UART, USART_TDBE_FLAG) != RESET) {
     usart_flag_clear(RsUpper.UART, USART_TDBE_FLAG);
     usart_interrupt_enable(RsUpper.UART, USART_TDBE_INT, FALSE);
-    RsUpper.tx_idex--;
     RS485_Tx_Data_ISR(&RsUpper);
   }
 }

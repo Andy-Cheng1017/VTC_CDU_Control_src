@@ -102,6 +102,8 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
         return SensStat.temperature & 0xFFFF;
       case 0x0044:
         return SensStat.humidity & 0xFFFF;
+      case 0x0045:
+        return SensStat.dew_temp & 0xFFFF;
       case 0x0050:
         return (SensCardStat.pt100_1_temp_m / 10) & 0xFFFF;
       case 0x0051:
@@ -127,6 +129,12 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
   if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
     if (root) {
       switch (addr) {
+        case 0x0043:
+          return (SensStat.temperature = data) & 0xFFFF;
+        case 0x0044:
+          return (SensStat.humidity = data) & 0xFFFF;
+        case 0x0045:
+          return (SensStat.dew_temp = data) & 0xFFFF;
         case 0x0050:
           return (SensCardStat.pt100_1_temp_m = data * 10) & 0xFFFF;
         case 0x0051:
@@ -285,7 +293,7 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
           case 0x0088:
             return (FansCardStat.fan9_fb = data) & 0xFFFF;
           case 0x0089:
-            return (FansCardStat.fan10_fb = data) & 0xFFFF ;
+            return (FansCardStat.fan10_fb = data) & 0xFFFF;
           case 0x008A:
             return (FansCardStat.fan11_fb = data) & 0xFFFF;
           case 0x008B:
@@ -338,7 +346,7 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
           case 0x009E:
             return (FansCardCtrl.fan_duty[14] = data) & 0xFFFF;
           case 0x009F:
-            return (FansCardCtrl.fan_duty[15] = data) & 0xFFFF ;
+            return (FansCardCtrl.fan_duty[15] = data) & 0xFFFF;
           default:
             return ILLIGAL_DATA_ADDR << 16;
         }

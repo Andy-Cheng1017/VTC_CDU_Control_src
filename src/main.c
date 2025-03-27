@@ -20,6 +20,7 @@
 #include "side_card_task.h"
 #include "pt100_task.h"
 #include "main_task.h"
+#include "temp_hum_task.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -56,6 +57,9 @@
 
 #define PT100_TASK_PRIO 3
 #define PT100_STK_SIZE 512
+
+#define TEMP_HUM_TASK_PRIO 2
+#define TEMP_HUM_STK_SIZE 512
 
 #define MAIN_TASK_PRIO 2
 #define MAIN_STK_SIZE 512
@@ -211,8 +215,12 @@ void start_task(void* pvParameters) {
   xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
               (TaskHandle_t*)&main_handler);
   vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)temp_hum_task_function, (const char*)"Temp_Hum_task", (uint16_t)TEMP_HUM_STK_SIZE, (void*)NULL,
+              (UBaseType_t)TEMP_HUM_TASK_PRIO, (TaskHandle_t*)&temp_hum_handler);
+  vTaskDelay(100);
   xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
               (TaskHandle_t*)&pt100_handler);
+  vTaskDelay(100);
   vTaskDelete(StartTask_Handler);
   // taskEXIT_CRITICAL();
 }

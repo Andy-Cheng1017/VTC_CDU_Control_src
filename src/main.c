@@ -13,6 +13,7 @@
 #include "wk_system.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "main.h"
 #include "LCD_task.h"
 #include "upper_task.h"
 #include "sensor_task.h"
@@ -21,6 +22,7 @@
 #include "pt100_task.h"
 #include "main_task.h"
 #include "temp_hum_task.h"
+#include "power_task.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -61,6 +63,9 @@
 #define TEMP_HUM_TASK_PRIO 2
 #define TEMP_HUM_STK_SIZE 512
 
+#define POWER_TASK_PRIO 2
+#define POWER_STK_SIZE 512
+
 #define MAIN_TASK_PRIO 2
 #define MAIN_STK_SIZE 512
 
@@ -73,6 +78,8 @@
 
 /* private variables ---------------------------------------------------------*/
 /* add user code begin private variables */
+
+SemaphoreHandle_t RS485RegionMutex = NULL;
 
 /* add user code end private variables */
 
@@ -187,6 +194,13 @@ int main(void) {
   /* init gpio function. */
   wk_gpio_config();
 
+  RS485RegionMutex = xSemaphoreCreateMutex();
+
+  if (RS485RegionMutex == NULL) {
+    log_e("Failed to create mutex!\n");
+    while (1);
+  }
+
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);
 
@@ -212,11 +226,14 @@ void start_task(void* pvParameters) {
   xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
               (TaskHandle_t*)&pump_handler);
   vTaskDelay(100);
-  xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
-              (TaskHandle_t*)&main_handler);
+  // xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
+  //             (TaskHandle_t*)&main_handler);
   vTaskDelay(100);
   xTaskCreate((TaskFunction_t)temp_hum_task_function, (const char*)"Temp_Hum_task", (uint16_t)TEMP_HUM_STK_SIZE, (void*)NULL,
               (UBaseType_t)TEMP_HUM_TASK_PRIO, (TaskHandle_t*)&temp_hum_handler);
+  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)power_task_function, (const char*)"Power_task", (uint16_t)POWER_STK_SIZE, (void*)NULL, (UBaseType_t)POWER_TASK_PRIO,
+              (TaskHandle_t*)&power_handler);
   vTaskDelay(100);
   xTaskCreate((TaskFunction_t)pt100_task_function, (const char*)"PT100_task", (uint16_t)PT100_STK_SIZE, (void*)NULL, (UBaseType_t)PT100_TASK_PRIO,
               (TaskHandle_t*)&pt100_handler);

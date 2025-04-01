@@ -1,6 +1,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "side_card_task.h"
+#include "main.h"
 #include "at32f403a_407_wk_config.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
@@ -22,6 +23,7 @@ Rs485_t RsCard = {
 };
 
 SensCardStat_t SensCardStat = {0};
+SensCardCtrl_t SensCardCtrl = {0};
 
 FansCardCtrl_t FansCardCtrl = {0};
 FansCardStat_t FansCardStat = {0};
@@ -45,15 +47,15 @@ void USART2_IRQHandler(void) {
 void SideCardTaskFunc(void* pvParameters) {
   RsInit(&RsCard);
 
-  RsCard.reg_hdle_stat = SENS_CARD_REG_START;
-  RsCard.reg_hdle_end = SENS_CARD_REG_END;
-  RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
-  RsRegHdle(&RsCard, DataRead_Handler);
+  // RsCard.reg_hdle_stat = SENS_CARD_REG_START;
+  // RsCard.reg_hdle_end = SENS_CARD_REG_END;
+  // // RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
+  // RsRegHdle(&RsCard, DataRead_Handler);
 
-  RsCard.reg_hdle_stat = FANS_CARD_REG_START;
-  RsCard.reg_hdle_end = FANS_CARD_REG_END;
-  RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
-  RsRegHdle(&RsCard, FansCardHdle);
+  // RsCard.reg_hdle_stat = FANS_CARD_REG_START;
+  // RsCard.reg_hdle_end = FANS_CARD_REG_END;
+  // // RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
+  // RsRegHdle(&RsCard, FansCardHdle);
 
   xTaskCreate((TaskFunction_t)ReadCardTaskFunc, (const char*)"Read Card Task Func", (uint16_t)READ_CARD_STK_SIZE, (void*)NULL,
               (UBaseType_t)READ_CARD_TASK_PRIO, (TaskHandle_t*)&ReadCardHandler);
@@ -104,6 +106,8 @@ void ReadCardTaskFunc(void* pvParameters) {
   while (1) {
     vTaskDelayUntil(&xLastWakeTime, RS485_SIDECARD_READ_PERIOD);
 
+    xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
+
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = SENS_CARD_ADDR;
     RsCard.reg_hdle_stat = SENS_CARD_REG_START;
@@ -124,6 +128,11 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     if (notificationValue > 0) {
     }
+    xSemaphoreGive(RS485RegionMutex);
+
+    vTaskDelay(100);
+
+    xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
 
     RsCard.tx_Func = WRITE_MULTIPLE_REGISTERS;
     RsCard.ip_addr = FANS_CARD_ADDR;
@@ -145,9 +154,13 @@ void ReadCardTaskFunc(void* pvParameters) {
       // elog_hexdump("FansCardCtrl", 32, RsCard.tx_Data, sizeof(RsCard.tx_Data) / 2);
     }
 
+    notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+
+    xSemaphoreGive(RS485RegionMutex);
+
     vTaskDelay(100);
 
-    notificationValue = ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+    xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
 
     if (notificationValue > 0) {
 
@@ -175,6 +188,8 @@ void ReadCardTaskFunc(void* pvParameters) {
       if (notificationValue > 0) {
       }
     }
+
+    xSemaphoreGive(RS485RegionMutex);
   }
   vTaskDelete(NULL);
 }

@@ -2,6 +2,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "upper_task.h"
+#include "main.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
 
@@ -39,18 +40,6 @@ void UART4_IRQHandler(void) {
 void upper_task_function(void* pvParameters) {
   RsInit(&RsUpper);
   log_i("UPPER Task Running");
-  RsUpper.reg_hdle_stat = 0x00;
-  RsUpper.reg_hdle_end = 0x2F;
-  RsRegHdle(&RsUpper, SysStat_Handler);
-  RsUpper.reg_hdle_stat = 0x30;
-  RsUpper.reg_hdle_end = 0x5F;
-  RsRegHdle(&RsUpper, DataRead_Handler);
-  RsUpper.reg_hdle_stat = 0x60;
-  RsUpper.reg_hdle_end = 0x7F;
-  RsRegHdle(&RsUpper, DevCtrl_Handler);
-  RsUpper.reg_hdle_stat = 0x80;
-  RsUpper.reg_hdle_end = 0x9F;
-  RsRegHdle(&RsUpper, FansCardHdle);
 
   RsError_t err;
 
@@ -68,7 +57,9 @@ void upper_task_function(void* pvParameters) {
         // elog_hexdump("UPPER_rx_Data", 16, RsUpper.rx_Data, sizeof(RsUpper.rx_Data)/2);
       }
 
+      xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
       err = RS485ReadHandler(&RsUpper);
+      xSemaphoreGive(RS485RegionMutex);
 
       if (err != RS485_OK) {
         log_e("Error handling RS485: %d", err);

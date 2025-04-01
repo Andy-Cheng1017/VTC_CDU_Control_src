@@ -87,7 +87,7 @@ void temp_hum_task_function(void *pvParameters) {
           //   log_i("RS485 Read Success %X %X", RsTempHum.ip_addr, RsTempHum.rx_Func);
           //   elog_hexdump("Card_rx_Data", 32, RsTempHum.rx_Data, sizeof(RsTempHum.rx_Data) / 2);
         }
-        RsTempHum.reg_hdle_stat = 0X43;
+        RsTempHum.reg_hdle_stat = 0X0068;
 
         ret = RS485ReadHandler(&RsTempHum);
 

@@ -2,6 +2,7 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "LCD_task.h"
+#include "main.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
 
@@ -40,16 +41,22 @@ void LCD_task_function(void* pvParameters) {
   RsInit(&RsLCD);
   log_i("LCD Task Running");
   RsLCD.reg_hdle_stat = 0x00;
-  RsLCD.reg_hdle_end = 0x2F;
+  RsLCD.reg_hdle_end = 0x4F;
   RsRegHdle(&RsLCD, SysStat_Handler);
-  RsLCD.reg_hdle_stat = 0x30;
-  RsLCD.reg_hdle_end = 0x5F;
+  RsLCD.reg_hdle_stat = 0x50;
+  RsLCD.reg_hdle_end = 0x6F;
   RsRegHdle(&RsLCD, DataRead_Handler);
-  RsLCD.reg_hdle_stat = 0x60;
+  RsLCD.reg_hdle_stat = 0x70;
   RsLCD.reg_hdle_end = 0x7F;
-  RsRegHdle(&RsLCD, DevCtrl_Handler);
+  RsRegHdle(&RsLCD, SideCar_Sens_DataRead_Handler);
   RsLCD.reg_hdle_stat = 0x80;
+  RsLCD.reg_hdle_end = 0x8F;
+  RsRegHdle(&RsLCD, DevCtrl_Handler);
+  RsLCD.reg_hdle_stat = 0x90;
   RsLCD.reg_hdle_end = 0x9F;
+  RsRegHdle(&RsLCD, SideCar_Sens_DevCtrl_Handler);
+  RsLCD.reg_hdle_stat = 0x100;
+  RsLCD.reg_hdle_end = 0x11F;
   RsRegHdle(&RsLCD, FansCardHdle);
 
   RsError_t err;
@@ -68,7 +75,9 @@ void LCD_task_function(void* pvParameters) {
         // elog_hexdump("UPPER_rx_Data", 32, RsLCD.rx_Data, sizeof(RsLCD.rx_Data)/2);
       }
 
+      xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
       err = RS485ReadHandler(&RsLCD);
+      xSemaphoreGive(RS485RegionMutex);
 
       if (err != RS485_OK) {
         log_e("Error handling RS485: %d", err);

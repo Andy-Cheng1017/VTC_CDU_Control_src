@@ -27,6 +27,7 @@ typedef struct {
   uint16_t voltage_input;
   uint16_t current_input;
   int32_t power_input;
+  uint16_t leak_sensor;
   int16_t temperature;
   uint16_t humidity;
   int16_t dew_temp;

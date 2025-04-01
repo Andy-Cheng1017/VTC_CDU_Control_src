@@ -93,7 +93,7 @@ void pt100_task_function(void* pvParameters) {
 
     err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_1, &raw_val);
     if (err == errorNone) {
-      Pt100Stat.pt100_1_temp_m = Cal_Apply(&PtCal_1, raw_val);
+      Pt100Stat.pt100_3_temp_m = Cal_Apply(&PtCal_1, raw_val);
       // log_i("pt100_1_temp_m: %d", Pt100Stat.pt100_1_temp_m);
     } else {
       log_e("MCP342x_convertAndRead error: %d", err);
@@ -101,7 +101,7 @@ void pt100_task_function(void* pvParameters) {
 
     err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_2, &raw_val);
     if (err == errorNone) {
-      Pt100Stat.pt100_2_temp_m = Cal_Apply(&PtCal_2, raw_val);
+      Pt100Stat.pt100_4_temp_m = Cal_Apply(&PtCal_2, raw_val);
       // log_i("pt100_2_temp_m: %d", Pt100Stat.pt100_2_temp_m);
     } else {
       log_e("MCP342x_convertAndRead error: %d", err);
@@ -109,7 +109,7 @@ void pt100_task_function(void* pvParameters) {
 
     err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_3, &raw_val);
     if (err == errorNone) {
-      Pt100Stat.pt100_3_temp_m = Cal_Apply(&PtCal_3, raw_val);
+      Pt100Stat.pt100_1_temp_m = Cal_Apply(&PtCal_3, raw_val);
       // log_i("pt100_3_temp_m: %d", Pt100Stat.pt100_3_temp_m);
     } else {
       log_e("MCP342x_convertAndRead error: %d", err);
@@ -117,7 +117,7 @@ void pt100_task_function(void* pvParameters) {
 
     err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP342x_CHANNEL_4, &raw_val);
     if (err == errorNone) {
-      Pt100Stat.pt100_4_temp_m = Cal_Apply(&PtCal_4, raw_val);
+      Pt100Stat.pt100_2_temp_m = Cal_Apply(&PtCal_4, raw_val);
       // log_i("pt100_4_temp_m: %d", Pt100Stat.pt100_4_temp_m);
     } else {
       log_e("MCP342x_convertAndRead error: %d", err);

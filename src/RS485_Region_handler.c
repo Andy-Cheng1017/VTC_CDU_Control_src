@@ -3,156 +3,242 @@
 #include "pump_task.h"
 #include "pt100_task.h"
 #include "side_card_task.h"
+#include "power_task.h"
 
 uint32_t SysStat_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
-  switch (addr) {
-    case 0x0000:
-      break;
-    case 0x0001:
-      break;
-    case 0x0002:
-      break;
-    case 0x0003:
-      break;
-    case 0x0004:
-      break;
-    case 0x0005:
-      break;
-    case 0x0006:
-      break;
-    case 0x0007:
-      break;
-    case 0x0008:
-      break;
-    case 0x0009:
-      break;
-    case 0x000A:
-      break;
-    case 0x000B:
-      break;
-    case 0x000C:
-      break;
-    case 0x000D:
-      break;
-    case 0x000E:
-      break;
-    case 0x000F:
-      break;
-    case 0x0010:
-      break;
-    case 0x0011:
-      break;
-    case 0x0012:
-      break;
-    case 0x0013:
-      break;
-    default:
-      break;
-  }
-  return 0;
-}
-
-uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
-  uint16_t retval = 0;
   if (func == READ_HOLDING_REGISTERS) {
     switch (addr) {
-      case 0x0030:
-        return (Pt100Stat.pt100_1_temp_m / 10) & 0xFFFF;
-      case 0x0031:
-        return (Pt100Stat.pt100_2_temp_m / 10) & 0xFFFF;
-      case 0x0032:
-        return (Pt100Stat.pt100_3_temp_m / 10) & 0xFFFF;
-      case 0x0033:
-        return (Pt100Stat.pt100_4_temp_m / 10) & 0xFFFF;
-      case 0x0034:
-        return (SensStat.ntc_1_temp / 10) & 0xFFFF;
-      case 0x0035:
-        return (SensStat.ntc_2_temp / 10) & 0xFFFF;
-      case 0x0036:
-        return (SensStat.ntc_3_temp / 10) & 0xFFFF;
-      case 0x0037:
-        return (SensStat.ntc_4_temp / 10) & 0xFFFF;
-      case 0x0038:
-        return (SensStat.press_1_val) & 0xFFFF;
-      case 0x0039:
-        return (SensStat.press_2_val) & 0xFFFF;
-      case 0x003A:
-        return (SensStat.press_3_val) & 0xFFFF;
-      case 0x003B:
-        return (SensStat.press_4_val) & 0xFFFF;
-      case 0x003C:
-        return (SensStat.Flow_val) & 0xFFFF;
-      case 0x003D:
-        return pump_status.pump_1_FB & 0xFFFF;
-      case 0x003E:
-        return pump_status.pump_2_FB & 0xFFFF;
-      case 0x003F:
-        retval = SensStat.voltage_input;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0040:
-        retval = SensStat.current_input;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0041:
-        retval = (SensStat.power_input >> 16) & 0xFFFF;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0042:
-        retval = SensStat.power_input & 0xFFFF;
-        return (retval >= 0 && retval <= 3000) ? (uint32_t)retval : SLAVE_DEVICE_FAILURE << 16;
-      case 0x0043:
-        return SensStat.temperature & 0xFFFF;
-      case 0x0044:
-        return SensStat.humidity & 0xFFFF;
-      case 0x0045:
-        return SensStat.dew_temp & 0xFFFF;
-      case 0x0050:
-        return (SensCardStat.pt100_1_temp_m / 10) & 0xFFFF;
-      case 0x0051:
-        return (SensCardStat.pt100_2_temp_m / 10) & 0xFFFF;
-      case 0x0052:
-        return (SensCardStat.pt100_3_temp_m / 10) & 0xFFFF;
-      case 0x0053:
-        return (SensCardStat.pt100_4_temp_m / 10) & 0xFFFF;
-      case 0x0054:
-        return (SensCardStat.press_1_val) & 0xFFFF;
-      case 0x0055:
-        return (SensCardStat.press_2_val) & 0xFFFF;
-      case 0x0056:
-        return SensCardStat.leak_sensor & 0xFFFF;
-      case 0x0057:
-        return SensCardStat.temperature & 0xFFFF;
-      case 0x0058:
-        return SensCardStat.humidity & 0xFFFF;
+      case 0X0000 ... 0X004F:
+        return 0;
       default:
         return ILLIGAL_DATA_ADDR << 16;
     }
+  } else {
+    return ILLIGAL_FUNC << 16;
   }
-  if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
+}
+
+uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
+  if (func == READ_HOLDING_REGISTERS) {
+    switch (addr) {
+      case 0x0050:
+        return (Pt100Stat.pt100_1_temp_m / 10) & 0xFFFF;
+      case 0x0051:
+        return (Pt100Stat.pt100_2_temp_m / 10) & 0xFFFF;
+      case 0x0052:
+        return (Pt100Stat.pt100_3_temp_m / 10) & 0xFFFF;
+      case 0x0053:
+        return (Pt100Stat.pt100_4_temp_m / 10) & 0xFFFF;
+      case 0x0054:
+        return (SensStat.ntc_1_temp / 10) & 0xFFFF;
+      case 0x0055:
+        return (SensStat.ntc_2_temp / 10) & 0xFFFF;
+      case 0x0056:
+        return (SensStat.ntc_3_temp / 10) & 0xFFFF;
+      case 0x0057:
+        return (SensStat.ntc_4_temp / 10) & 0xFFFF;
+      case 0x0058:
+        return (SensStat.press_1_val) & 0xFFFF;
+      case 0x0059:
+        return (SensStat.press_2_val) & 0xFFFF;
+      case 0x005A:
+        return (SensStat.press_3_val) & 0xFFFF;
+      case 0x005B:
+        return (SensStat.press_4_val) & 0xFFFF;
+      case 0x005C:
+        return (SensStat.Flow_val) & 0xFFFF;
+      case 0x005D:
+        return pump_status.pump_1_FB & 0xFFFF;
+      case 0x005E:
+        return pump_status.pump_2_FB & 0xFFFF;
+      case 0x005F:
+        return SensCardStat.leak_sensor & 0xFFFF;
+      case 0x0060:
+        return Power_1_Stat.power_state & 0xFFFF;
+      case 0x0061:
+        return Power_1_Stat.voltage_input & 0xFFFF;
+      case 0x0062:
+        return Power_1_Stat.current_input & 0xFFFF;
+      case 0x0063:
+        return Power_1_Stat.power_temp & 0xFFFF;
+      case 0x0064:
+        return Power_2_Stat.power_state & 0xFFFF;
+      case 0x0065:
+        return Power_2_Stat.voltage_input & 0xFFFF;
+      case 0x0066:
+        return Power_2_Stat.current_input & 0xFFFF;
+      case 0x0067:
+        return Power_2_Stat.power_temp & 0xFFFF;
+      case 0x0068:
+        return SensStat.temperature & 0xFFFF;
+      case 0x0069:
+        return SensStat.humidity & 0xFFFF;
+      case 0x006A:
+        return SensStat.dew_temp & 0xFFFF;
+      case 0x006B:
+        return FansCardStat.fan1_fb & 0xFFFF;
+      case 0x006C:
+        return 0;
+      case 0x006D:
+        return 0;
+      case 0x006E:
+        return 0;
+      case 0x006F:
+        return 0;
+      default:
+        return ILLIGAL_DATA_ADDR << 16;
+    }
+  } else if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
     if (root) {
       switch (addr) {
-        case 0x0043:
-          return (SensStat.temperature = data) & 0xFFFF;
-        case 0x0044:
-          return (SensStat.humidity = data) & 0xFFFF;
-        case 0x0045:
-          return (SensStat.dew_temp = data) & 0xFFFF;
         case 0x0050:
-          return (SensCardStat.pt100_1_temp_m = data * 10) & 0xFFFF;
+          return 0;
         case 0x0051:
-          return (SensCardStat.pt100_2_temp_m = data * 10) & 0xFFFF;
+          return 0;
         case 0x0052:
-          return (SensCardStat.pt100_3_temp_m = data * 10) & 0xFFFF;
+          return 0;
         case 0x0053:
-          return (SensCardStat.pt100_4_temp_m = data * 10) & 0xFFFF;
+          return 0;
         case 0x0054:
-          return (SensCardStat.press_1_val = data) & 0xFFFF;
+          return 0;
         case 0x0055:
-          return (SensCardStat.press_2_val = data) & 0xFFFF;
+          return 0;
         case 0x0056:
-          return (SensCardStat.leak_sensor = data) & 0xFFFF;
+          return 0;
         case 0x0057:
-          return (SensCardStat.temperature = data) & 0xFFFF;
+          return 0;
         case 0x0058:
+          return 0;
+        case 0x0059:
+          return 0;
+        case 0x005A:
+          return 0;
+        case 0x005B:
+          return 0;
+        case 0x005C:
+          return 0;
+        case 0x005D:
+          return 0;
+        case 0x005E:
+          return 0;
+        case 0x005F:
+          return 0;
+        case 0x0060:
+          return 0;
+        case 0x0061:
+          return 0;
+        case 0x0062:
+          return 0;
+        case 0x0063:
+          return 0;
+        case 0x0064:
+          return 0;
+        case 0x0065:
+          return 0;
+        case 0x0066:
+          return 0;
+        case 0x0067:
+          return 0;
+        case 0x0068:
+          return (SensStat.temperature = data) & 0xFFFF;
+        case 0x0069:
+          return (SensStat.humidity = data) & 0xFFFF;
+        case 0x006A:
+          return (SensStat.dew_temp = data) & 0xFFFF;
+        case 0x006B:
+          return 0;
+        case 0x006C:
+          return 0;
+        case 0x006D:
+          return 0;
+        case 0x006E:
+          return 0;
+        case 0x006F:
+          return 0;
+        default:
+          return ILLIGAL_DATA_ADDR << 16;
+      }
+    } else {
+      return ILLIGAL_FUNC << 16;
+    }
+  } else {
+    return ILLIGAL_FUNC << 16;
+  }
+}
+
+uint32_t SideCar_Sens_DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
+  if (func == READ_HOLDING_REGISTERS) {
+    switch (addr) {
+      case 0x0070:
+        return (SensCardStat.pt100_1_temp_m / 10) & 0xFFFF;
+      case 0x0071:
+        return (SensCardStat.pt100_2_temp_m / 10) & 0xFFFF;
+      case 0x0072:
+        return (SensCardStat.pt100_3_temp_m / 10) & 0xFFFF;
+      case 0x0073:
+        return (SensCardStat.pt100_4_temp_m / 10) & 0xFFFF;
+      case 0x0074:
+        return (SensCardStat.press_1_val) & 0xFFFF;
+      case 0x0075:
+        return (SensCardStat.press_2_val) & 0xFFFF;
+      case 0x0076:
+        return SensCardStat.leak_sensor & 0xFFFF;
+      case 0x0077:
+        return SensCardStat.temperature & 0xFFFF;
+      case 0x0078:
+        return SensCardStat.humidity & 0xFFFF;
+      case 0x0079:
+        return 0;
+      case 0x007A:
+        return 0;
+      case 0x007B:
+        return 0;
+      case 0x007C:
+        return 0;
+      case 0x007D:
+        return 0;
+      case 0x007E:
+        return 0;
+      case 0x007F:
+        return 0;
+      default:
+        return ILLIGAL_DATA_ADDR << 16;
+    }
+  } else if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
+    if (root) {
+      switch (addr) {
+        case 0x0070:
+          return (SensCardStat.pt100_1_temp_m = data * 10) & 0xFFFF;
+        case 0x0071:
+          return (SensCardStat.pt100_2_temp_m = data * 10) & 0xFFFF;
+        case 0x0072:
+          return (SensCardStat.pt100_3_temp_m = data * 10) & 0xFFFF;
+        case 0x0073:
+          return (SensCardStat.pt100_4_temp_m = data * 10) & 0xFFFF;
+        case 0x0074:
+          return (SensCardStat.press_1_val = data) & 0xFFFF;
+        case 0x0075:
+          return (SensCardStat.press_2_val = data) & 0xFFFF;
+        case 0x0076:
+          return (SensCardStat.leak_sensor = data) & 0xFFFF;
+        case 0x0077:
+          return (SensCardStat.temperature = data) & 0xFFFF;
+        case 0x0078:
           return (SensCardStat.humidity = data) & 0xFFFF;
+        case 0x0079:
+          return 0;
+        case 0x007A:
+          return 0;
+        case 0x007B:
+          return 0;
+        case 0x007C:
+          return 0;
+        case 0x007D:
+          return 0;
+        case 0x007E:
+          return 0;
+        case 0x007F:
+          return 0;
         default:
           return ILLIGAL_DATA_ADDR << 16;
       }
@@ -168,14 +254,38 @@ uint32_t DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t le
   if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
     if (data >= 0 && data <= 1000) {
       switch (addr) {
-        case 0x0062:
+        case 0x0080:
           return (pump_control.pump_1_rpm = data) & 0xFFFF;
-        case 0x0063:
+        case 0x0081:
           return (pump_control.pump_2_rpm = data) & 0xFFFF;
-        case 0x0066:
+        case 0x0082:
           return (SensCtrl.porpo_1_duty = data) & 0xFFFF;
-        case 0x0067:
+        case 0x0083:
           return (SensCtrl.porpo_2_duty = data) & 0xFFFF;
+        case 0x0084:
+          return 0;
+        case 0x0085:
+          return 0;
+        case 0x0086:
+          return 0;
+        case 0x0087:
+          return 0;
+        case 0x0088:
+          return 0;
+        case 0x0089:
+          return 0;
+        case 0x008A:
+          return 0;
+        case 0x008B:
+          return 0;
+        case 0x008C:
+          return 0;
+        case 0x008D:
+          return 0;
+        case 0x008E:
+          return 0;
+        case 0x008F:
+          return 0;
         default:
           return ILLIGAL_DATA_ADDR << 16;
       }
@@ -184,16 +294,124 @@ uint32_t DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t le
     }
   } else if (func == READ_HOLDING_REGISTERS) {
     switch (addr) {
-      case 0x0062:
+      case 0x0080:
         return (pump_control.pump_1_rpm & 0xFFFF);
-      case 0x0063:
+      case 0x0081:
         return (pump_control.pump_2_rpm & 0xFFFF);
-      case 0x0066:
+      case 0x0082:
         return (SensCtrl.porpo_1_duty & 0xFFFF);
-      case 0x0067:
+      case 0x0083:
         return (SensCtrl.porpo_2_duty & 0xFFFF);
+      case 0x0084:
+        return 0;
+      case 0x0085:
+        return 0;
+      case 0x0086:
+        return 0;
+      case 0x0087:
+        return 0;
+      case 0x0088:
+        return 0;
+      case 0x0089:
+        return 0;
+      case 0x008A:
+        return 0;
+      case 0x008B:
+        return 0;
+      case 0x008C:
+        return 0;
+      case 0x008D:
+        return 0;
+      case 0x008E:
+        return 0;
+      case 0x008F:
+        return 0;
       default:
         return ILLIGAL_DATA_ADDR << 16;
+    }
+  } else {
+    return ILLIGAL_FUNC << 16;
+  }
+}
+
+uint32_t SideCar_Sens_DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
+  if (func == READ_HOLDING_REGISTERS) {
+    switch (addr) {
+      case 0x0090:
+        return SensCardCtrl.pressure_pump & 0xFFFF;
+      case 0x0091:
+        return 0;
+      case 0x0092:
+        return 0;
+      case 0x0093:
+        return 0;
+      case 0x0094:
+        return 0;
+      case 0x0095:
+        return 0;
+      case 0x0096:
+        return 0;
+      case 0x0097:
+        return 0;
+      case 0x0098:
+        return 0;
+      case 0x0099:
+        return 0;
+      case 0x009A:
+        return 0;
+      case 0x009B:
+        return 0;
+      case 0x009C:
+        return 0;
+      case 0x009D:
+        return 0;
+      case 0x009E:
+        return 0;
+      case 0x009F:
+        return 0;
+      default:
+        return ILLIGAL_DATA_ADDR << 16;
+    }
+  } else if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
+    if (root) {
+      switch (addr) {
+        case 0x0090:
+          return (SensCardCtrl.pressure_pump = data) & 0xFFFF;
+        case 0x0091:
+          return 0;
+        case 0x0092:
+          return 0;
+        case 0x0093:
+          return 0;
+        case 0x0094:
+          return 0;
+        case 0x0095:
+          return 0;
+        case 0x0096:
+          return 0;
+        case 0x0097:
+          return 0;
+        case 0x0098:
+          return 0;
+        case 0x0099:
+          return 0;
+        case 0x009A:
+          return 0;
+        case 0x009B:
+          return 0;
+        case 0x009C:
+          return 0;
+        case 0x009D:
+          return 0;
+        case 0x009E:
+          return 0;
+        case 0x009F:
+          return 0;
+        default:
+          return ILLIGAL_DATA_ADDR << 16;
+      }
+    } else {
+      return ILLIGAL_FUNC << 16;
     }
   } else {
     return ILLIGAL_FUNC << 16;
@@ -203,108 +421,108 @@ uint32_t DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t le
 uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
   if (func == READ_HOLDING_REGISTERS) {
     switch (addr) {
-      case 0x0080:
+      case 0x0100:
         return FansCardStat.fan1_fb & 0xFFFF;
-      case 0x0081:
+      case 0x0101:
         return FansCardStat.fan2_fb & 0xFFFF;
-      case 0x0082:
+      case 0x0102:
         return FansCardStat.fan3_fb & 0xFFFF;
-      case 0x0083:
+      case 0x0103:
         return FansCardStat.fan4_fb & 0xFFFF;
-      case 0x0084:
+      case 0x0104:
         return FansCardStat.fan5_fb & 0xFFFF;
-      case 0x0085:
+      case 0x0105:
         return FansCardStat.fan6_fb & 0xFFFF;
-      case 0x0086:
+      case 0x0106:
         return FansCardStat.fan7_fb & 0xFFFF;
-      case 0x0087:
+      case 0x0107:
         return FansCardStat.fan8_fb & 0xFFFF;
-      case 0x0088:
+      case 0x0108:
         return FansCardStat.fan9_fb & 0xFFFF;
-      case 0x0089:
+      case 0x0109:
         return FansCardStat.fan10_fb & 0xFFFF;
-      case 0x008A:
+      case 0x010A:
         return FansCardStat.fan11_fb & 0xFFFF;
-      case 0x008B:
+      case 0x010B:
         return FansCardStat.fan12_fb & 0xFFFF;
-      case 0x008C:
+      case 0x010C:
         return FansCardStat.fan13_fb & 0xFFFF;
-      case 0x008D:
+      case 0x010D:
         return FansCardStat.fan14_fb & 0xFFFF;
-      case 0x008E:
+      case 0x010E:
         return FansCardStat.fan15_fb & 0xFFFF;
-      case 0x008F:
+      case 0x010F:
         return FansCardStat.fan16_fb & 0xFFFF;
-      case 0x0090:
+      case 0x0110:
         return FansCardCtrl.fan_duty[0] & 0xFFFF;
-      case 0x0091:
+      case 0x0111:
         return FansCardCtrl.fan_duty[1] & 0xFFFF;
-      case 0x0092:
+      case 0x0112:
         return FansCardCtrl.fan_duty[2] & 0xFFFF;
-      case 0x0093:
+      case 0x0113:
         return FansCardCtrl.fan_duty[3] & 0xFFFF;
-      case 0x0094:
+      case 0x0114:
         return FansCardCtrl.fan_duty[4] & 0xFFFF;
-      case 0x0095:
+      case 0x0115:
         return FansCardCtrl.fan_duty[5] & 0xFFFF;
-      case 0x0096:
+      case 0x0116:
         return FansCardCtrl.fan_duty[6] & 0xFFFF;
-      case 0x0097:
+      case 0x0117:
         return FansCardCtrl.fan_duty[7] & 0xFFFF;
-      case 0x0098:
+      case 0x0118:
         return FansCardCtrl.fan_duty[8] & 0xFFFF;
-      case 0x0099:
+      case 0x0119:
         return FansCardCtrl.fan_duty[9] & 0xFFFF;
-      case 0x009A:
+      case 0x011A:
         return FansCardCtrl.fan_duty[10] & 0xFFFF;
-      case 0x009B:
+      case 0x011B:
         return FansCardCtrl.fan_duty[11] & 0xFFFF;
-      case 0x009C:
+      case 0x011C:
         return FansCardCtrl.fan_duty[12] & 0xFFFF;
-      case 0x009D:
+      case 0x011D:
         return FansCardCtrl.fan_duty[13] & 0xFFFF;
-      case 0x009E:
+      case 0x011E:
         return FansCardCtrl.fan_duty[14] & 0xFFFF;
-      case 0x009F:
+      case 0x011F:
         return FansCardCtrl.fan_duty[15] & 0xFFFF;
       default:
         return ILLIGAL_DATA_ADDR << 16;
     }
   } else if (func == WRITE_SINGLE_REGISTER || func == WRITE_MULTIPLE_REGISTERS) {
-    if (addr >= 0x0080 && addr <= 0x008f) {
+    if (addr >= 0x0100 && addr <= 0x010F) {
       if (root) {
         switch (addr) {
-          case 0x0080:
+          case 0x0100:
             return (FansCardStat.fan1_fb = data) & 0xFFFF;
-          case 0x0081:
+          case 0x0101:
             return (FansCardStat.fan2_fb = data) & 0xFFFF;
-          case 0x0082:
+          case 0x0102:
             return (FansCardStat.fan3_fb = data) & 0xFFFF;
-          case 0x0083:
+          case 0x0103:
             return (FansCardStat.fan4_fb = data) & 0xFFFF;
-          case 0x0084:
+          case 0x0104:
             return (FansCardStat.fan5_fb = data) & 0xFFFF;
-          case 0x0085:
+          case 0x0105:
             return (FansCardStat.fan6_fb = data) & 0xFFFF;
-          case 0x0086:
+          case 0x0106:
             return (FansCardStat.fan7_fb = data) & 0xFFFF;
-          case 0x0087:
+          case 0x0107:
             return (FansCardStat.fan8_fb = data) & 0xFFFF;
-          case 0x0088:
+          case 0x0108:
             return (FansCardStat.fan9_fb = data) & 0xFFFF;
-          case 0x0089:
+          case 0x0109:
             return (FansCardStat.fan10_fb = data) & 0xFFFF;
-          case 0x008A:
+          case 0x010A:
             return (FansCardStat.fan11_fb = data) & 0xFFFF;
-          case 0x008B:
+          case 0x010B:
             return (FansCardStat.fan12_fb = data) & 0xFFFF;
-          case 0x008C:
+          case 0x010C:
             return (FansCardStat.fan13_fb = data) & 0xFFFF;
-          case 0x008D:
+          case 0x010D:
             return (FansCardStat.fan14_fb = data) & 0xFFFF;
-          case 0x008E:
+          case 0x010E:
             return (FansCardStat.fan15_fb = data) & 0xFFFF;
-          case 0x008F:
+          case 0x010F:
             return (FansCardStat.fan16_fb = data) & 0xFFFF;
           default:
             return ILLIGAL_DATA_ADDR << 16;
@@ -312,40 +530,40 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
       } else {
         return ILLIGAL_FUNC << 16;
       }
-    } else if (addr >= 0x0090 && addr <= 0x009f) {
+    } else if (addr >= 0x0110 && addr <= 0x011F) {
       if (data >= 0 && data <= 1000) {
         switch (addr) {
-          case 0x0090:
+          case 0x0110:
             return (FansCardCtrl.fan_duty[0] = data) & 0xFFFF;
-          case 0x0091:
+          case 0x0111:
             return (FansCardCtrl.fan_duty[1] = data) & 0xFFFF;
-          case 0x0092:
+          case 0x0112:
             return (FansCardCtrl.fan_duty[2] = data) & 0xFFFF;
-          case 0x0093:
+          case 0x0113:
             return (FansCardCtrl.fan_duty[3] = data) & 0xFFFF;
-          case 0x0094:
+          case 0x0114:
             return (FansCardCtrl.fan_duty[4] = data) & 0xFFFF;
-          case 0x0095:
+          case 0x0115:
             return (FansCardCtrl.fan_duty[5] = data) & 0xFFFF;
-          case 0x0096:
+          case 0x0116:
             return (FansCardCtrl.fan_duty[6] = data) & 0xFFFF;
-          case 0x0097:
+          case 0x0117:
             return (FansCardCtrl.fan_duty[7] = data) & 0xFFFF;
-          case 0x0098:
+          case 0x0118:
             return (FansCardCtrl.fan_duty[8] = data) & 0xFFFF;
-          case 0x0099:
+          case 0x0119:
             return (FansCardCtrl.fan_duty[9] = data) & 0xFFFF;
-          case 0x009A:
+          case 0x011A:
             return (FansCardCtrl.fan_duty[10] = data) & 0xFFFF;
-          case 0x009B:
+          case 0x011B:
             return (FansCardCtrl.fan_duty[11] = data) & 0xFFFF;
-          case 0x009C:
+          case 0x011C:
             return (FansCardCtrl.fan_duty[12] = data) & 0xFFFF;
-          case 0x009D:
+          case 0x011D:
             return (FansCardCtrl.fan_duty[13] = data) & 0xFFFF;
-          case 0x009E:
+          case 0x011E:
             return (FansCardCtrl.fan_duty[14] = data) & 0xFFFF;
-          case 0x009F:
+          case 0x011F:
             return (FansCardCtrl.fan_duty[15] = data) & 0xFFFF;
           default:
             return ILLIGAL_DATA_ADDR << 16;

@@ -11,6 +11,11 @@
 #define LOG_TAG "Sensor_Task"
 #include "elog.h"
 
+#define SET_BIT_TO(var, bit, value) ((var) = (value) ? ((var) | (1 << (bit))) : ((var) & ~(1 << (bit))))
+
+#define PUMP_1_EXITS_BIT 0
+#define PUMP_2_EXITS_BIT 1
+
 uint16_t adc1_ordinary_valuetab[ADC1_SAMPLE_NUM][ADC1_CHANNEL_NUM] = {0};
 
 TaskHandle_t sensor_handler;
@@ -23,7 +28,16 @@ FgParam_t Flow_Fg = {
 };
 
 void EXINT15_10_IRQHandler(void) {
-  if (exint_interrupt_flag_get(EXINT_LINE_15)) {
+  if (exint_interrupt_flag_get(EXINT_LINE_12) != RESET) {
+    exint_flag_clear(EXINT_LINE_12);
+    SET_BIT_TO(SensStat.device_connected, PUMP_1_EXITS_BIT, !gpio_input_data_bit_read(GPIOD, GPIO_PINS_12));
+  } else if (exint_interrupt_flag_get(EXINT_LINE_13) != RESET) {
+    exint_flag_clear(EXINT_LINE_13);
+    SET_BIT_TO(SensStat.device_connected, PUMP_2_EXITS_BIT, !gpio_input_data_bit_read(GPIOD, GPIO_PINS_13));
+  } else if (exint_interrupt_flag_get(EXINT_LINE_14) != RESET) {
+    exint_flag_clear(EXINT_LINE_14);
+    SET_BIT_TO(SensStat.leak_sensor, 0, gpio_input_data_bit_read(GPIOE, GPIO_PINS_14));
+  } else if (exint_interrupt_flag_get(EXINT_LINE_15)) {
     exint_flag_clear(EXINT_LINE_15);
     FgExintIntSampling(&Flow_Fg);
   }
@@ -156,6 +170,16 @@ SensCtrl_t SensCtrl = {
 void sensor_task_function(void* pvParameters) {
   log_i("Sensor Task Running");
 
+  exint_interrupt_enable(EXINT_LINE_12, TRUE);
+  exint_software_interrupt_event_generate(EXINT_LINE_12);
+  vTaskDelay(1);
+  exint_interrupt_enable(EXINT_LINE_13, TRUE);
+  exint_software_interrupt_event_generate(EXINT_LINE_13);
+  vTaskDelay(1);
+  exint_interrupt_enable(EXINT_LINE_14, TRUE);
+  exint_software_interrupt_event_generate(EXINT_LINE_14);
+  vTaskDelay(1);
+
   int32_t raw_val = 0;
 
   Conv_Init(&PressConv);
@@ -182,28 +206,28 @@ void sensor_task_function(void* pvParameters) {
     }
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[0] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    SensStat.press_1_val = (int16_t)Cal_Apply(&PressCal_1, raw_val);
+    SensStat.press_1_val_kpa = (int16_t)Cal_Apply(&PressCal_1, raw_val);
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[1] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    SensStat.press_2_val = (int16_t)Cal_Apply(&PressCal_2, raw_val);
+    SensStat.press_2_val_kpa = (int16_t)Cal_Apply(&PressCal_2, raw_val);
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[2] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    SensStat.press_3_val = (int16_t)Cal_Apply(&PressCal_3, raw_val);
+    SensStat.press_3_val_kpa = (int16_t)Cal_Apply(&PressCal_3, raw_val);
 
     err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[3] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
-    SensStat.press_4_val = (int16_t)Cal_Apply(&PressCal_4, raw_val);
+    SensStat.press_4_val_kpa = (int16_t)Cal_Apply(&PressCal_4, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[4] >> SMP_NUM_PWR, &raw_val);
-    SensStat.ntc_1_temp = Cal_Apply(&NtcCal_1, raw_val);
+    SensStat.ntc_1_temp_m = Cal_Apply(&NtcCal_1, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[5] >> SMP_NUM_PWR, &raw_val);
-    SensStat.ntc_2_temp = Cal_Apply(&NtcCal_2, raw_val);
+    SensStat.ntc_2_temp_m = Cal_Apply(&NtcCal_2, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[6] >> SMP_NUM_PWR, &raw_val);
-    SensStat.ntc_3_temp = Cal_Apply(&NtcCal_3, raw_val);
+    SensStat.ntc_3_temp_m = Cal_Apply(&NtcCal_3, raw_val);
 
     err_ntc = Ntc_ConvertToC(adc_sum_val[7] >> SMP_NUM_PWR, &raw_val);
-    SensStat.ntc_4_temp = Cal_Apply(&NtcCal_4, raw_val);
+    SensStat.ntc_4_temp_m = Cal_Apply(&NtcCal_4, raw_val);
 
     FgGetRPM(&Flow_Fg, &SensStat.Flow_val);
 

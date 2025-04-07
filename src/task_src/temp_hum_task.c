@@ -6,8 +6,14 @@
 #include <string.h>
 #include "FreeRTOS.h"
 #include "task.h"
+
+#define SINGLE_DATA_MAX_SIZE 16
+#define MAX_CIRCLE_BUFFER_SIZE 32
+#define MAX_PKG_SIZE 16
+
 #include "RS485.h"
 #include "temp_hum_task.h"
+#include "sensor_task.h"
 
 #define LOG_TAG "Temp_Hum_Task"
 #include "elog.h"
@@ -17,6 +23,9 @@
 #define TEMP_HUM_ADDR 0x01
 #define TEMP_HUM_REG_START 0x00
 #define TEMP_HUM_TOTAL_REG_NUM 3
+
+#define TEMP_HUM_EXITS_BIT 2
+#define SET_BIT_TO(var, bit, value) ((var) = (value) ? ((var) | (1 << (bit))) : ((var) & ~(1 << (bit))))
 
 TaskHandle_t temp_hum_handler;
 
@@ -94,11 +103,13 @@ void temp_hum_task_function(void *pvParameters) {
         if (ret != RS485_OK) {
           log_e("Error handling RS485: %d", ret);
         }
+        SET_BIT_TO(SensStat.device_connected, TEMP_HUM_EXITS_BIT, true);
         break;
       }
 
       if ((xTaskGetTickCount() - start_time) > TEMP_HUM_TASK_PERIOD) {
-        log_e("RS485 read timeout");
+        // log_e("RS485 read timeout");
+        SET_BIT_TO(SensStat.device_connected, TEMP_HUM_EXITS_BIT, false);
         break;
       }
 

@@ -9,7 +9,7 @@ extern TaskHandle_t power_handler;
 void power_task_function(void* pvParameters);
 
 typedef struct {
-  uint16_t power_state;
+  uint16_t power_status;
   uint16_t voltage_input;
   uint16_t current_input;
   int16_t power_temp;

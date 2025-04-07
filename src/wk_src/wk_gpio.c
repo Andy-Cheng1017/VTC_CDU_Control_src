@@ -50,7 +50,7 @@ void wk_gpio_config(void) {
 
   /* gpio input config */
   gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
-  gpio_init_struct.gpio_pins = GPIO_PINS_12 | GPIO_PINS_13 | GPIO_PINS_14 | GPIO_PINS_15 | GPIO_PINS_1;
+  gpio_init_struct.gpio_pins = GPIO_PINS_12 | GPIO_PINS_13 | GPIO_PINS_15 | GPIO_PINS_1;
   gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
   gpio_init(GPIOE, &gpio_init_struct);
 

@@ -15,14 +15,14 @@ extern uint16_t adc1_ordinary_valuetab[ADC1_SAMPLE_NUM][ADC1_CHANNEL_NUM];
 extern TaskHandle_t sensor_handler;
 
 typedef struct {
-  int32_t ntc_1_temp;
-  int32_t ntc_2_temp;
-  int32_t ntc_3_temp;
-  int32_t ntc_4_temp;
-  int16_t press_1_val;
-  int16_t press_2_val;
-  int16_t press_3_val;
-  int16_t press_4_val;
+  int32_t ntc_1_temp_m;
+  int32_t ntc_2_temp_m;
+  int32_t ntc_3_temp_m;
+  int32_t ntc_4_temp_m;
+  int16_t press_1_val_kpa;
+  int16_t press_2_val_kpa;
+  int16_t press_3_val_kpa;
+  int16_t press_4_val_kpa;
   uint16_t Flow_val;
   uint16_t voltage_input;
   uint16_t current_input;
@@ -31,6 +31,8 @@ typedef struct {
   int16_t temperature;
   uint16_t humidity;
   int16_t dew_temp;
+
+  uint16_t device_connected;
 } SensStat_t;
 
 extern SensStat_t SensStat;

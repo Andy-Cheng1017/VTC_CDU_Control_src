@@ -11,17 +11,17 @@
 
 #define CARD_DATA_MAX_SIZE 32
 
-#define SENS_CARD_REG_START 0x0070
-#define SENS_CARD_REG_END 0x007F
-#define SENS_CARD_TOTAL_REG_NUM (SENS_CARD_REG_END - SENS_CARD_REG_START + 1)
+// #define SENS_CARD_REG_START 0x0070
+// #define SENS_CARD_REG_END 0x007F
+// #define SENS_CARD_TOTAL_REG_NUM (SENS_CARD_REG_END - SENS_CARD_REG_START + 1)
 
 
-#define FANS_CARD_REG_START 0x0100
-#define FANS_CARD_REG_END 0x011f
-#define FANS_CARD_TOTAL_REG_NUM (FANS_CARD_REG_END - FANS_CARD_REG_START + 1)
-#define FANS_CARD_WRITE_REG_START 0x0110
-#define FANS_CARD_WRITE_REG_END 0x011F
-#define FANS_CARD_WRITE_NUM (FANS_CARD_WRITE_REG_END - FANS_CARD_WRITE_REG_START + 1)
+// #define FANS_CARD_REG_START 0x0100
+// #define FANS_CARD_REG_END 0x011f
+// #define FANS_CARD_TOTAL_REG_NUM (FANS_CARD_REG_END - FANS_CARD_REG_START + 1)
+// #define FANS_CARD_WRITE_REG_START 0x0110
+// #define FANS_CARD_WRITE_REG_END 0x011F
+// #define FANS_CARD_WRITE_NUM (FANS_CARD_WRITE_REG_END - FANS_CARD_WRITE_REG_START + 1)
 
 #define READ_CARD_TASK_PRIO 2
 #define READ_CARD_STK_SIZE 512
@@ -37,8 +37,8 @@ typedef struct {
   int32_t pt100_2_temp_m;  
   int32_t pt100_3_temp_m;  
   int32_t pt100_4_temp_m;    
-  int16_t press_1_val;
-  int16_t press_2_val;
+  int16_t press_1_val_kpa;
+  int16_t press_2_val_kpa;
   uint8_t leak_sensor;
   int16_t temperature;    
   uint16_t humidity;      

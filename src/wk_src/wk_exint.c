@@ -109,7 +109,7 @@ void wk_exint_config(void) {
   exint_init_struct.line_enable = TRUE;
   exint_init_struct.line_mode = EXINT_LINE_INTERRUPUT;
   exint_init_struct.line_select = EXINT_LINE_12;
-  exint_init_struct.line_polarity = EXINT_TRIGGER_RISING_EDGE;
+  exint_init_struct.line_polarity = EXINT_TRIGGER_BOTH_EDGE;
   exint_init(&exint_init_struct);
 
   /**
@@ -133,13 +133,37 @@ void wk_exint_config(void) {
   exint_init_struct.line_enable = TRUE;
   exint_init_struct.line_mode = EXINT_LINE_INTERRUPUT;
   exint_init_struct.line_select = EXINT_LINE_13;
-  exint_init_struct.line_polarity = EXINT_TRIGGER_RISING_EDGE;
+  exint_init_struct.line_polarity = EXINT_TRIGGER_BOTH_EDGE;
   exint_init(&exint_init_struct);
 
   /**
    * Users need to configure EXINT13 interrupt functions according to the actual application.
    * 1. Call the below function to enable the corresponding EXINT13 interrupt.
    *     --exint_interrupt_enable(EXINT_LINE_13, TRUE);
+   * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
+   *     --void EXINT15_10_IRQHandler(void)
+   */
+
+  /* configure the EXINT14 */
+  gpio_default_para_init(&gpio_init_struct);
+  gpio_init_struct.gpio_mode = GPIO_MODE_INPUT;
+  gpio_init_struct.gpio_pins = GPIO_PINS_14;
+  gpio_init_struct.gpio_pull = GPIO_PULL_NONE;
+  gpio_init(GPIOE, &gpio_init_struct);
+
+  gpio_exint_line_config(GPIO_PORT_SOURCE_GPIOE, GPIO_PINS_SOURCE14);
+
+  exint_default_para_init(&exint_init_struct);
+  exint_init_struct.line_enable = TRUE;
+  exint_init_struct.line_mode = EXINT_LINE_INTERRUPUT;
+  exint_init_struct.line_select = EXINT_LINE_14;
+  exint_init_struct.line_polarity = EXINT_TRIGGER_BOTH_EDGE;
+  exint_init(&exint_init_struct);
+
+  /**
+   * Users need to configure EXINT14 interrupt functions according to the actual application.
+   * 1. Call the below function to enable the corresponding EXINT14 interrupt.
+   *     --exint_interrupt_enable(EXINT_LINE_14, TRUE);
    * 2. Add the user's interrupt handler code into the below function in the at32f403a_407_int.c file.
    *     --void EXINT15_10_IRQHandler(void)
    */
@@ -157,7 +181,7 @@ void wk_exint_config(void) {
   exint_init_struct.line_enable = TRUE;
   exint_init_struct.line_mode = EXINT_LINE_INTERRUPUT;
   exint_init_struct.line_select = EXINT_LINE_15;
-  exint_init_struct.line_polarity = EXINT_TRIGGER_RISING_EDGE;
+  exint_init_struct.line_polarity = EXINT_TRIGGER_BOTH_EDGE;
   exint_init(&exint_init_struct);
 
   /**

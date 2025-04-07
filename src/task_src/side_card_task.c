@@ -110,7 +110,7 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = SENS_CARD_ADDR;
-    RsCard.reg_hdle_stat = SENS_CARD_REG_START;
+    RsCard.reg_hdle_stat = SENS_CARD_DATAREAD_REG_START;
     RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);

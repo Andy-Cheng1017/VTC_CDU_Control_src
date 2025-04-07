@@ -49,31 +49,17 @@ extern SensCardStat_t SensCardStat;
 typedef struct {
   uint16_t pressure_pump;
 }SensCardCtrl_t;
+
 extern SensCardCtrl_t SensCardCtrl;
 
 typedef struct {
-  uint16_t fan_duty[16]; // 0x0090
+  uint16_t fan_duty[16];
 } FansCardCtrl_t;
 
 extern FansCardCtrl_t FansCardCtrl;
 
 typedef struct {
-  uint16_t fan1_fb;  // 0x0080
-  uint16_t fan2_fb;
-  uint16_t fan3_fb;
-  uint16_t fan4_fb;
-  uint16_t fan5_fb;
-  uint16_t fan6_fb;
-  uint16_t fan7_fb;
-  uint16_t fan8_fb;
-  uint16_t fan9_fb;
-  uint16_t fan10_fb;
-  uint16_t fan11_fb;
-  uint16_t fan12_fb;
-  uint16_t fan13_fb;
-  uint16_t fan14_fb;
-  uint16_t fan15_fb;
-  uint16_t fan16_fb;  // 0x008F
+  uint16_t fan_fb[16];  // 0x0080
 } FansCardStat_t;
 
 extern FansCardStat_t FansCardStat;

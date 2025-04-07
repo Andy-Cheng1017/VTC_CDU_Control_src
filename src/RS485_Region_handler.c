@@ -448,7 +448,7 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
       case DEW_TEMPERATURE:
         return SensStat.dew_temp & 0xFFFF;
       case FAN_1_FEEDBACK_TEMP:
-        return FansCardStat.fan1_fb & 0xFFFF;
+        return FansCardStat.fan_fb[0] & 0xFFFF;
       case DEVICE_CONNECTED:
         return SensStat.device_connected & 0xFFFF;
       case RESERVED_1:
@@ -794,37 +794,37 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
   if (func == READ_HOLDING_REGISTERS) {
     switch (addr) {
       case FAN_1_FEEDBACK:
-        return FansCardStat.fan1_fb & 0xFFFF;
+        return FansCardStat.fan_fb[0] & 0xFFFF;
       case FAN_2_FEEDBACK:
-        return FansCardStat.fan2_fb & 0xFFFF;
+        return FansCardStat.fan_fb[1] & 0xFFFF;
       case FAN_3_FEEDBACK:
-        return FansCardStat.fan3_fb & 0xFFFF;
+        return FansCardStat.fan_fb[2] & 0xFFFF;
       case FAN_4_FEEDBACK:
-        return FansCardStat.fan4_fb & 0xFFFF;
+        return FansCardStat.fan_fb[3] & 0xFFFF;
       case FAN_5_FEEDBACK:
-        return FansCardStat.fan5_fb & 0xFFFF;
+        return FansCardStat.fan_fb[4] & 0xFFFF;
       case FAN_6_FEEDBACK:
-        return FansCardStat.fan6_fb & 0xFFFF;
+        return FansCardStat.fan_fb[5] & 0xFFFF;
       case FAN_7_FEEDBACK:
-        return FansCardStat.fan7_fb & 0xFFFF;
+        return FansCardStat.fan_fb[6] & 0xFFFF;
       case FAN_8_FEEDBACK:
-        return FansCardStat.fan8_fb & 0xFFFF;
+        return FansCardStat.fan_fb[7] & 0xFFFF;
       case FAN_9_FEEDBACK:
-        return FansCardStat.fan9_fb & 0xFFFF;
+        return FansCardStat.fan_fb[8] & 0xFFFF;
       case FAN_10_FEEDBACK:
-        return FansCardStat.fan10_fb & 0xFFFF;
+        return FansCardStat.fan_fb[9] & 0xFFFF;
       case FAN_11_FEEDBACK:
-        return FansCardStat.fan11_fb & 0xFFFF;
+        return FansCardStat.fan_fb[10] & 0xFFFF;
       case FAN_12_FEEDBACK:
-        return FansCardStat.fan12_fb & 0xFFFF;
+        return FansCardStat.fan_fb[11] & 0xFFFF;
       case FAN_13_FEEDBACK:
-        return FansCardStat.fan13_fb & 0xFFFF;
+        return FansCardStat.fan_fb[12] & 0xFFFF;
       case FAN_14_FEEDBACK:
-        return FansCardStat.fan14_fb & 0xFFFF;
+        return FansCardStat.fan_fb[13] & 0xFFFF;
       case FAN_15_FEEDBACK:
-        return FansCardStat.fan15_fb & 0xFFFF;
+        return FansCardStat.fan_fb[14] & 0xFFFF;
       case FAN_16_FEEDBACK:
-        return FansCardStat.fan16_fb & 0xFFFF;
+        return FansCardStat.fan_fb[15] & 0xFFFF;
       case FAN_1_DUTY:
         return FansCardCtrl.fan_duty[0] & 0xFFFF;
       case FAN_2_DUTY:
@@ -865,37 +865,37 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
       if (root) {
         switch (addr) {
           case FAN_1_FEEDBACK:
-            return (FansCardStat.fan1_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[0] = data) & 0xFFFF;
           case FAN_2_FEEDBACK:
-            return (FansCardStat.fan2_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[1] = data) & 0xFFFF;
           case FAN_3_FEEDBACK:
-            return (FansCardStat.fan3_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[2] = data) & 0xFFFF;
           case FAN_4_FEEDBACK:
-            return (FansCardStat.fan4_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[3] = data) & 0xFFFF;
           case FAN_5_FEEDBACK:
-            return (FansCardStat.fan5_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[4] = data) & 0xFFFF;
           case FAN_6_FEEDBACK:
-            return (FansCardStat.fan6_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[5] = data) & 0xFFFF;
           case FAN_7_FEEDBACK:
-            return (FansCardStat.fan7_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[6] = data) & 0xFFFF;
           case FAN_8_FEEDBACK:
-            return (FansCardStat.fan8_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[7] = data) & 0xFFFF;
           case FAN_9_FEEDBACK:
-            return (FansCardStat.fan9_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[8] = data) & 0xFFFF;
           case FAN_10_FEEDBACK:
-            return (FansCardStat.fan10_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[9] = data) & 0xFFFF;
           case FAN_11_FEEDBACK:
-            return (FansCardStat.fan11_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[10] = data) & 0xFFFF;
           case FAN_12_FEEDBACK:
-            return (FansCardStat.fan12_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[11] = data) & 0xFFFF;
           case FAN_13_FEEDBACK:
-            return (FansCardStat.fan13_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[12] = data) & 0xFFFF;
           case FAN_14_FEEDBACK:
-            return (FansCardStat.fan14_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[13] = data) & 0xFFFF;
           case FAN_15_FEEDBACK:
-            return (FansCardStat.fan15_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[14] = data) & 0xFFFF;
           case FAN_16_FEEDBACK:
-            return (FansCardStat.fan16_fb = data) & 0xFFFF;
+            return (FansCardStat.fan_fb[15] = data) & 0xFFFF;
           default:
             return ILLIGAL_DATA_ADDR << 16;
         }

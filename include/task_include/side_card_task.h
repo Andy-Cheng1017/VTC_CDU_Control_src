@@ -53,13 +53,13 @@ typedef struct {
 extern SensCardCtrl_t SensCardCtrl;
 
 typedef struct {
-  uint16_t fan_duty[16];
+  uint16_t fan_pwm[16];
 } FansCardCtrl_t;
 
 extern FansCardCtrl_t FansCardCtrl;
 
 typedef struct {
-  uint16_t fan_fb[16];  // 0x0080
+  uint16_t fan_fg[16];  // 0x0080
 } FansCardStat_t;
 
 extern FansCardStat_t FansCardStat;

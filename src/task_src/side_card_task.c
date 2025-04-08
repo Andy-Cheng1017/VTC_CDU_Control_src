@@ -55,7 +55,7 @@ void SideCardTaskFunc(void* pvParameters) {
   // RsCard.reg_hdle_stat = FANS_CARD_REG_START;
   // RsCard.reg_hdle_end = FANS_CARD_REG_END;
   // // RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
-  // RsRegHdle(&RsCard, FansCardHdle);
+  // RsRegHdle(&RsCard, FansCard_Handler);
 
   xTaskCreate((TaskFunction_t)ReadCardTaskFunc, (const char*)"Read Card Task Func", (uint16_t)READ_CARD_STK_SIZE, (void*)NULL,
               (UBaseType_t)READ_CARD_TASK_PRIO, (TaskHandle_t*)&ReadCardHandler);
@@ -139,7 +139,7 @@ void ReadCardTaskFunc(void* pvParameters) {
     RsCard.reg_hdle_stat = FANS_CARD_WRITE_REG_START;
     RsCard.reg_hdle_num = FANS_CARD_WRITE_NUM;
 
-    ret = RS485WriteHandler(&RsCard, FansCardCtrl.fan_duty, sizeof(FansCardCtrl.fan_duty));
+    ret = RS485WriteHandler(&RsCard, FansCardCtrl.fan_pwm, sizeof(FansCardCtrl.fan_pwm));
     if (ret) {
       log_e("Fans Card Write Handler Error %d", ret);
       continue;

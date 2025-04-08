@@ -448,7 +448,7 @@ uint32_t DataRead_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t l
       case DEW_TEMPERATURE:
         return SensStat.dew_temp & 0xFFFF;
       case FAN_1_FEEDBACK_TEMP:
-        return FansCardStat.fan_fb[0] & 0xFFFF;
+        return FansCardStat.fan_fg[0] & 0xFFFF;
       case DEVICE_CONNECTED:
         return SensStat.device_connected & 0xFFFF;
       case RESERVED_1:
@@ -790,73 +790,73 @@ uint32_t SideCar_Sens_DevCtrl_Handler(RsFunc_t func, uint16_t addr, uint16_t dat
   }
 }
 
-uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
+uint32_t FansCard_Handler(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, bool root) {
   if (func == READ_HOLDING_REGISTERS) {
     switch (addr) {
       case FAN_1_FEEDBACK:
-        return FansCardStat.fan_fb[0] & 0xFFFF;
+        return FansCardStat.fan_fg[0] & 0xFFFF;
       case FAN_2_FEEDBACK:
-        return FansCardStat.fan_fb[1] & 0xFFFF;
+        return FansCardStat.fan_fg[1] & 0xFFFF;
       case FAN_3_FEEDBACK:
-        return FansCardStat.fan_fb[2] & 0xFFFF;
+        return FansCardStat.fan_fg[2] & 0xFFFF;
       case FAN_4_FEEDBACK:
-        return FansCardStat.fan_fb[3] & 0xFFFF;
+        return FansCardStat.fan_fg[3] & 0xFFFF;
       case FAN_5_FEEDBACK:
-        return FansCardStat.fan_fb[4] & 0xFFFF;
+        return FansCardStat.fan_fg[4] & 0xFFFF;
       case FAN_6_FEEDBACK:
-        return FansCardStat.fan_fb[5] & 0xFFFF;
+        return FansCardStat.fan_fg[5] & 0xFFFF;
       case FAN_7_FEEDBACK:
-        return FansCardStat.fan_fb[6] & 0xFFFF;
+        return FansCardStat.fan_fg[6] & 0xFFFF;
       case FAN_8_FEEDBACK:
-        return FansCardStat.fan_fb[7] & 0xFFFF;
+        return FansCardStat.fan_fg[7] & 0xFFFF;
       case FAN_9_FEEDBACK:
-        return FansCardStat.fan_fb[8] & 0xFFFF;
+        return FansCardStat.fan_fg[8] & 0xFFFF;
       case FAN_10_FEEDBACK:
-        return FansCardStat.fan_fb[9] & 0xFFFF;
+        return FansCardStat.fan_fg[9] & 0xFFFF;
       case FAN_11_FEEDBACK:
-        return FansCardStat.fan_fb[10] & 0xFFFF;
+        return FansCardStat.fan_fg[10] & 0xFFFF;
       case FAN_12_FEEDBACK:
-        return FansCardStat.fan_fb[11] & 0xFFFF;
+        return FansCardStat.fan_fg[11] & 0xFFFF;
       case FAN_13_FEEDBACK:
-        return FansCardStat.fan_fb[12] & 0xFFFF;
+        return FansCardStat.fan_fg[12] & 0xFFFF;
       case FAN_14_FEEDBACK:
-        return FansCardStat.fan_fb[13] & 0xFFFF;
+        return FansCardStat.fan_fg[13] & 0xFFFF;
       case FAN_15_FEEDBACK:
-        return FansCardStat.fan_fb[14] & 0xFFFF;
+        return FansCardStat.fan_fg[14] & 0xFFFF;
       case FAN_16_FEEDBACK:
-        return FansCardStat.fan_fb[15] & 0xFFFF;
+        return FansCardStat.fan_fg[15] & 0xFFFF;
       case FAN_1_DUTY:
-        return FansCardCtrl.fan_duty[0] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[0] & 0xFFFF;
       case FAN_2_DUTY:
-        return FansCardCtrl.fan_duty[1] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[1] & 0xFFFF;
       case FAN_3_DUTY:
-        return FansCardCtrl.fan_duty[2] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[2] & 0xFFFF;
       case FAN_4_DUTY:
-        return FansCardCtrl.fan_duty[3] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[3] & 0xFFFF;
       case FAN_5_DUTY:
-        return FansCardCtrl.fan_duty[4] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[4] & 0xFFFF;
       case FAN_6_DUTY:
-        return FansCardCtrl.fan_duty[5] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[5] & 0xFFFF;
       case FAN_7_DUTY:
-        return FansCardCtrl.fan_duty[6] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[6] & 0xFFFF;
       case FAN_8_DUTY:
-        return FansCardCtrl.fan_duty[7] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[7] & 0xFFFF;
       case FAN_9_DUTY:
-        return FansCardCtrl.fan_duty[8] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[8] & 0xFFFF;
       case FAN_10_DUTY:
-        return FansCardCtrl.fan_duty[9] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[9] & 0xFFFF;
       case FAN_11_DUTY:
-        return FansCardCtrl.fan_duty[10] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[10] & 0xFFFF;
       case FAN_12_DUTY:
-        return FansCardCtrl.fan_duty[11] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[11] & 0xFFFF;
       case FAN_13_DUTY:
-        return FansCardCtrl.fan_duty[12] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[12] & 0xFFFF;
       case FAN_14_DUTY:
-        return FansCardCtrl.fan_duty[13] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[13] & 0xFFFF;
       case FAN_15_DUTY:
-        return FansCardCtrl.fan_duty[14] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[14] & 0xFFFF;
       case FAN_16_DUTY:
-        return FansCardCtrl.fan_duty[15] & 0xFFFF;
+        return FansCardCtrl.fan_pwm[15] & 0xFFFF;
       default:
         return 0;
     }
@@ -865,37 +865,37 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
       if (root) {
         switch (addr) {
           case FAN_1_FEEDBACK:
-            return (FansCardStat.fan_fb[0] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[0] = data) & 0xFFFF;
           case FAN_2_FEEDBACK:
-            return (FansCardStat.fan_fb[1] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[1] = data) & 0xFFFF;
           case FAN_3_FEEDBACK:
-            return (FansCardStat.fan_fb[2] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[2] = data) & 0xFFFF;
           case FAN_4_FEEDBACK:
-            return (FansCardStat.fan_fb[3] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[3] = data) & 0xFFFF;
           case FAN_5_FEEDBACK:
-            return (FansCardStat.fan_fb[4] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[4] = data) & 0xFFFF;
           case FAN_6_FEEDBACK:
-            return (FansCardStat.fan_fb[5] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[5] = data) & 0xFFFF;
           case FAN_7_FEEDBACK:
-            return (FansCardStat.fan_fb[6] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[6] = data) & 0xFFFF;
           case FAN_8_FEEDBACK:
-            return (FansCardStat.fan_fb[7] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[7] = data) & 0xFFFF;
           case FAN_9_FEEDBACK:
-            return (FansCardStat.fan_fb[8] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[8] = data) & 0xFFFF;
           case FAN_10_FEEDBACK:
-            return (FansCardStat.fan_fb[9] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[9] = data) & 0xFFFF;
           case FAN_11_FEEDBACK:
-            return (FansCardStat.fan_fb[10] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[10] = data) & 0xFFFF;
           case FAN_12_FEEDBACK:
-            return (FansCardStat.fan_fb[11] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[11] = data) & 0xFFFF;
           case FAN_13_FEEDBACK:
-            return (FansCardStat.fan_fb[12] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[12] = data) & 0xFFFF;
           case FAN_14_FEEDBACK:
-            return (FansCardStat.fan_fb[13] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[13] = data) & 0xFFFF;
           case FAN_15_FEEDBACK:
-            return (FansCardStat.fan_fb[14] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[14] = data) & 0xFFFF;
           case FAN_16_FEEDBACK:
-            return (FansCardStat.fan_fb[15] = data) & 0xFFFF;
+            return (FansCardStat.fan_fg[15] = data) & 0xFFFF;
           default:
             return ILLIGAL_DATA_ADDR << 16;
         }
@@ -906,37 +906,37 @@ uint32_t FansCardHdle(RsFunc_t func, uint16_t addr, uint16_t data, uint8_t len, 
       if (data >= 0 && data <= 1000) {
         switch (addr) {
           case FAN_1_DUTY:
-            return (FansCardCtrl.fan_duty[0] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[0] = data) & 0xFFFF;
           case FAN_2_DUTY:
-            return (FansCardCtrl.fan_duty[1] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[1] = data) & 0xFFFF;
           case FAN_3_DUTY:
-            return (FansCardCtrl.fan_duty[2] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[2] = data) & 0xFFFF;
           case FAN_4_DUTY:
-            return (FansCardCtrl.fan_duty[3] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[3] = data) & 0xFFFF;
           case FAN_5_DUTY:
-            return (FansCardCtrl.fan_duty[4] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[4] = data) & 0xFFFF;
           case FAN_6_DUTY:
-            return (FansCardCtrl.fan_duty[5] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[5] = data) & 0xFFFF;
           case FAN_7_DUTY:
-            return (FansCardCtrl.fan_duty[6] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[6] = data) & 0xFFFF;
           case FAN_8_DUTY:
-            return (FansCardCtrl.fan_duty[7] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[7] = data) & 0xFFFF;
           case FAN_9_DUTY:
-            return (FansCardCtrl.fan_duty[8] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[8] = data) & 0xFFFF;
           case FAN_10_DUTY:
-            return (FansCardCtrl.fan_duty[9] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[9] = data) & 0xFFFF;
           case FAN_11_DUTY:
-            return (FansCardCtrl.fan_duty[10] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[10] = data) & 0xFFFF;
           case FAN_12_DUTY:
-            return (FansCardCtrl.fan_duty[11] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[11] = data) & 0xFFFF;
           case FAN_13_DUTY:
-            return (FansCardCtrl.fan_duty[12] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[12] = data) & 0xFFFF;
           case FAN_14_DUTY:
-            return (FansCardCtrl.fan_duty[13] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[13] = data) & 0xFFFF;
           case FAN_15_DUTY:
-            return (FansCardCtrl.fan_duty[14] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[14] = data) & 0xFFFF;
           case FAN_16_DUTY:
-            return (FansCardCtrl.fan_duty[15] = data) & 0xFFFF;
+            return (FansCardCtrl.fan_pwm[15] = data) & 0xFFFF;
           default:
             return ILLIGAL_DATA_ADDR << 16;
         }

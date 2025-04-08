@@ -63,7 +63,7 @@ void LCD_task_function(void* pvParameters) {
   RsRegHdle(&RsLCD, SideCar_Sens_DevCtrl_Handler);
   RsLCD.reg_hdle_stat = FANS_CARD_REG_START;
   RsLCD.reg_hdle_end = FANS_CARD_REG_END;
-  RsRegHdle(&RsLCD, FansCardHdle);
+  RsRegHdle(&RsLCD, FansCard_Handler);
 
   RsError_t err;
 

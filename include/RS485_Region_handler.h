@@ -2,7 +2,7 @@
 #define __RS485_REGION_H_
 #include <stdint.h>
 #include <stdbool.h>
-#include "RS485.h"
+#include "RS485_enum.h"
 
 #define MY_485_ADDR 0x21
 

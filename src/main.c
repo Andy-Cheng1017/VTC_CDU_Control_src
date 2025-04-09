@@ -23,6 +23,7 @@
 #include "main_task.h"
 #include "temp_hum_task.h"
 #include "power_task.h"
+#include "alarm_task.h"
 
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
@@ -68,6 +69,9 @@
 
 #define MAIN_TASK_PRIO 2
 #define MAIN_STK_SIZE 512
+
+#define ALARM_TASK_PRIO 2
+#define ALARM_STK_SIZE 512
 
 /* add user code end private define */
 
@@ -228,6 +232,9 @@ void start_task(void* pvParameters) {
   vTaskDelay(100);
   // xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
   //             (TaskHandle_t*)&main_handler);
+  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)alarm_task_function, (const char*)"Alarm_task", (uint16_t)ALARM_STK_SIZE, (void*)NULL, (UBaseType_t)ALARM_TASK_PRIO,
+              (TaskHandle_t*)&alarm_handler);
   vTaskDelay(100);
   xTaskCreate((TaskFunction_t)temp_hum_task_function, (const char*)"Temp_Hum_task", (uint16_t)TEMP_HUM_STK_SIZE, (void*)NULL,
               (UBaseType_t)TEMP_HUM_TASK_PRIO, (TaskHandle_t*)&temp_hum_handler);

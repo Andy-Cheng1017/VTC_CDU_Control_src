@@ -16,10 +16,10 @@ typedef enum {
 typedef enum {
   ONLY_WARNING,
   WARNING_AND_STOP,
-} WarningAction_t;
+} AlarmAction_t;
 
 typedef struct {
-  WarningAction_t act;
+  AlarmAction_t act;
   int16_t delay;
   uint16_t outlet_low;
   uint16_t outlet_high;
@@ -30,7 +30,7 @@ typedef struct {
 } PressureWarn_t;
 
 typedef struct {
-  WarningAction_t act;
+  AlarmAction_t act;
   uint16_t low_val;
   uint16_t low_delay;
   uint16_t high_val;
@@ -38,7 +38,7 @@ typedef struct {
 } FlowWarn_t;
 
 typedef struct {
-  WarningAction_t act;
+  AlarmAction_t act;
   uint16_t delay;
   int16_t outlet_low;
   int16_t outlet_high;
@@ -46,7 +46,7 @@ typedef struct {
 } TempWarn_t;
 
 typedef struct {
-  WarningAction_t act;
+  AlarmAction_t act;
   uint16_t CUD_delay;
   uint16_t server_delay;
   uint16_t sidecar_delay;

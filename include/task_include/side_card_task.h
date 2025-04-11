@@ -1,54 +1,33 @@
 #ifndef SIDE_CARD_TASK_H
 #define SIDE_CARD_TASK_H
 
+#include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
-
-#define SENS_CARD_ADDR 0x22
-#define FANS_CARD_ADDR 0x23
-
-#define CARD_DATA_MAX_SIZE 32
-
-// #define SENS_CARD_REG_START 0x0070
-// #define SENS_CARD_REG_END 0x007F
-// #define SENS_CARD_TOTAL_REG_NUM (SENS_CARD_REG_END - SENS_CARD_REG_START + 1)
-
-
-// #define FANS_CARD_REG_START 0x0100
-// #define FANS_CARD_REG_END 0x011f
-// #define FANS_CARD_TOTAL_REG_NUM (FANS_CARD_REG_END - FANS_CARD_REG_START + 1)
-// #define FANS_CARD_WRITE_REG_START 0x0110
-// #define FANS_CARD_WRITE_REG_END 0x011F
-// #define FANS_CARD_WRITE_NUM (FANS_CARD_WRITE_REG_END - FANS_CARD_WRITE_REG_START + 1)
-
-#define READ_CARD_TASK_PRIO 2
-#define READ_CARD_STK_SIZE 512
-
-#define RS485_READ_TIMEOUT 50
-#define RS485_SIDECARD_READ_PERIOD 500
 
 extern TaskHandle_t SideCardHandler;
 extern TaskHandle_t ReadCardHandler;
 
 typedef struct {
-  int32_t pt100_1_temp_m; 
-  int32_t pt100_2_temp_m;  
-  int32_t pt100_3_temp_m;  
-  int32_t pt100_4_temp_m;    
+  int32_t pt100_1_temp_m;
+  int32_t pt100_2_temp_m;
+  int32_t pt100_3_temp_m;
+  int32_t pt100_4_temp_m;
   int16_t press_1_val_kpa;
   int16_t press_2_val_kpa;
   uint8_t leak_sensor;
-  int16_t temperature;    
-  uint16_t humidity;      
+  int16_t temperature;
+  uint16_t humidity;
 } SensCardStat_t;
 
 extern SensCardStat_t SensCardStat;
 
 typedef struct {
   uint16_t pressure_pump;
-}SensCardCtrl_t;
+} SensCardCtrl_t;
 
 extern SensCardCtrl_t SensCardCtrl;
 
@@ -63,6 +42,37 @@ typedef struct {
 } FansCardStat_t;
 
 extern FansCardStat_t FansCardStat;
+
+typedef enum {
+  ONLY_WARNING_FAN,
+  WARNING_AND_STOP_FAN,
+} AlarmAction_FAN_t;
+
+typedef struct {
+  AlarmAction_FAN_t act;
+  int16_t delay;
+  uint16_t fan_low_speed_warning_threshold;
+  uint16_t fan_fg_difference_warning_threshold;
+} FanAlarm_t;
+
+typedef struct {
+  bool auto_control;
+  uint16_t auto_control_target_speed;
+  uint16_t fan_installation_status;
+
+  FanAlarm_t fan_alarm;
+
+} FanCardSysSet_t;
+
+extern FanCardSysSet_t FanCardSysSet;
+
+typedef struct {
+  uint16_t fan_board_fault_status;
+  uint16_t fan_status_on_fan_board_bitfield_0_15;
+
+} FanCardSysDisp_t;
+
+extern FanCardSysDisp_t FanCardSysDisp;
 
 void SideCardTaskFunc(void* pvParameters);
 void ReadCardTaskFunc(void* pvParameters);

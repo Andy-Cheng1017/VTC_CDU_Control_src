@@ -1,9 +1,6 @@
-/**
- * @file temp_hum_task.c
- * @brief Temperature and humidity monitoring task implementation
- */
 #include <stdio.h>
 #include <string.h>
+
 #include "FreeRTOS.h"
 #include "task.h"
 
@@ -12,11 +9,13 @@
 #define MAX_PKG_SIZE 16
 
 #include "RS485.h"
-#include "temp_hum_task.h"
 #include "sensor_task.h"
+#include "temp_hum_task.h"
 
 #define LOG_TAG "Temp_Hum_Task"
 #include "elog.h"
+
+#define SINGLE_DATA_MAX_SIZE 16
 
 #define TEMP_HUM_TASK_PERIOD 500
 
@@ -29,6 +28,8 @@
 
 TaskHandle_t temp_hum_handler;
 
+DECLARE_RS485_BUFFERS(RsTempHum, SINGLE_DATA_MAX_SIZE);
+
 Rs485_t RsTempHum = {
     .UART = USART3,
     .Mode = MASTER,
@@ -39,6 +40,9 @@ Rs485_t RsTempHum = {
     .root = true,
     .tx_Func = READ_HOLDING_REGISTERS,
     .reg_hdle_num = TEMP_HUM_TOTAL_REG_NUM,
+
+    RS485_BUFFERS_INIT(RsTempHum, SINGLE_DATA_MAX_SIZE),
+
 };
 
 void USART3_IRQHandler(void) {

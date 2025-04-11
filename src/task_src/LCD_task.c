@@ -1,15 +1,21 @@
-#include <stdio.h>
-#include "FreeRTOS.h"
-#include "task.h"
 #include "LCD_task.h"
-#include "main.h"
+
+#include <stdio.h>
+
+#include "FreeRTOS.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
+#include "main.h"
+#include "task.h"
 
 #define LOG_TAG "LCD_Task"
 #include "elog.h"
 
+#define SINGLE_DATA_MAX_SIZE 512
+
 TaskHandle_t LCD_handler;
+
+DECLARE_RS485_BUFFERS(RsLCD, SINGLE_DATA_MAX_SIZE);
 
 Rs485_t RsLCD = {
     .UART = UART8,
@@ -17,8 +23,11 @@ Rs485_t RsLCD = {
     .BaudRate = BR_115200,
     .DataBit = USART_DATA_8BITS,
     .StopBit = USART_STOP_1_BIT,
-    .ip_addr = MY_485_ADDR,
+    .ip_addr = CDU_RS485_ADDR,
     .root = false,
+
+    RS485_BUFFERS_INIT(RsLCD, SINGLE_DATA_MAX_SIZE),
+
 };
 
 void UART8_IRQHandler(void) {
@@ -38,32 +47,9 @@ void UART8_IRQHandler(void) {
 }
 
 void LCD_task_function(void* pvParameters) {
-  RsInit(&RsLCD);
   log_i("LCD Task Running");
-  RsLCD.reg_hdle_stat = SYSINFOM_REG_START;
-  RsLCD.reg_hdle_end = SYSINFOM_REG_END;
-  RsRegHdle(&RsLCD, SysInfom_Handler);
-  RsLCD.reg_hdle_stat = SYSPARASET_REG_START;
-  RsLCD.reg_hdle_end = SYSPARASET_REG_END;
-  RsRegHdle(&RsLCD, SysParaSet_Handler);
-  RsLCD.reg_hdle_stat = SYSPARADISP_REG_START;
-  RsLCD.reg_hdle_end = SYSPARADISP_REG_END;
-  RsRegHdle(&RsLCD, SysParaDisp_Handler);
-  RsLCD.reg_hdle_stat = DATAREAD_REG_START;
-  RsLCD.reg_hdle_end = DATAREAD_REG_END;
-  RsRegHdle(&RsLCD, DataRead_Handler);
-  RsLCD.reg_hdle_stat = SENS_CARD_DATAREAD_REG_START;
-  RsLCD.reg_hdle_end = SENS_CARD_REG_END;
-  RsRegHdle(&RsLCD, SideCar_Sens_DataRead_Handler);
-  RsLCD.reg_hdle_stat = DEVCTRL_REG_START;
-  RsLCD.reg_hdle_end = DEVCTRL_REG_END;
-  RsRegHdle(&RsLCD, DevCtrl_Handler);
-  RsLCD.reg_hdle_stat = SENS_CARD_DEVCTRL_REG_START;
-  RsLCD.reg_hdle_end = SENS_CARD_DEVCTRL_REG_END;
-  RsRegHdle(&RsLCD, SideCar_Sens_DevCtrl_Handler);
-  RsLCD.reg_hdle_stat = FANS_CARD_REG_START;
-  RsLCD.reg_hdle_end = FANS_CARD_REG_END;
-  RsRegHdle(&RsLCD, FansCard_Handler);
+
+  RsInit(&RsLCD);
 
   RsError_t err;
 

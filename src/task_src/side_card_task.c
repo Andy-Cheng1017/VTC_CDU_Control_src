@@ -1,17 +1,28 @@
-#include "FreeRTOS.h"
-#include "task.h"
 #include "side_card_task.h"
-#include "main.h"
-#include "at32f403a_407_wk_config.h"
+
+#include "FreeRTOS.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
+#include "at32f403a_407_wk_config.h"
+#include "main.h"
+#include "task.h"
 
 #define LOG_TAG "Side_Card_Task"
 #include "elog.h"
 
+#define SINGLE_DATA_MAX_SIZE 128
+
+#define READ_CARD_TASK_PRIO 2
+#define READ_CARD_STK_SIZE 512
+
+#define RS485_READ_TIMEOUT 50
+#define RS485_SIDECARD_READ_PERIOD 500
+
 TaskHandle_t SideCardHandler;
 
 TaskHandle_t ReadCardHandler;
+
+DECLARE_RS485_BUFFERS(RsCard, SINGLE_DATA_MAX_SIZE);
 
 Rs485_t RsCard = {
     .UART = USART2,
@@ -20,6 +31,9 @@ Rs485_t RsCard = {
     .DataBit = USART_DATA_8BITS,
     .StopBit = USART_STOP_1_BIT,
     .root = true,
+
+    RS485_BUFFERS_INIT(RsCard, SINGLE_DATA_MAX_SIZE),
+
 };
 
 SensCardStat_t SensCardStat = {0};
@@ -45,17 +59,9 @@ void USART2_IRQHandler(void) {
 }
 
 void SideCardTaskFunc(void* pvParameters) {
+  log_i("Side Card Task Start"); 
+
   RsInit(&RsCard);
-
-  // RsCard.reg_hdle_stat = SENS_CARD_REG_START;
-  // RsCard.reg_hdle_end = SENS_CARD_REG_END;
-  // // RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
-  // RsRegHdle(&RsCard, DataRead_Handler);
-
-  // RsCard.reg_hdle_stat = FANS_CARD_REG_START;
-  // RsCard.reg_hdle_end = FANS_CARD_REG_END;
-  // // RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
-  // RsRegHdle(&RsCard, FansCard_Handler);
 
   xTaskCreate((TaskFunction_t)ReadCardTaskFunc, (const char*)"Read Card Task Func", (uint16_t)READ_CARD_STK_SIZE, (void*)NULL,
               (UBaseType_t)READ_CARD_TASK_PRIO, (TaskHandle_t*)&ReadCardHandler);
@@ -109,7 +115,7 @@ void ReadCardTaskFunc(void* pvParameters) {
     xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
-    RsCard.ip_addr = SENS_CARD_ADDR;
+    RsCard.ip_addr = SENS_RS485_ADDR;
     RsCard.reg_hdle_stat = SENS_CARD_DATAREAD_REG_START;
     RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
 
@@ -135,7 +141,7 @@ void ReadCardTaskFunc(void* pvParameters) {
     xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
 
     RsCard.tx_Func = WRITE_MULTIPLE_REGISTERS;
-    RsCard.ip_addr = FANS_CARD_ADDR;
+    RsCard.ip_addr = FAN_RS485_ADDR;
     RsCard.reg_hdle_stat = FANS_CARD_WRITE_REG_START;
     RsCard.reg_hdle_num = FANS_CARD_WRITE_NUM;
 
@@ -163,9 +169,8 @@ void ReadCardTaskFunc(void* pvParameters) {
     xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
 
     if (notificationValue > 0) {
-
       RsCard.tx_Func = READ_HOLDING_REGISTERS;
-      RsCard.ip_addr = FANS_CARD_ADDR;
+      RsCard.ip_addr = FAN_RS485_ADDR;
       RsCard.reg_hdle_stat = FANS_CARD_REG_START;
       RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
 
@@ -179,7 +184,7 @@ void ReadCardTaskFunc(void* pvParameters) {
       if (ret) {
         log_e("Fans Card Write Error %d", ret);
         continue;
-      }else{
+      } else {
         // log_i("Fans Card Write Success: %X %X", RsCard.ip_addr, RsCard.tx_Func);
         // elog_hexdump("FansCardCtrl", 32, RsCard.tx_Data, sizeof(RsCard.tx_Data) / 2);
       }

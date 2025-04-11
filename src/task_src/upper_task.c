@@ -1,15 +1,21 @@
-#include <stdio.h>
-#include "FreeRTOS.h"
-#include "task.h"
 #include "upper_task.h"
-#include "main.h"
+
+#include <stdio.h>
+
+#include "FreeRTOS.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
+#include "main.h"
+#include "task.h"
 
 #define LOG_TAG "UPPER_Task"
 #include "elog.h"
 
+#define SINGLE_DATA_MAX_SIZE 512
+
 TaskHandle_t upper_handler;
+
+DECLARE_RS485_BUFFERS(RsUpper, SINGLE_DATA_MAX_SIZE);
 
 Rs485_t RsUpper = {
     .UART = UART4,
@@ -17,8 +23,11 @@ Rs485_t RsUpper = {
     .BaudRate = BR_115200,
     .DataBit = USART_DATA_8BITS,
     .StopBit = USART_STOP_1_BIT,
-    .ip_addr = MY_485_ADDR,
+    .ip_addr = CDU_RS485_ADDR,
     .root = false,
+
+    RS485_BUFFERS_INIT(RsUpper, SINGLE_DATA_MAX_SIZE),
+
 };
 
 void UART4_IRQHandler(void) {
@@ -38,8 +47,9 @@ void UART4_IRQHandler(void) {
 }
 
 void upper_task_function(void* pvParameters) {
+  log_i("Upper Task Running");
+
   RsInit(&RsUpper);
-  log_i("UPPER Task Running");
 
   RsError_t err;
 

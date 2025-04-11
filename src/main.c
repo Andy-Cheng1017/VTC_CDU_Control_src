@@ -25,6 +25,8 @@
 #include "power_task.h"
 #include "alarm_task.h"
 
+#include "RS485_Region_handler.h"
+
 /* private includes ----------------------------------------------------------*/
 /* add user code begin private includes */
 
@@ -204,6 +206,15 @@ int main(void) {
     log_e("Failed to create mutex!\n");
     while (1);
   }
+
+  RsRegHdle(SysInfom_Handler, SYSINFOM_REG_START, SYSINFOM_REG_END);
+  RsRegHdle(SysParaSet_Handler, SYSPARASET_REG_START, SYSPARASET_REG_END);
+  RsRegHdle(SysParaDisp_Handler, SYSPARADISP_REG_START, SYSPARADISP_REG_END);
+  RsRegHdle(DataRead_Handler, DATAREAD_REG_START, DATAREAD_REG_END);
+  RsRegHdle(SideCar_Sens_DataRead_Handler, SENS_CARD_DATAREAD_REG_START, SENS_CARD_REG_END);
+  RsRegHdle(DevCtrl_Handler, DEVCTRL_REG_START, DEVCTRL_REG_END);
+  RsRegHdle(SideCar_Sens_DevCtrl_Handler, SENS_CARD_DEVCTRL_REG_START, SENS_CARD_DEVCTRL_REG_END);
+  RsRegHdle(FansCard_Handler, FANS_CARD_REG_START, FANS_CARD_REG_END);
 
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);

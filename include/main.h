@@ -5,6 +5,11 @@
 
 #define RS485_SEMAPHORE_TIMEOUT 250
 
-extern SemaphoreHandle_t RS485RegionMutex; 
+// typedef enum {
+//   ONLY_WARNING,
+//   WARNING_AND_STOP,
+// } AlarmAction_t;
 
-#endif // !MAIN_H
+extern SemaphoreHandle_t RS485RegionMutex;
+
+#endif  // !MAIN_H

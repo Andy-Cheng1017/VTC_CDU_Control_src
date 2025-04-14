@@ -32,19 +32,6 @@ TaskHandle_t alarm_handler;
 #define LEAK_SERVER_WARN_BIT 12
 #define LEAK_SIDECAR_WARN_BIT 13
 
-#define INLET_PRESSURE_CHANNEL SensStat.press_1_val_kpa
-#define OUTLET_PRESSURE_CHANNEL SensStat.press_2_val_kpa
-#define RETURN_PRESSURE_CHANNEL SensCardStat.press_1_val_kpa
-
-#define FLOW_CHANNEL SensStat.Flow_val
-
-#define OUTLET_TEMP_CHANNEL Pt100Stat.pt100_1_temp_m
-#define AMBIENT_TEMP_CHANNEL SensStat.temperature
-
-#define LEAK_SENSOR_CHANNEL SensStat.leak_sensor
-#define CUD_LEAK_CHANNEL SensCardStat.leak_sensor
-#define SERVER_LEAK_CHANNEL SensCardStat.leak_sensor
-
 #define PUMP_1_EXITS_BIT 0
 #define PUMP_2_EXITS_BIT 1
 #define TEMP_HUM_EXITS_BIT 2

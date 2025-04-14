@@ -53,8 +53,14 @@ typedef struct {
 } LeakWarn_t;
 
 typedef struct {
+  uint16_t power_on_setting;
+} SysInform_t;
+
+extern SysInform_t SysInform;
+
+typedef struct {
   CtrlMode_t ctrl_mode;
-  int16_t temp_set;
+  int32_t temp_set;
   int16_t flow_set;
   int16_t press_set;
   uint16_t pump_min_duty;

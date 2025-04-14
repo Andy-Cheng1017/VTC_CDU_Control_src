@@ -53,14 +53,14 @@ typedef struct {
   int16_t delay;
   uint16_t fan_low_speed_warning_threshold;
   uint16_t fan_fg_difference_warning_threshold;
-} FanAlarm_t;
+} FanCardAlarm_t;
 
 typedef struct {
   bool auto_control;
   uint16_t auto_control_target_speed;
   uint16_t fan_installation_status;
 
-  FanAlarm_t fan_alarm;
+  FanCardAlarm_t fan_alarm;
 
 } FanCardSysSet_t;
 

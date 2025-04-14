@@ -42,6 +42,9 @@ SensCardCtrl_t SensCardCtrl = {0};
 FansCardCtrl_t FansCardCtrl = {0};
 FansCardStat_t FansCardStat = {0};
 
+FanCardSysSet_t FanCardSysSet = {0};
+FanCardSysDisp_t FanCardSysDisp = {0};
+
 void USART2_IRQHandler(void) {
   if (usart_interrupt_flag_get(RsCard.UART, USART_RDBF_FLAG) != RESET) {
     usart_flag_clear(RsCard.UART, USART_RDBF_FLAG);
@@ -59,7 +62,7 @@ void USART2_IRQHandler(void) {
 }
 
 void SideCardTaskFunc(void* pvParameters) {
-  log_i("Side Card Task Start"); 
+  log_i("Side Card Task Start");
 
   RsInit(&RsCard);
 

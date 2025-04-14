@@ -207,7 +207,7 @@ int main(void) {
     while (1);
   }
 
-  RsRegHdle(SysInfom_Handler, SYSINFOM_REG_START, SYSINFOM_REG_END);
+  RsRegHdle(SysInform_Handler, SYSINFORM_REG_START, SYSINFORM_REG_END);
   RsRegHdle(SysParaSet_Handler, SYSPARASET_REG_START, SYSPARASET_REG_END);
   RsRegHdle(SysParaDisp_Handler, SYSPARADISP_REG_START, SYSPARADISP_REG_END);
   RsRegHdle(DataRead_Handler, DATAREAD_REG_START, DATAREAD_REG_END);
@@ -241,8 +241,8 @@ void start_task(void* pvParameters) {
   xTaskCreate((TaskFunction_t)pump_task_function, (const char*)"Pump_task", (uint16_t)PUMP_STK_SIZE, (void*)NULL, (UBaseType_t)PUMP_TASK_PRIO,
               (TaskHandle_t*)&pump_handler);
   vTaskDelay(100);
-  // xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
-  //             (TaskHandle_t*)&main_handler);
+  xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
+              (TaskHandle_t*)&main_handler);
   vTaskDelay(100);
   xTaskCreate((TaskFunction_t)alarm_task_function, (const char*)"Alarm_task", (uint16_t)ALARM_STK_SIZE, (void*)NULL, (UBaseType_t)ALARM_TASK_PRIO,
               (TaskHandle_t*)&alarm_handler);

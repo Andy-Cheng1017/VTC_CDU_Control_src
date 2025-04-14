@@ -10,6 +10,11 @@
 
 extern TaskHandle_t SideCardHandler;
 extern TaskHandle_t ReadCardHandler;
+extern TaskHandle_t WriteCardHandler;
+
+uint16_t write_ip;
+uint16_t write_card_address;
+uint16_t write_card_data;
 
 typedef struct {
   int32_t pt100_1_temp_m;
@@ -38,7 +43,7 @@ typedef struct {
 extern FansCardCtrl_t FansCardCtrl;
 
 typedef struct {
-  uint16_t fan_fg[16];  // 0x0080
+  uint16_t fan_fg[16]; 
 } FansCardStat_t;
 
 extern FansCardStat_t FansCardStat;
@@ -75,6 +80,6 @@ typedef struct {
 extern FanCardSysDisp_t FanCardSysDisp;
 
 void SideCardTaskFunc(void* pvParameters);
-void ReadCardTaskFunc(void* pvParameters);
+// void ReadCardTaskFunc(void* pvParameters);
 
 #endif  // SIDE_CARD_TASK_H

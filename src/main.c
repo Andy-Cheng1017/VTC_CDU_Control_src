@@ -215,6 +215,8 @@ int main(void) {
   RsRegHdle(DevCtrl_Handler, DEVCTRL_REG_START, DEVCTRL_REG_END);
   RsRegHdle(SideCar_Sens_DevCtrl_Handler, SENS_CARD_DEVCTRL_REG_START, SENS_CARD_DEVCTRL_REG_END);
   RsRegHdle(FansCard_Handler, FANS_CARD_REG_START, FANS_CARD_REG_END);
+  RsRegHdle(FanCardSysSet_Handler, FANS_CARD_SYS_SET_REG_START, FANS_CARD_SYS_SET_REG_END);
+  RsRegHdle(FanCardSysDisp_Handler, FANS_CARD_SYS_DISP_REG_START, FANS_CARD_SYS_DISP_REG_END);
 
   xTaskCreate((TaskFunction_t)start_task, (const char*)"start_task", (uint16_t)START_STK_SIZE, (void*)NULL, (UBaseType_t)START_TASK_PRIO,
               (TaskHandle_t*)&StartTask_Handler);

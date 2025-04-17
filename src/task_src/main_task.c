@@ -23,7 +23,7 @@ SysInform_t SysInform = {
 
 SysParaSet_t SysParaSet = {
     .ctrl_mode = TEMP_CONST,
-    .temp_set = 30000,
+    .temp_set = 40000,
     .flow_set = 0,
     .press_set = 0,
     .pump_min_duty = 100,
@@ -74,10 +74,13 @@ SysParaSet_t SysParaSet = {
 
 SysParaDisp_t SysParaDisp = {0};
 
+uint16_t triger_fan = 0;
+
 void main_task_function(void* pvParameters) {
   log_i("Main Task Started");
 
   TickType_t xLastWakeTime = xTaskGetTickCount();
+  pump_control.pump_1_rpm = 300;
 
   while (1) {
     vTaskDelayUntil(&xLastWakeTime, MAIN_PERIOD);
@@ -89,20 +92,30 @@ void main_task_function(void* pvParameters) {
       SysParaSet.ctrl_mode = TEMP_CONST;
     } else if (SysInform.power_on_setting == 4) {
       SysInform.power_on_setting = 0;
-      SysParaSet.ctrl_mode = TEMP_CONST;
+      SysParaSet.ctrl_mode = NON_CTRL;
+      FanCardSysSet.auto_control_target_speed = 0;
+      // pump_control.pump_1_rpm = 0;
     }
 
     if (SysParaSet.ctrl_mode == TEMP_CONST) {
       if (OUTLET_TEMP_CHANNEL > SysParaSet.temp_set) {
-        pump_control.pump_1_rpm = 200;
+        // pump_control.pump_1_rpm = 200;
         FanCardSysSet.auto_control_target_speed = 100;
       } else {
         FanCardSysSet.auto_control_target_speed = 0;
-        pump_control.pump_1_rpm = 0;
+        // pump_control.pump_1_rpm = 0;
       }
+
     } else if (SysParaSet.ctrl_mode == FLOW_CONST) {
     } else if (SysParaSet.ctrl_mode == PRESS_CONST) {
     } else if (SysParaSet.ctrl_mode == NON_CTRL) {
+    }
+    if (triger_fan != FanCardSysSet.auto_control_target_speed) {
+      write_ip = 0x23;
+      write_card_address = 197;
+      write_card_data = FanCardSysSet.auto_control_target_speed;
+      triger_fan = FanCardSysSet.auto_control_target_speed;
+      xTaskNotifyGive(WriteCardHandler);
     }
   }
   vTaskDelete(NULL);

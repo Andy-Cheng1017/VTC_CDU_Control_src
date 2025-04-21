@@ -1,12 +1,11 @@
 #include "LCD_task.h"
-
 #include <stdio.h>
-
 #include "FreeRTOS.h"
+#include "task.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
 #include "main.h"
-#include "task.h"
+#include "side_card_task.h"
 
 #define LOG_TAG "LCD_Task"
 #include "elog.h"
@@ -70,6 +69,16 @@ void LCD_task_function(void* pvParameters) {
       xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
       err = RS485ReadHandler(&RsLCD);
       xSemaphoreGive(RS485RegionMutex);
+
+      if (IS_SENSCARD_WRITABLE_REG(RsLCD.rx_Func, RsLCD.rx_reg_start_addr)) {
+        if (RsLCD.rx_Func == WRITE_SINGLE_REGISTER) {
+          WRITE_CARD_SINGLE(SENS_RS485_ADDR, RsLCD.rx_reg_start_addr, RsLCD.rx_Data[2] << 8 | RsLCD.rx_Data[3]);
+        }
+      } else if (IS_FANCARD_WRITABLE_REG(RsLCD.rx_Func, RsLCD.rx_reg_start_addr)) {
+        if (RsLCD.rx_Func == WRITE_SINGLE_REGISTER) {
+          WRITE_CARD_SINGLE(FAN_RS485_ADDR, RsLCD.rx_reg_start_addr, RsLCD.rx_Data[2] << 8 | RsLCD.rx_Data[3]);
+        }
+      }
 
       if (err != RS485_OK) {
         log_e("Error handling RS485: %d", err);

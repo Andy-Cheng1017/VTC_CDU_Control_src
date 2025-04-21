@@ -111,9 +111,6 @@ void main_task_function(void* pvParameters) {
     } else if (SysParaSet.ctrl_mode == NON_CTRL) {
     }
     if (triger_fan != FanCardSysSet.auto_control_target_speed) {
-      write_ip = 0x23;
-      write_card_address = 197;
-      write_card_data = FanCardSysSet.auto_control_target_speed;
       triger_fan = FanCardSysSet.auto_control_target_speed;
       xTaskNotifyGive(WriteCardHandler);
     }

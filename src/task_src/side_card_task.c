@@ -1,22 +1,28 @@
 #include "side_card_task.h"
 
 #include "FreeRTOS.h"
+#include "task.h"
 #include "RS485.h"
 #include "RS485_Region_handler.h"
 #include "at32f403a_407_wk_config.h"
 #include "main.h"
-#include "task.h"
 
 #define LOG_TAG "Side_Card_Task"
 #include "elog.h"
 
+#define RS485_SIDECARD_TIMEOUT 50
+#define RS485_SIDECARD_READ_PERIOD 500
+
 #define SINGLE_DATA_MAX_SIZE 128
 
 #define READ_CARD_TASK_PRIO 2
-#define READ_CARD_STK_SIZE 512
+#define READ_CARD_STK_SIZE 216
 
-#define RS485_READ_TIMEOUT 50
-#define RS485_SIDECARD_READ_PERIOD 500
+#define WRITE_CARD_TASK_PRIO 2
+#define WRITE_CARD_STK_SIZE 216
+
+#define WRITE_QUEUE_LENGTH 10
+QueueHandle_t xWriteReqQueue = NULL;
 
 TaskHandle_t SideCardHandler;
 
@@ -81,15 +87,15 @@ void ReadCardTaskFunc(void* pvParameters) {
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {
       log_e("Sens Card Write Handler Error %d", ret);
+      xSemaphoreGive(RS485RegionMutex);
       continue;
     }
 
     ret = RS485Write(&RsCard);
     if (ret) {
       log_e("Sens Card Write Error %d", ret);
-      continue;
     }
-    ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+    ulTaskNotifyTake(pdTRUE, RS485_SIDECARD_TIMEOUT);
 
     xSemaphoreGive(RS485RegionMutex);
 
@@ -104,17 +110,17 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {
-      log_e("Fans Card Write Handler Error %d", ret);
+      log_e("Fans Card read Handler Error %d", ret);
+      xSemaphoreGive(RS485RegionMutex);
       continue;
     }
 
     ret = RS485Write(&RsCard);
     if (ret) {
-      log_e("Fans Card Write Error %d", ret);
-      continue;
+      log_e("Fans Card read Error %d", ret);
     }
 
-    ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+    ulTaskNotifyTake(pdTRUE, RS485_SIDECARD_TIMEOUT);
 
     xSemaphoreGive(RS485RegionMutex);
 
@@ -129,17 +135,17 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {
-      log_e("Fans Card Write Handler Error %d", ret);
+      log_e("Fans Card read Handler Error %d", ret);
+      xSemaphoreGive(RS485RegionMutex);
       continue;
     }
 
     ret = RS485Write(&RsCard);
     if (ret) {
-      log_e("Fans Card Write Error %d", ret);
-      continue;
+      log_e("Fans Card read Error %d", ret);
     }
 
-    ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT);
+    ulTaskNotifyTake(pdTRUE, RS485_SIDECARD_TIMEOUT);
 
     xSemaphoreGive(RS485RegionMutex);
   }
@@ -147,27 +153,30 @@ void ReadCardTaskFunc(void* pvParameters) {
 }
 
 void WriteCardTaskFunc(void* pvParameters) {
+  RS485WriteRequest_t req;
   RsError_t ret;
 
   while (1) {
-    if (ulTaskNotifyTake(pdTRUE, RS485_READ_TIMEOUT)) {
+    if (xQueueReceive(xWriteReqQueue, &req, portMAX_DELAY) == pdPASS) {
       xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
 
-      RsCard.tx_Func = WRITE_SINGLE_REGISTER;
-      RsCard.ip_addr = write_ip;
-      RsCard.reg_hdle_stat = write_card_address;
+      RsCard.tx_Func = req.function_code;
+      RsCard.ip_addr = req.ip_addr;
+      RsCard.reg_hdle_stat = req.reg_addr;
 
-      ret = RS485WriteHandler(&RsCard, &write_card_data, sizeof(&write_card_data));
+      ret = RS485WriteHandler(&RsCard, req.data, sizeof(uint16_t) * req.quantity);
       if (ret) {
         log_e("Fans Card Write Handler Error %d", ret);
+        xSemaphoreGive(RS485RegionMutex);
         continue;
       }
 
       ret = RS485Write(&RsCard);
       if (ret) {
         log_e("Fans Card Write Error %d", ret);
-        continue;
       }
+
+      ulTaskNotifyTake(pdTRUE, RS485_SIDECARD_TIMEOUT);
 
       xSemaphoreGive(RS485RegionMutex);
     }
@@ -180,12 +189,14 @@ void SideCardTaskFunc(void* pvParameters) {
 
   RsInit(&RsCard);
 
+  xWriteReqQueue = xQueueCreate(WRITE_QUEUE_LENGTH, sizeof(RS485WriteRequest_t));
+  vTaskDelay(100);
+
   xTaskCreate((TaskFunction_t)ReadCardTaskFunc, (const char*)"Read Card Task Func", (uint16_t)READ_CARD_STK_SIZE, (void*)NULL,
               (UBaseType_t)READ_CARD_TASK_PRIO, (TaskHandle_t*)&ReadCardHandler);
   vTaskDelay(100);
-  xTaskCreate((TaskFunction_t)WriteCardTaskFunc, (const char*)"Write Card Task Func", (uint16_t)READ_CARD_STK_SIZE, (void*)NULL,
-              (UBaseType_t)READ_CARD_TASK_PRIO, (TaskHandle_t*)&WriteCardHandler);
-  vTaskDelay(100);
+  xTaskCreate((TaskFunction_t)WriteCardTaskFunc, (const char*)"Write Card Task Func", (uint16_t)WRITE_CARD_STK_SIZE, (void*)NULL,
+              (UBaseType_t)WRITE_CARD_TASK_PRIO, (TaskHandle_t*)&WriteCardHandler);
 
   RsError_t err;
 
@@ -200,7 +211,7 @@ void SideCardTaskFunc(void* pvParameters) {
         continue;
       } else {
         if (RsCard.rx_Func == WRITE_MULTIPLE_REGISTERS) {
-          xTaskNotifyGive(ReadCardHandler);
+          xTaskNotifyGive(WriteCardHandler);
           continue;
         }
       }
@@ -211,10 +222,14 @@ void SideCardTaskFunc(void* pvParameters) {
         log_e("Error handling RS485: %d", err);
         continue;
       } else {
-        xTaskNotifyGive(ReadCardHandler);
+        if (RsCard.rx_Func == READ_HOLDING_REGISTERS) {
+          xTaskNotifyGive(ReadCardHandler);
+        } else if (RsCard.rx_Func == WRITE_SINGLE_REGISTER) {
+          xTaskNotifyGive(WriteCardHandler);
+        }
       }
     }
-
     vTaskDelay(25);
   }
+  vTaskDelete(NULL);
 }

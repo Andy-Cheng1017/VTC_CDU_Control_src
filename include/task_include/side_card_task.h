@@ -9,6 +9,8 @@
 #include "task.h"
 #include "queue.h"
 
+#define FG_SAMPLE_COUNT_MAX 32
+
 extern TaskHandle_t SideCardHandler;
 extern TaskHandle_t ReadCardHandler;
 extern TaskHandle_t WriteCardHandler;
@@ -64,14 +66,17 @@ typedef struct {
 
   FanCardAlarm_t fan_alarm;
 
+  uint16_t fan_speed_sampling_interval_ms;
+  uint8_t weighted_moving_average_count;
+
 } FanCardSysSet_t;
 
 extern FanCardSysSet_t FanCardSysSet;
 
 typedef struct {
-  uint16_t fan_board_fault_status;
+  uint16_t fan_fault_status;
   uint16_t fan_status_on_fan_board_bitfield_0_15;
-
+  uint8_t fan_count;
 } FanCardSysDisp_t;
 
 extern FanCardSysDisp_t FanCardSysDisp;

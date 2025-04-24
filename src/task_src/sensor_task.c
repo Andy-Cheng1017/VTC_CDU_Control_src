@@ -16,7 +16,7 @@
 #define PUMP_1_EXITS_BIT 0
 #define PUMP_2_EXITS_BIT 1
 
-uint16_t adc1_ordinary_valuetab[ADC1_SAMPLE_NUM][ADC1_CHANNEL_NUM] = {0};
+uint16_t adc1_ordinary_valuetab[ADC1_SAMPLE_COUNT][ADC1_CHANNEL_COUNT] = {0};
 
 TaskHandle_t sensor_handler;
 
@@ -198,35 +198,35 @@ void sensor_task_function(void* pvParameters) {
   vTaskDelay(5);
 
   while (1) {
-    uint32_t adc_sum_val[ADC1_CHANNEL_NUM] = {0};
-    for (int i = 0; i < ADC1_CHANNEL_NUM; i++) {
-      for (int j = 0; j < ADC1_SAMPLE_NUM; j++) {
+    uint32_t adc_sum_val[ADC1_CHANNEL_COUNT] = {0};
+    for (int i = 0; i < ADC1_CHANNEL_COUNT; i++) {
+      for (int j = 0; j < ADC1_SAMPLE_COUNT; j++) {
         adc_sum_val[i] += adc1_ordinary_valuetab[j][i];
       }
     }
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[0] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[0] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
     SensStat.press_1_val_kpa = (int16_t)Cal_Apply(&PressCal_1, raw_val);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[1] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[1] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
     SensStat.press_2_val_kpa = (int16_t)Cal_Apply(&PressCal_2, raw_val);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[2] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[2] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
     SensStat.press_3_val_kpa = (int16_t)Cal_Apply(&PressCal_3, raw_val);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[3] >> SMP_NUM_PWR)) / (adc_sum_val[8] >> SMP_NUM_PWR)) * 1.2f, &raw_val);
+    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[3] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
     SensStat.press_4_val_kpa = (int16_t)Cal_Apply(&PressCal_4, raw_val);
 
-    err_ntc = Ntc_ConvertToC(adc_sum_val[4] >> SMP_NUM_PWR, &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[4] >> SMP_CNT_PWR, &raw_val);
     SensStat.ntc_1_temp_m = Cal_Apply(&NtcCal_1, raw_val);
 
-    err_ntc = Ntc_ConvertToC(adc_sum_val[5] >> SMP_NUM_PWR, &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[5] >> SMP_CNT_PWR, &raw_val);
     SensStat.ntc_2_temp_m = Cal_Apply(&NtcCal_2, raw_val);
 
-    err_ntc = Ntc_ConvertToC(adc_sum_val[6] >> SMP_NUM_PWR, &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[6] >> SMP_CNT_PWR, &raw_val);
     SensStat.ntc_3_temp_m = Cal_Apply(&NtcCal_3, raw_val);
 
-    err_ntc = Ntc_ConvertToC(adc_sum_val[7] >> SMP_NUM_PWR, &raw_val);
+    err_ntc = Ntc_ConvertToC(adc_sum_val[7] >> SMP_CNT_PWR, &raw_val);
     SensStat.ntc_4_temp_m = Cal_Apply(&NtcCal_4, raw_val);
 
     FgGetRPM(&Flow_Fg, &SensStat.Flow_val);

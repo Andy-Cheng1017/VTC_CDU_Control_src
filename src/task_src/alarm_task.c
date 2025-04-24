@@ -58,72 +58,72 @@ void alarm_task_function(void* pvParameters) {
   log_i("Alarm Task Started");
   TickType_t xLastWakeTime = xTaskGetTickCount();
   while (1) {
-    if (check_threshold_with_delay(&press_monitor, OUTLET_PRESSURE_CHANNEL, SysParaSet.press_warn.outlet_low, SysParaSet.press_warn.delay)) {
+    if (over_threshold_with_delay(&press_monitor, OUTLET_PRESSURE_CHANNEL, SysParaSet.press_warn.outlet_low, SysParaSet.press_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_OUTLET_LOW_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_OUTLET_LOW_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&press_monitor, OUTLET_PRESSURE_CHANNEL, SysParaSet.press_warn.outlet_high, SysParaSet.press_warn.delay)) {
+    if (over_threshold_with_delay(&press_monitor, OUTLET_PRESSURE_CHANNEL, SysParaSet.press_warn.outlet_high, SysParaSet.press_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_OUTLET_HIGH_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_OUTLET_HIGH_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&press_monitor, INLET_PRESSURE_CHANNEL, SysParaSet.press_warn.inlet_low, SysParaSet.press_warn.delay)) {
+    if (over_threshold_with_delay(&press_monitor, INLET_PRESSURE_CHANNEL, SysParaSet.press_warn.inlet_low, SysParaSet.press_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_INLET_LOW_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_INLET_LOW_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&press_monitor, INLET_PRESSURE_CHANNEL, SysParaSet.press_warn.inlet_high, SysParaSet.press_warn.delay)) {
+    if (over_threshold_with_delay(&press_monitor, INLET_PRESSURE_CHANNEL, SysParaSet.press_warn.inlet_high, SysParaSet.press_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_INLET_HIGH_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_INLET_HIGH_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&press_monitor, RETURN_PRESSURE_CHANNEL, SysParaSet.press_warn.return_low, SysParaSet.press_warn.delay)) {
+    if (over_threshold_with_delay(&press_monitor, RETURN_PRESSURE_CHANNEL, SysParaSet.press_warn.return_low, SysParaSet.press_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_RETURN_LOW_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_RETURN_LOW_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&press_monitor, RETURN_PRESSURE_CHANNEL, SysParaSet.press_warn.return_high, SysParaSet.press_warn.delay)) {
+    if (over_threshold_with_delay(&press_monitor, RETURN_PRESSURE_CHANNEL, SysParaSet.press_warn.return_high, SysParaSet.press_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_RETURN_HIGH_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PRESS_RETURN_HIGH_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&flow_monitor, SensStat.Flow_val, SysParaSet.flow_warn.low_val, SysParaSet.flow_warn.low_delay)) {
+    if (over_threshold_with_delay(&flow_monitor, SensStat.Flow_val, SysParaSet.flow_warn.low_val, SysParaSet.flow_warn.low_delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, FLOW_LOW_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, FLOW_LOW_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&flow_monitor, SensStat.Flow_val, SysParaSet.flow_warn.high_val, SysParaSet.flow_warn.high_delay)) {
+    if (over_threshold_with_delay(&flow_monitor, SensStat.Flow_val, SysParaSet.flow_warn.high_val, SysParaSet.flow_warn.high_delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, FLOW_HIGH_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, FLOW_HIGH_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&temp_monitor, OUTLET_TEMP_CHANNEL, SysParaSet.temp_warn.outlet_low, SysParaSet.temp_warn.delay)) {
+    if (over_threshold_with_delay(&temp_monitor, OUTLET_TEMP_CHANNEL, SysParaSet.temp_warn.outlet_low, SysParaSet.temp_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, TEMP_OUTLET_LOW_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, TEMP_OUTLET_LOW_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&temp_monitor, OUTLET_TEMP_CHANNEL, SysParaSet.temp_warn.outlet_high, SysParaSet.temp_warn.delay)) {
+    if (over_threshold_with_delay(&temp_monitor, OUTLET_TEMP_CHANNEL, SysParaSet.temp_warn.outlet_high, SysParaSet.temp_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, TEMP_OUTLET_HIGH_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, TEMP_OUTLET_HIGH_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&temp_monitor, AMBIENT_TEMP_CHANNEL, SysParaSet.temp_warn.ambient_high, SysParaSet.temp_warn.delay)) {
+    if (over_threshold_with_delay(&temp_monitor, AMBIENT_TEMP_CHANNEL, SysParaSet.temp_warn.ambient_high, SysParaSet.temp_warn.delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, TEMP_AMBIENT_HIGH_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, TEMP_AMBIENT_HIGH_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&leak_monitor, LEAK_SENSOR_CHANNEL, 1, SysParaSet.leak_warn.CUD_delay)) {
+    if (over_threshold_with_delay(&leak_monitor, LEAK_SENSOR_CHANNEL, 1, SysParaSet.leak_warn.CUD_delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, LEAK_CUD_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, LEAK_CUD_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&leak_monitor, SERVER_LEAK_CHANNEL, 1, SysParaSet.leak_warn.server_delay)) {
+    if (over_threshold_with_delay(&leak_monitor, SERVER_LEAK_CHANNEL, 1, SysParaSet.leak_warn.server_delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, LEAK_SERVER_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, LEAK_SERVER_WARN_BIT, false);
     }
-    if (check_threshold_with_delay(&leak_monitor, CUD_LEAK_CHANNEL, 1, SysParaSet.leak_warn.sidecar_delay)) {
+    if (over_threshold_with_delay(&leak_monitor, CUD_LEAK_CHANNEL, 1, SysParaSet.leak_warn.sidecar_delay)) {
       SET_BIT_TO(SysParaDisp.warn_stat, LEAK_SIDECAR_WARN_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, LEAK_SIDECAR_WARN_BIT, false);
@@ -144,22 +144,22 @@ void alarm_task_function(void* pvParameters) {
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, TEMP_HUM_EXITS_BIT, false);
     }
-    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_1_temp_m || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_1_temp_m) {
+    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_temp_m[0] || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_temp_m[0]) {
       SET_BIT_TO(SysParaDisp.periphery_component_exist, PT100_1_EXITS_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PT100_1_EXITS_BIT, false);
     }
-    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_2_temp_m || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_2_temp_m) {
+    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_temp_m[1] || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_temp_m[1]) {
       SET_BIT_TO(SysParaDisp.periphery_component_exist, PT100_2_EXITS_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PT100_2_EXITS_BIT, false);
     }
-    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_3_temp_m || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_3_temp_m) {
+    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_temp_m[2] || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_temp_m[2]) {
       SET_BIT_TO(SysParaDisp.periphery_component_exist, PT100_3_EXITS_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PT100_3_EXITS_BIT, false);
     }
-    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_4_temp_m || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_4_temp_m) {
+    if (SysParaSet.pt100_abnl_temp_high_m < Pt100Stat.pt100_temp_m[3] || SysParaSet.pt100_abnl_temp_low_m > Pt100Stat.pt100_temp_m[3]) {
       SET_BIT_TO(SysParaDisp.periphery_component_exist, PT100_4_EXITS_BIT, true);
     } else {
       SET_BIT_TO(SysParaDisp.warn_stat, PT100_4_EXITS_BIT, false);

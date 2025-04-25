@@ -3,6 +3,7 @@
 
 #include "FreeRTOS.h"
 #include "task.h"
+#include "PID.h"
 
 extern TaskHandle_t main_handler;
 
@@ -104,6 +105,8 @@ typedef struct {
 } SysParaDisp_t;
 
 extern SysParaDisp_t SysParaDisp;
+
+extern PIDController CUD_PID;
 
 void main_task_function(void* pvParameters);
 

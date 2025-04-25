@@ -7,13 +7,30 @@
 #include "alarm_task.h"
 #include "pump_task.h"
 #include "sensor_task.h"
+#include "RS485_Region_handler_enum.h"
 #include "side_card_task.h"
-#include "PID.h"
+#include "RS485.h"
 
 #define LOG_TAG "Main_Task"
 #include "elog.h"
 
-#define MAIN_PERIOD 20
+#define MAIN_PERIOD 100
+
+#define INITIAL_KP 20.0f
+#define INITIAL_KI 0.0f
+#define INITIAL_KD 0.0f
+
+PIDController CUD_PID = {
+    .kp = INITIAL_KP,
+    .ki = INITIAL_KI,
+    .kd = INITIAL_KD,
+    .G_base = 1.0f,
+    .gain_update_interval = 1.0f,
+    .dt = 0.1f,
+    .alpha = 0.2f,
+    .output_min = 0,
+    .output_max = 1000,
+};
 
 TaskHandle_t main_handler;
 
@@ -26,7 +43,7 @@ SysParaSet_t SysParaSet = {
     .temp_set = 40000,
     .flow_set = 0,
     .press_set = 0,
-    .pump_min_duty = 100,
+    .pump_min_duty = 300,
     .pump_stop_delay = 100,
 
     .press_warn =
@@ -94,17 +111,10 @@ void main_task_function(void* pvParameters) {
       SysInform.power_on_setting = 0;
       SysParaSet.ctrl_mode = NON_CTRL;
       FanCardSysSet.auto_control_target_speed = 0;
-      // pump_control.pump_1_rpm = 0;
     }
 
     if (SysParaSet.ctrl_mode == TEMP_CONST) {
-      if (OUTLET_TEMP_CHANNEL > SysParaSet.temp_set) {
-        // pump_control.pump_1_rpm = 200;
-        FanCardSysSet.auto_control_target_speed = 100;
-      } else {
-        FanCardSysSet.auto_control_target_speed = 0;
-        // pump_control.pump_1_rpm = 0;
-      }
+      FanCardSysSet.auto_control_target_speed = PID_Update(&CUD_PID, ((float)SysParaSet.temp_set) / 1000.0f, ((float)OUTLET_TEMP_CHANNEL) / 1000.0f);
 
     } else if (SysParaSet.ctrl_mode == FLOW_CONST) {
     } else if (SysParaSet.ctrl_mode == PRESS_CONST) {
@@ -112,7 +122,8 @@ void main_task_function(void* pvParameters) {
     }
     if (triger_fan != FanCardSysSet.auto_control_target_speed) {
       triger_fan = FanCardSysSet.auto_control_target_speed;
-      xTaskNotifyGive(WriteCardHandler);
+      log_i("Fan Speed Set: %d", FanCardSysSet.auto_control_target_speed);
+      WRITE_CARD_SINGLE(FAN_RS485_ADDR, AUTO_CONTROL_TARGET_SPEED, FanCardSysSet.auto_control_target_speed);
     }
   }
   vTaskDelete(NULL);

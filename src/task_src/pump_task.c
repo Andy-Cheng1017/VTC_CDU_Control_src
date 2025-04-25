@@ -6,6 +6,7 @@
 #include "FG_RPM.h"
 #include "Duty_PWM.h"
 #include "pump_task.h"
+#include "main_task.h"
 
 #define LOG_TAG "Pump_Task"
 #include "elog.h"
@@ -67,6 +68,11 @@ void pump_task_function(void* pvParameters) {
     vTaskDelayUntil(&xLastWakeTime, Fan_FG_READ_PERIOD);
     FgGetRPM(&Pump1_Fg, &pump_status.pump_1_FB);
     FgGetRPM(&Pump2_Fg, &pump_status.pump_2_FB);
+
+    if (SysInform.power_on_setting) {
+      if (pump_control.pump_1_rpm < SysParaSet.pump_min_duty) pump_control.pump_1_rpm = SysParaSet.pump_min_duty;
+      if (pump_control.pump_2_rpm < SysParaSet.pump_min_duty) pump_control.pump_2_rpm = SysParaSet.pump_min_duty;
+    }
 
     PwmSetDuty(&Pump1_PwmParam, pump_control.pump_1_rpm);
     PwmSetDuty(&Pump2_PwmParam, pump_control.pump_2_rpm);

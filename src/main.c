@@ -20,6 +20,7 @@
 #include "pump_task.h"
 #include "side_card_task.h"
 #include "pt100_task.h"
+#include "PID.h"
 #include "main_task.h"
 #include "temp_hum_task.h"
 #include "power_task.h"

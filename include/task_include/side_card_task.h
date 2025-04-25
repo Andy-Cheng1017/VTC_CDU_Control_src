@@ -16,10 +16,7 @@ extern TaskHandle_t ReadCardHandler;
 extern TaskHandle_t WriteCardHandler;
 
 typedef struct {
-  int32_t pt100_1_temp_m;
-  int32_t pt100_2_temp_m;
-  int32_t pt100_3_temp_m;
-  int32_t pt100_4_temp_m;
+  int32_t pt100_temp_m[4];
   int16_t press_1_val_kpa;
   int16_t press_2_val_kpa;
   uint8_t leak_sensor;
@@ -31,6 +28,7 @@ extern SensCardStat_t SensCardStat;
 
 typedef struct {
   uint16_t pressure_pump;
+  uint8_t pt100_enable;
 } SensCardCtrl_t;
 
 extern SensCardCtrl_t SensCardCtrl;

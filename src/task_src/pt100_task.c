@@ -86,13 +86,13 @@ CalParam_t PtCal[4] = {
 
 uint16_t MCP_Remap(int i) {
   if (i == 0) {
-    i = 3;
-  } else if (i == 1) {
-    i = 4;
-  } else if (i == 2) {
-    i = 1;
-  } else if (i == 3) {
     i = 2;
+  } else if (i == 1) {
+    i = 3;
+  } else if (i == 2) {
+    i = 0;
+  } else if (i == 3) {
+    i = 1;
   }
   return i;
 }
@@ -117,7 +117,7 @@ void pt100_task_function(void* pvParameters) {
         err = PT100_MCP_ReadAndCalcTemp(&Pt100I2cParam, MCP_Remap(i), &raw_val);
         if (err == errorNone) {
           Pt100Stat.pt100_temp_m[i] = Cal_Apply(&PtCal[i], raw_val);
-          log_i("pt100_%d_temp_m: %d", i + 1, Pt100Stat.pt100_temp_m[i]);
+          // log_i("pt100_%d_temp_m: %d", i + 1, Pt100Stat.pt100_temp_m[i]);
         } else {
           log_e("MCP342x_convertAndRead error: %d", err);
         }

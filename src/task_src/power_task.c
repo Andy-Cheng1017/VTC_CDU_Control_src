@@ -8,8 +8,22 @@
 
 TaskHandle_t power_handler;
 
-PowerStat_t Power_1_Stat = {0};
-PowerStat_t Power_2_Stat = {0};
+PowerStat_t Power_Stat[2] = {
+    [0] =
+        {
+            .power_status = 0,
+            .voltage_input = 0,
+            .current_input = 0,
+            .power_temp = 0,
+        },
+    [1] =
+        {
+            .power_status = 0,
+            .voltage_input = 0,
+            .current_input = 0,
+            .power_temp = 0,
+        },
+};
 
 void power_task_function(void* pvParameters) {
   log_i("Power Task Running");

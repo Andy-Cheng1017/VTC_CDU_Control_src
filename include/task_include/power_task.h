@@ -15,6 +15,5 @@ typedef struct {
   int16_t power_temp;
 } PowerStat_t;
 
-extern PowerStat_t Power_1_Stat;
-extern PowerStat_t Power_2_Stat;
+extern PowerStat_t Power_Stat[2];
 #endif

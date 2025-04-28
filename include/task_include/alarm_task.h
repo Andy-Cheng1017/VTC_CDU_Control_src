@@ -10,7 +10,7 @@
 
 #define FLOW_CHANNEL SensStat.Flow_val
 
-#define OUTLET_TEMP_CHANNEL SensCardStat.pt100_temp_m[0]
+#define OUTLET_TEMP_CHANNEL SensCardStat.pt100_temp_x10[0]
 #define AMBIENT_TEMP_CHANNEL SensStat.temperature
 
 #define LEAK_SENSOR_CHANNEL SensStat.leak_sensor

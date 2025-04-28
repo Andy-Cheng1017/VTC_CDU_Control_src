@@ -7,21 +7,15 @@
 extern TaskHandle_t pt100_handler;
 
 typedef struct {
-  int32_t pt100_temp_m[4];
+  int32_t pt100_temp_x10[4];
   uint8_t pt100_enable;
 } Pt100Stat_t;
 
 extern Pt100Stat_t Pt100Stat;
 
 typedef struct {
-  int32_t pt100_1_raw_l_val;
-  int32_t pt100_2_raw_l_val;
-  int32_t pt100_3_raw_l_val;
-  int32_t pt100_4_raw_l_val;
-  int32_t pt100_1_raw_h_val;
-  int32_t pt100_2_raw_h_val;
-  int32_t pt100_3_raw_h_val;
-  int32_t pt100_4_raw_h_val;
+  int32_t pt100_raw_l_val[4];
+  int32_t pt100_raw_h_val[4];
   int32_t pt100_ideal_l_val;
   int32_t pt100_ideal_h_val;
 } Pt100TwoCal_t;

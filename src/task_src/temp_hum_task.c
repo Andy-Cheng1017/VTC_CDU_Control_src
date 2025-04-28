@@ -4,11 +4,8 @@
 #include "FreeRTOS.h"
 #include "task.h"
 
-#define SINGLE_DATA_MAX_SIZE 16
-#define MAX_CIRCLE_BUFFER_SIZE 32
-#define MAX_PKG_SIZE 16
-
 #include "RS485.h"
+#include "RS485_Region_handler_enum.h"
 #include "sensor_task.h"
 #include "temp_hum_task.h"
 
@@ -100,7 +97,7 @@ void temp_hum_task_function(void *pvParameters) {
           //   log_i("RS485 Read Success %X %X", RsTempHum.ip_addr, RsTempHum.rx_Func);
           //   elog_hexdump("Card_rx_Data", 32, RsTempHum.rx_Data, sizeof(RsTempHum.rx_Data) / 2);
         }
-        RsTempHum.reg_hdle_stat = 0X0068;
+        RsTempHum.reg_hdle_stat = AMBIRNT_TEMPERATURE;
 
         ret = RS485ReadHandler(&RsTempHum);
 

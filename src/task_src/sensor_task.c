@@ -44,109 +44,127 @@ void EXINT15_10_IRQHandler(void) {
 }
 
 NtcTwoCal_t NtcTwoCal = {
-    .ntc_1_raw_l_val = 24987,
-    .ntc_2_raw_l_val = 24987,
-    .ntc_3_raw_l_val = 24962,
-    .ntc_4_raw_l_val = 24836,
-    .ntc_1_raw_h_val = 103662,
-    .ntc_2_raw_h_val = 103529,
-    .ntc_3_raw_h_val = 103529,
-    .ntc_4_raw_h_val = 103529,
+    .ntc_raw_l_val =
+        {
+            [0] = 25000,
+            [1] = 25000,
+            [2] = 25000,
+            [3] = 25000,
+        },
+    .ntc_raw_h_val =
+        {
+            [0] = 103779,
+            [1] = 103779,
+            [2] = 103779,
+            [3] = 103779,
+        },
     .ntc_ideal_l_val = 25000,   // 10kohm
     .ntc_ideal_h_val = 103779,  // 900ohm
 };
 
 PressTwoCal_t PressTwoCal = {
-    .press_1_raw_l_val = 0,
-    .press_2_raw_l_val = 0,
-    .press_3_raw_l_val = 0,
-    .press_4_raw_l_val = 0,
-    .press_1_raw_h_val = 2000,
-    .press_2_raw_h_val = 2000,
-    .press_3_raw_h_val = 2000,
-    .press_4_raw_h_val = 2000,
+    .press_raw_l_val =
+        {
+            [0] = 0,
+            [1] = 0,
+            [2] = 0,
+            [3] = 0,
+        },
+    .press_raw_h_val =
+        {
+            [0] = 2000,
+            [1] = 2000,
+            [2] = 2000,
+            [3] = 2000,
+        },
     .press_ideal_l_val = 0,     // 4ma
     .press_ideal_h_val = 2000,  // 7.2ma
 };
 
-CalParam_t NtcCal_1 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &NtcTwoCal.ntc_1_raw_l_val,
-    .raw_h = &NtcTwoCal.ntc_1_raw_h_val,
-    .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
-    .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
-    .data_type = DATA_TYPE_INT32,
+CalParam_t NtcCal[4] = {
+    [0] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &NtcTwoCal.ntc_raw_l_val[0],
+            .raw_h = &NtcTwoCal.ntc_raw_h_val[0],
+            .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
+            .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
+            .data_type = DATA_TYPE_INT32,
+        },
+    [1] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &NtcTwoCal.ntc_raw_l_val[1],
+            .raw_h = &NtcTwoCal.ntc_raw_h_val[1],
+            .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
+            .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
+            .data_type = DATA_TYPE_INT32,
+        },
+    [2] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &NtcTwoCal.ntc_raw_l_val[2],
+            .raw_h = &NtcTwoCal.ntc_raw_h_val[2],
+            .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
+            .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
+            .data_type = DATA_TYPE_INT32,
+        },
+    [3] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &NtcTwoCal.ntc_raw_l_val[3],
+            .raw_h = &NtcTwoCal.ntc_raw_h_val[3],
+            .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
+            .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
+            .data_type = DATA_TYPE_INT32,
+        },
 };
 
-CalParam_t NtcCal_2 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &NtcTwoCal.ntc_2_raw_l_val,
-    .raw_h = &NtcTwoCal.ntc_2_raw_h_val,
-    .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
-    .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
-    .data_type = DATA_TYPE_INT32,
-};
-
-CalParam_t NtcCal_3 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &NtcTwoCal.ntc_3_raw_l_val,
-    .raw_h = &NtcTwoCal.ntc_3_raw_h_val,
-    .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
-    .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
-    .data_type = DATA_TYPE_INT32,
-};
-
-CalParam_t NtcCal_4 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &NtcTwoCal.ntc_4_raw_l_val,
-    .raw_h = &NtcTwoCal.ntc_4_raw_h_val,
-    .ideal_l = &NtcTwoCal.ntc_ideal_l_val,
-    .ideal_h = &NtcTwoCal.ntc_ideal_h_val,
-    .data_type = DATA_TYPE_INT32,
-};
-
-CalParam_t PressCal_1 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &PressTwoCal.press_1_raw_l_val,
-    .raw_h = &PressTwoCal.press_1_raw_h_val,
-    .ideal_l = &PressTwoCal.press_ideal_l_val,
-    .ideal_h = &PressTwoCal.press_ideal_h_val,
-    .data_type = DATA_TYPE_INT16,
-};
-
-CalParam_t PressCal_2 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &PressTwoCal.press_2_raw_l_val,
-    .raw_h = &PressTwoCal.press_2_raw_h_val,
-    .ideal_l = &PressTwoCal.press_ideal_l_val,
-    .ideal_h = &PressTwoCal.press_ideal_h_val,
-    .data_type = DATA_TYPE_INT16,
-};
-
-CalParam_t PressCal_3 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &PressTwoCal.press_3_raw_l_val,
-    .raw_h = &PressTwoCal.press_3_raw_h_val,
-    .ideal_l = &PressTwoCal.press_ideal_l_val,
-    .ideal_h = &PressTwoCal.press_ideal_h_val,
-    .data_type = DATA_TYPE_INT16,
-};
-
-CalParam_t PressCal_4 = {
-    .offset = 0.0f,
-    .slope = 1.0f,
-    .raw_l = &PressTwoCal.press_4_raw_l_val,
-    .raw_h = &PressTwoCal.press_4_raw_h_val,
-    .ideal_l = &PressTwoCal.press_ideal_l_val,
-    .ideal_h = &PressTwoCal.press_ideal_h_val,
-    .data_type = DATA_TYPE_INT16,
+CalParam_t PressCal[4] = {
+    [0] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &PressTwoCal.press_raw_l_val[0],
+            .raw_h = &PressTwoCal.press_raw_h_val[0],
+            .ideal_l = &PressTwoCal.press_ideal_l_val,
+            .ideal_h = &PressTwoCal.press_ideal_h_val,
+            .data_type = DATA_TYPE_INT16,
+        },
+    [1] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &PressTwoCal.press_raw_l_val[1],
+            .raw_h = &PressTwoCal.press_raw_h_val[1],
+            .ideal_l = &PressTwoCal.press_ideal_l_val,
+            .ideal_h = &PressTwoCal.press_ideal_h_val,
+            .data_type = DATA_TYPE_INT16,
+        },
+    [2] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &PressTwoCal.press_raw_l_val[2],
+            .raw_h = &PressTwoCal.press_raw_h_val[2],
+            .ideal_l = &PressTwoCal.press_ideal_l_val,
+            .ideal_h = &PressTwoCal.press_ideal_h_val,
+            .data_type = DATA_TYPE_INT16,
+        },
+    [3] =
+        {
+            .offset = 0.0f,
+            .slope = 1.0f,
+            .raw_l = &PressTwoCal.press_raw_l_val[3],
+            .raw_h = &PressTwoCal.press_raw_h_val[3],
+            .ideal_l = &PressTwoCal.press_ideal_l_val,
+            .ideal_h = &PressTwoCal.press_ideal_h_val,
+            .data_type = DATA_TYPE_INT16,
+        },
 };
 
 ErrNtc_t err_ntc;
@@ -183,15 +201,10 @@ void sensor_task_function(void* pvParameters) {
   int32_t raw_val = 0;
 
   Conv_Init(&PressConv);
-
-  if (Cal_CalcParams(&NtcCal_1)) log_e("NtcCal_1 CalcParams failed");
-  if (Cal_CalcParams(&NtcCal_2)) log_e("NtcCal_2 CalcParams failed");
-  if (Cal_CalcParams(&NtcCal_3)) log_e("NtcCal_3 CalcParams failed");
-  if (Cal_CalcParams(&NtcCal_4)) log_e("NtcCal_4 CalcParams failed");
-  if (Cal_CalcParams(&PressCal_1)) log_e("PressCal_1 CalcParams failed");
-  if (Cal_CalcParams(&PressCal_2)) log_e("PressCal_2 CalcParams failed");
-  if (Cal_CalcParams(&PressCal_3)) log_e("PressCal_3 CalcParams failed");
-  if (Cal_CalcParams(&PressCal_4)) log_e("PressCal_4 CalcParams failed");
+  for (int i = 0; i < 4; i++) {
+    if (Cal_CalcParams(&NtcCal[i])) log_e("NtcCal_%d CalcParams failed", i + 1);
+    if (Cal_CalcParams(&PressCal[i])) log_e("PressCal_%d CalcParams failed", i + 1);
+  }
 
   FgInit(&Flow_Fg);
 
@@ -205,29 +218,13 @@ void sensor_task_function(void* pvParameters) {
       }
     }
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[0] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
-    SensStat.press_1_val_kpa = (int16_t)Cal_Apply(&PressCal_1, raw_val);
+    for (int i = 0; i < 4; i++) {
+      err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[i] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
+      SensStat.press_val_kpa[i] = (int16_t)Cal_Apply(&PressCal[i], raw_val);
 
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[1] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
-    SensStat.press_2_val_kpa = (int16_t)Cal_Apply(&PressCal_2, raw_val);
-
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[2] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
-    SensStat.press_3_val_kpa = (int16_t)Cal_Apply(&PressCal_3, raw_val);
-
-    err_conv = Conv_GetVal_Volt(&PressConv, (((float)(adc_sum_val[3] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
-    SensStat.press_4_val_kpa = (int16_t)Cal_Apply(&PressCal_4, raw_val);
-
-    err_ntc = Ntc_ConvertToC(adc_sum_val[4] >> SMP_CNT_PWR, &raw_val);
-    SensStat.ntc_1_temp_m = Cal_Apply(&NtcCal_1, raw_val);
-
-    err_ntc = Ntc_ConvertToC(adc_sum_val[5] >> SMP_CNT_PWR, &raw_val);
-    SensStat.ntc_2_temp_m = Cal_Apply(&NtcCal_2, raw_val);
-
-    err_ntc = Ntc_ConvertToC(adc_sum_val[6] >> SMP_CNT_PWR, &raw_val);
-    SensStat.ntc_3_temp_m = Cal_Apply(&NtcCal_3, raw_val);
-
-    err_ntc = Ntc_ConvertToC(adc_sum_val[7] >> SMP_CNT_PWR, &raw_val);
-    SensStat.ntc_4_temp_m = Cal_Apply(&NtcCal_4, raw_val);
+      err_ntc = Ntc_ConvertToC((((float)(adc_sum_val[i + 4] >> SMP_CNT_PWR)) / (adc_sum_val[8] >> SMP_CNT_PWR)) * 1.2f, &raw_val);
+      SensStat.ntc_temp_x10[i] = Cal_Apply(&NtcCal[i], raw_val) / 100;
+    }
 
     FgGetRPM(&Flow_Fg, &SensStat.Flow_val);
 

@@ -47,6 +47,11 @@ Rs485_t RsCard = {
 SensCardStat_t SensCardStat = {0};
 SensCardCtrl_t SensCardCtrl = {0};
 
+SensPt100TwoCal_t SensPt100TwoCal;
+SensPressTwoCal_t SensPressTwoCal;
+
+SideCarPowerStat_t SideCarPower_Stat[4];
+
 FansCardCtrl_t FansCardCtrl = {0};
 FansCardStat_t FansCardStat = {0};
 
@@ -81,8 +86,8 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = SENS_RS485_ADDR;
-    RsCard.reg_hdle_stat = SENS_CARD_DATAREAD_REG_START;
-    RsCard.reg_hdle_num = SENS_CARD_TOTAL_REG_NUM;
+    RsCard.reg_hdle_stat = SENS_DATA_READ_REG_START;
+    RsCard.reg_hdle_num = SENS_DATA_READ_REG_NUM;
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {
@@ -105,8 +110,8 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = FAN_RS485_ADDR;
-    RsCard.reg_hdle_stat = FANS_CARD_REG_START;
-    RsCard.reg_hdle_num = FANS_CARD_TOTAL_REG_NUM;
+    RsCard.reg_hdle_stat = FANS_FG_PWM_SET_REG_START;
+    RsCard.reg_hdle_num = FANS_FG_PWM_SET_REG_NUM;
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {
@@ -130,8 +135,8 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = FAN_RS485_ADDR;
-    RsCard.reg_hdle_stat = FANS_CARD_SYS_SET_REG_START;
-    RsCard.reg_hdle_num = FANS_CARD_SYS_DISP_REG_END - FANS_CARD_SYS_SET_REG_START + 1;
+    RsCard.reg_hdle_stat = FANS_SYS_SET_REG_START;
+    RsCard.reg_hdle_num = FANS_SYS_DISP_REG_END - FANS_SYS_SET_REG_START + 1;
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {

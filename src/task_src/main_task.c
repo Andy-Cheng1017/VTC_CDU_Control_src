@@ -81,10 +81,10 @@ SysParaSet_t SysParaSet = {
             .sidecar_delay = 30,
         },
 
-    .pt100_abnl_temp_low_m = 5000,
-    .pt100_abnl_temp_high_m = 105000,
-    .ntc_abnl_temp_low_m = 5000,
-    .ntc_abnl_temp_high_m = 105000,
+    .pt100_abnl_temp_low_m = 50,
+    .pt100_abnl_temp_high_m = 1050,
+    .ntc_abnl_temp_low_m = 50,
+    .ntc_abnl_temp_high_m = 1050,
     .press_abnl_val_low_kpa = 0,
     .press_abnl_val_high_kpa = 10000,
 };
@@ -114,7 +114,7 @@ void main_task_function(void* pvParameters) {
     }
 
     if (SysParaSet.ctrl_mode == TEMP_CONST) {
-      FanCardSysSet.auto_control_target_speed = PID_Update(&CUD_PID, ((float)SysParaSet.temp_set) / 1000.0f, ((float)OUTLET_TEMP_CHANNEL) / 1000.0f);
+      FanCardSysSet.auto_control_target_speed = PID_Update(&CUD_PID, ((float)SysParaSet.temp_set) / 10.0f, ((float)OUTLET_TEMP_CHANNEL) / 1000.0f);
 
     } else if (SysParaSet.ctrl_mode == FLOW_CONST) {
     } else if (SysParaSet.ctrl_mode == PRESS_CONST) {

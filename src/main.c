@@ -238,8 +238,8 @@ void start_task(void* pvParameters) {
   xTaskCreate((TaskFunction_t)main_task_function, (const char*)"Main_task", (uint16_t)MAIN_STK_SIZE, (void*)NULL, (UBaseType_t)MAIN_TASK_PRIO,
               (TaskHandle_t*)&main_handler);
   vTaskDelay(100);
-  xTaskCreate((TaskFunction_t)alarm_task_function, (const char*)"Alarm_task", (uint16_t)ALARM_STK_SIZE, (void*)NULL, (UBaseType_t)ALARM_TASK_PRIO,
-              (TaskHandle_t*)&alarm_handler);
+  // xTaskCreate((TaskFunction_t)alarm_task_function, (const char*)"Alarm_task", (uint16_t)ALARM_STK_SIZE, (void*)NULL, (UBaseType_t)ALARM_TASK_PRIO,
+  //             (TaskHandle_t*)&alarm_handler);
   vTaskDelay(100);
   xTaskCreate((TaskFunction_t)temp_hum_task_function, (const char*)"Temp_Hum_task", (uint16_t)TEMP_HUM_STK_SIZE, (void*)NULL,
               (UBaseType_t)TEMP_HUM_TASK_PRIO, (TaskHandle_t*)&temp_hum_handler);

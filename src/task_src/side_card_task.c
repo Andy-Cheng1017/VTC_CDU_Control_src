@@ -13,7 +13,7 @@
 #define RS485_SIDECARD_TIMEOUT 50
 #define RS485_SIDECARD_READ_PERIOD 500
 
-#define SINGLE_DATA_MAX_SIZE 128
+#define SINGLE_DATA_MAX_SIZE 512
 
 #define READ_CARD_TASK_PRIO 2
 #define READ_CARD_STK_SIZE 216
@@ -87,7 +87,7 @@ void ReadCardTaskFunc(void* pvParameters) {
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = SENS_RS485_ADDR;
     RsCard.reg_hdle_stat = SENS_DATA_READ_REG_START;
-    RsCard.reg_hdle_num = SENS_DATA_READ_REG_NUM;
+    RsCard.reg_hdle_num = SIDECAR_POWER_READ_REG_END - SENS_DATA_READ_REG_START + 1;
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {
@@ -110,33 +110,8 @@ void ReadCardTaskFunc(void* pvParameters) {
 
     RsCard.tx_Func = READ_HOLDING_REGISTERS;
     RsCard.ip_addr = FAN_RS485_ADDR;
-    RsCard.reg_hdle_stat = FANS_FG_PWM_SET_REG_START;
-    RsCard.reg_hdle_num = FANS_FG_PWM_SET_REG_NUM;
-
-    ret = RS485WriteHandler(&RsCard, NULL, NULL);
-    if (ret) {
-      log_e("Fans Card read Handler Error %d", ret);
-      xSemaphoreGive(RS485RegionMutex);
-      continue;
-    }
-
-    ret = RS485Write(&RsCard);
-    if (ret) {
-      log_e("Fans Card read Error %d", ret);
-    }
-
-    ulTaskNotifyTake(pdTRUE, RS485_SIDECARD_TIMEOUT);
-
-    xSemaphoreGive(RS485RegionMutex);
-
-    vTaskDelay(100);
-
-    xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
-
-    RsCard.tx_Func = READ_HOLDING_REGISTERS;
-    RsCard.ip_addr = FAN_RS485_ADDR;
     RsCard.reg_hdle_stat = FANS_SYS_SET_REG_START;
-    RsCard.reg_hdle_num = FANS_SYS_DISP_REG_END - FANS_SYS_SET_REG_START + 1;
+    RsCard.reg_hdle_num = FANS_FG_PWM_SET_REG_END - FANS_SYS_SET_REG_START + 1;
 
     ret = RS485WriteHandler(&RsCard, NULL, NULL);
     if (ret) {
@@ -153,6 +128,31 @@ void ReadCardTaskFunc(void* pvParameters) {
     ulTaskNotifyTake(pdTRUE, RS485_SIDECARD_TIMEOUT);
 
     xSemaphoreGive(RS485RegionMutex);
+
+    // vTaskDelay(100);
+
+    // xSemaphoreTake(RS485RegionMutex, RS485_SEMAPHORE_TIMEOUT);
+
+    // RsCard.tx_Func = READ_HOLDING_REGISTERS;
+    // RsCard.ip_addr = FAN_RS485_ADDR;
+    // RsCard.reg_hdle_stat = FANS_SYS_SET_REG_START;
+    // RsCard.reg_hdle_num = FANS_SYS_DISP_REG_END - FANS_SYS_SET_REG_START + 1;
+
+    // ret = RS485WriteHandler(&RsCard, NULL, NULL);
+    // if (ret) {
+    //   log_e("Fans Card read Handler Error %d", ret);
+    //   xSemaphoreGive(RS485RegionMutex);
+    //   continue;
+    // }
+
+    // ret = RS485Write(&RsCard);
+    // if (ret) {
+    //   log_e("Fans Card read Error %d", ret);
+    // }
+
+    // ulTaskNotifyTake(pdTRUE, RS485_SIDECARD_TIMEOUT);
+
+    // xSemaphoreGive(RS485RegionMutex);
   }
   vTaskDelete(NULL);
 }

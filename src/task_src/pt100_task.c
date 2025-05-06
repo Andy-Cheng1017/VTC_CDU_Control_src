@@ -18,7 +18,7 @@ Pt100I2cParam_t Pt100I2cParam = {
     .i2c_handle =
         {
             .i2cx = I2C3,
-            .timeout = 0xFFFFFFFF,
+            .timeout = 1000,
         },
     .mcp_i2c_addr = 0xD0,
     .adc_gain = 3,
@@ -29,14 +29,14 @@ Pt100Stat_t Pt100Stat = {
 };
 
 Pt100TwoCal_t Pt100TwoCal = {
-    .pt100_raw_h_val =
+    .pt100_raw_l_val =
         {
             [0] = 25684,
             [1] = 25684,
             [2] = 25684,
             [3] = 25684,
         },
-    .pt100_raw_l_val =
+    .pt100_raw_h_val =
         {
             [0] = 90770,
             [1] = 90770,

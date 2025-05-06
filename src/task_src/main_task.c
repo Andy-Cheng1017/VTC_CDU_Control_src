@@ -14,7 +14,7 @@
 #define LOG_TAG "Main_Task"
 #include "elog.h"
 
-#define MAIN_PERIOD 100
+#define MAIN_PERIOD 5000
 
 #define INITIAL_KP 20.0f
 #define INITIAL_KI 0.0f
@@ -24,10 +24,7 @@ PIDController CUD_PID = {
     .kp = INITIAL_KP,
     .ki = INITIAL_KI,
     .kd = INITIAL_KD,
-    .G_base = 1.0f,
-    .gain_update_interval = 1.0f,
-    .dt = 0.1f,
-    .alpha = 0.2f,
+    .dt = 5.0f,
     .output_min = 0,
     .output_max = 1000,
 };
@@ -40,7 +37,7 @@ SysInform_t SysInform = {
 
 SysParaSet_t SysParaSet = {
     .ctrl_mode = TEMP_CONST,
-    .temp_set = 40000,
+    .temp_set = 500,
     .flow_set = 0,
     .press_set = 0,
     .pump_min_duty = 300,
@@ -97,7 +94,9 @@ void main_task_function(void* pvParameters) {
   log_i("Main Task Started");
 
   TickType_t xLastWakeTime = xTaskGetTickCount();
-  pump_control.pump_1_rpm = 300;
+  pump_control.pump_1_rpm = 500;
+  pump_control.pump_2_rpm = 500;
+
 
   while (1) {
     vTaskDelayUntil(&xLastWakeTime, MAIN_PERIOD);
@@ -114,7 +113,7 @@ void main_task_function(void* pvParameters) {
     }
 
     if (SysParaSet.ctrl_mode == TEMP_CONST) {
-      FanCardSysSet.auto_control_target_speed = PID_Update(&CUD_PID, ((float)SysParaSet.temp_set) / 10.0f, ((float)OUTLET_TEMP_CHANNEL) / 1000.0f);
+      FanCardSysSet.auto_control_target_speed = PID_Update(&CUD_PID, ((float)SysParaSet.temp_set) / 10.0f, ((float)OUTLET_TEMP_CHANNEL) / 10.0f);
 
     } else if (SysParaSet.ctrl_mode == FLOW_CONST) {
     } else if (SysParaSet.ctrl_mode == PRESS_CONST) {

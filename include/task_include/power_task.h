@@ -9,6 +9,8 @@ extern TaskHandle_t power_handler;
 void power_task_function(void* pvParameters);
 
 typedef struct {
+  uint8_t pwr_stat_addr;
+  uint8_t pwr_out_addr;
   uint16_t power_status;
   uint16_t voltage_input;
   uint16_t current_input;
